@@ -1,24 +1,31 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Tailwind from "primereact/passthrough/tailwind";
+import { PrimeReactProvider } from "primereact/api";
+import "@/app/globals.css";
+import useThemeStore from "@/stores/themeStore";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Mantix Pro",
   description: "Mantix Pro App",
 };
-import "@/app/globals.css";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body>
-        <div id="app" className={inter.className}>
-          {children}
-        </div>
-      </body>
-    </html>
+    <PrimeReactProvider value={{ unstyled: true, pt: Tailwind }}>
+      <html lang="es">
+        <body className="dark">
+          <div id="app" className={inter.className}>
+            {children}
+          </div>
+        </body>
+      </html>
+    </PrimeReactProvider>
   );
 }

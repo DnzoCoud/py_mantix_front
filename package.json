@@ -14,7 +14,8 @@
     "primereact": "^10.5.1",
     "react": "^18",
     "react-dom": "^18",
-    "tailwind-merge": "^2.2.1"
+    "tailwind-merge": "^2.2.1",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20",

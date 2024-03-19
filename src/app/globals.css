@@ -9,17 +9,11 @@
   @tailwind utilities;
 }
 
-:root {
-  --darkMode: #222831;
-}
-
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 html.dark body {
-  background: var(--darkMode);
+  @apply bg-dark_bg;
 }
 
 #app {
