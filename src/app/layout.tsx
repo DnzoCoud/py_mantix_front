@@ -4,6 +4,7 @@ import Tailwind from "primereact/passthrough/tailwind";
 import { PrimeReactProvider } from "primereact/api";
 import "@/app/globals.css";
 import useThemeStore from "@/stores/themeStore";
+import "primeicons/primeicons.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

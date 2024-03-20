@@ -1,15 +1,31 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Image } from "primereact/image";
 import { Dialog } from "primereact/dialog";
 import { Password } from "primereact/password";
 import StackImg from "@/app/Login/stack.png";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@/stores/auth/authStore";
 export default function Login() {
   const [value, setValue] = useState<string>("");
 
   const [visible, setVisible] = useState<boolean>(false);
+  const router = useRouter();
+
+  const { isLoggedIn, login } = useAuthStore();
+
+  const handleLogin = () => {
+    login();
+    router.push("/Dashboard");
+  };
+
+  useEffect((): void => {
+    if (isLoggedIn) {
+      router.push("/Dashboard");
+    }
+  });
   return (
     <>
       <div className="w-full h-full flex justify-center items-center bg-dark_medium_bg ">
@@ -53,33 +69,48 @@ export default function Login() {
               <h1 className="text-center text-6xl font-extrabold text-white">
                 Iniciar Sesion
               </h1>
-              <InputText
-                value={value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setValue(e.target.value)
-                }
-                className="w-2/3 mt-4"
-              />
-              <Password
-                inputId="password"
-                value={value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setValue(e.target.value)
-                }
-                feedback={false}
-                tabIndex={1}
-                pt={{
-                  root: ({ props }: any) => ({
-                    className: "w-2/3 mt-4",
-                  }),
-                  input: {
-                    className: "w-full",
-                  },
-                }}
-              />
+              <div className="flex flex-col w-full  items-center ">
+                <div className="flex flex-col mt-4 w-full items-center">
+                  <label htmlFor="email" className="text-white">
+                    Correo Electronico
+                  </label>
+                  <InputText
+                    id="email"
+                    value={value}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setValue(e.target.value)
+                    }
+                    className="w-2/3 "
+                  />
+                </div>
+                <div className="flex flex-col mt-4 w-full items-center">
+                  <label htmlFor="password" className="text-white">
+                    Contraseña
+                  </label>
+
+                  <Password
+                    inputId="password"
+                    value={value}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setValue(e.target.value)
+                    }
+                    feedback={false}
+                    tabIndex={1}
+                    pt={{
+                      root: ({ props }: any) => ({
+                        className: "w-2/3",
+                      }),
+                      input: {
+                        className: "w-full",
+                      },
+                    }}
+                  />
+                </div>
+              </div>
               <Button
                 className="dark:bg-white_bg mt-6"
                 label="Iniciar Sesion"
+                onClick={handleLogin}
               />
             </div>
           </div>

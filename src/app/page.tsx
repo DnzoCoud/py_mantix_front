@@ -4,7 +4,7 @@ import { Calendar } from "primereact/calendar";
 import { Nullable } from "primereact/ts-helpers";
 import { Dropdown } from "primereact/dropdown";
 import { useState } from "react";
-import { IMaquina } from "./interfaces/IMaquina";
+import { IMaquina } from "../interfaces/IMaquina";
 import { PanelMenu } from "primereact/panelmenu";
 import { MenuItem } from "primereact/menuitem";
 export default function Home() {

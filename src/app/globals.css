@@ -12,12 +12,13 @@
 * {
   box-sizing: border-box;
 }
-html.dark body {
-  @apply bg-dark_bg;
+html body.dark #app {
+  @apply bg-dark_medium_bg;
 }
 
 #app {
   width: 100vw;
   height: 100vh;
   overflow: auto;
+  scroll-behavior: smooth;
 }
