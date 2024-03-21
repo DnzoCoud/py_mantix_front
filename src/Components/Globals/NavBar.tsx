@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { Avatar } from "primereact/avatar";
 import { ContextMenu } from "primereact/contextmenu";
-import { Menu } from "primereact/menu";
+import { Menubar } from "primereact/menubar";
 import { MenuItem } from "primereact/menuitem";
 import { Tag } from "primereact/tag";
 import React, { useRef } from "react";
@@ -42,13 +42,23 @@ export default function NavBar() {
             <Tag severity="warning" value="Pro" />
           </div>
           <div className="flex justify-evenly items-center">
-            <Menu model={navBarMenuitems} />
+            <Menubar
+              model={navBarMenuitems}
+              className="p-0"
+              style={{ padding: "0!important" }}
+            />
           </div>
-          <Avatar
-            image="https://primefaces.org/cdn/primereact/images/avatar/onyamalimba.png"
-            shape="circle"
-            onContextMenu={(e) => cm.current?.show(e)}
-          />
+          <div className="flex items-center justify-evenly">
+            <div className="flex flex-col mr-4">
+              <span className="dark:text-white">Oscar Ladino</span>
+              <span>Culinary</span>
+            </div>
+            <Avatar
+              image="https://primefaces.org/cdn/primereact/images/avatar/onyamalimba.png"
+              shape="circle"
+              onContextMenu={(e) => cm.current?.show(e)}
+            />
+          </div>
           <ContextMenu model={contextMenuItems} ref={cm} />
         </div>
       </div>
