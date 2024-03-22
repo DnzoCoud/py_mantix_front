@@ -32,7 +32,7 @@ export default function NavBar() {
   ];
   return (
     <>
-      <div className="w-full h-14 flex justify-center items-center sticky top-0 z-40">
+      <div className="w-full h-16 flex justify-center items-center sticky top-0 z-40">
         <div className="flex justify-between px-4 items-center w-full h-full bg-dark_bg p-2 rounded-md transition-all ease-out shadow-md shadow-dark_medium_bg">
           <div
             className="flex justify-evenly items-center cursor-pointer"
@@ -51,7 +51,7 @@ export default function NavBar() {
           <div className="flex items-center justify-evenly">
             <div className="flex flex-col mr-4">
               <span className="dark:text-white">Oscar Ladino</span>
-              <span>Culinary</span>
+              <Tag value="Culinary" />
             </div>
             <Avatar
               image="https://primefaces.org/cdn/primereact/images/avatar/onyamalimba.png"

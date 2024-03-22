@@ -22,3 +22,7 @@ html body.dark #app {
   overflow: auto;
   scroll-behavior: smooth;
 }
+
+.ariaOption[aria-selected="true"] {
+  @apply dark:bg-dark_medium_bg;
+}

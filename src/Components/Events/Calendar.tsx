@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import { EventClickArg } from "@fullcalendar/core/index.js";
-import DialogEvent from "./DIalogEvent";
+import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
 
 function Calendar() {
@@ -30,6 +30,8 @@ function Calendar() {
     });
     setVisible(true);
   };
+
+  const handleEventClose = () => setVisible(false);
   return (
     <>
       <FullCalendar
@@ -43,7 +45,11 @@ function Calendar() {
         ]}
       />
 
-      <DialogEvent eventInfo={eventInfo} visibleProps={visible} />
+      <DialogEvent
+        eventInfo={eventInfo}
+        visible={visible}
+        onClose={handleEventClose}
+      />
     </>
   );
 }
