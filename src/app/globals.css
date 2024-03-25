@@ -26,3 +26,12 @@ html body.dark #app {
 .ariaOption[aria-selected="true"] {
   @apply dark:bg-dark_medium_bg;
 }
+
+
+.inputCalendar input{
+  width: 100%;
+}
+
+.selectMaquina{
+  width: 100%!important
+}

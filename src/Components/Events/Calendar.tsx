@@ -5,9 +5,13 @@ import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import { EventClickArg } from "@fullcalendar/core/index.js";
 import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
+import interactionPlugin from "@fullcalendar/interaction";
+import DialogEventList from "./DialogEventList";
 
 function Calendar() {
   const [visible, setVisible] = useState<boolean>(false);
+  const [visibleDate, setVisibleDate] = useState<boolean>(false);
+
   const [eventInfo, setEventInfo] = useState<IEvent>({
     title: "",
     start: new Date(),
@@ -31,18 +35,27 @@ function Calendar() {
     setVisible(true);
   };
 
+  const handleDateClick = () => {
+    setVisibleDate(true);
+    console.log("Date Click");
+  };
+
   const handleEventClose = () => setVisible(false);
+  const handleDateClose = () => setVisibleDate(false);
+
   return (
     <>
       <FullCalendar
-        plugins={[dayGridPlugin]}
+        plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         locale={"es"}
+        nowIndicator
         eventClick={(e: EventClickArg) => handleEventClick(e)}
         events={[
           { title: "event 1", date: "2024-03-01" },
           { title: "event 2", date: "2024-03-02" },
         ]}
+        dateClick={handleDateClick}
       />
 
       <DialogEvent
@@ -50,6 +63,8 @@ function Calendar() {
         visible={visible}
         onClose={handleEventClose}
       />
+
+      <DialogEventList visible={visibleDate} onClose={handleDateClose} />
     </>
   );
 }
