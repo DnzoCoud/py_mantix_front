@@ -16,6 +16,10 @@ html body.dark #app {
   @apply bg-dark_medium_bg;
 }
 
+html body #app {
+  @apply bg-white_bg;
+}
+
 #app {
   width: 100vw;
   height: 100vh;
@@ -27,11 +31,26 @@ html body.dark #app {
   @apply dark:bg-dark_medium_bg;
 }
 
-
-.inputCalendar input{
+.inputCalendar input {
   width: 100%;
 }
 
-.selectMaquina{
-  width: 100%!important
+.selectMaquina {
+  width: 100% !important;
+}
+
+div.maximixed {
+  z-index: 99;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin-top: 0;
+}
+
+html body.dark #app *.darkBgComponents {
+  background-color: #222831 !important;
 }

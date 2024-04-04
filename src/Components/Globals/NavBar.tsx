@@ -33,7 +33,7 @@ export default function NavBar() {
   return (
     <>
       <div className="w-full h-16 flex justify-center items-center sticky top-0 z-40">
-        <div className="flex justify-between px-4 items-center w-full h-full bg-dark_bg p-2 rounded-md transition-all ease-out shadow-md shadow-dark_medium_bg">
+        <div className="flex justify-between px-4 items-center w-full h-full bg-white_medium_bg dark:bg-dark_bg p-2 rounded-md transition-all ease-out shadow-md  dark:shadow-dark_medium_bg">
           <div
             className="flex justify-evenly items-center cursor-pointer"
             onClick={() => router.push("/Dashboard")}
@@ -46,12 +46,15 @@ export default function NavBar() {
               model={navBarMenuitems}
               className="p-0"
               style={{ padding: "0!important" }}
+              pt={{ root: { className: "dark:!bg-dark_bg" } }}
             />
           </div>
           <div className="flex items-center justify-evenly">
             <div className="flex flex-col mr-4">
               <span className="dark:text-white">Oscar Ladino</span>
-              <Tag value="Culinary" />
+              <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg !">
+                Culinary
+              </span>
             </div>
             <Avatar
               image="https://primefaces.org/cdn/primereact/images/avatar/onyamalimba.png"

@@ -3,13 +3,13 @@ import { PrimeIcons, addLocale } from "primereact/api";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import SelectMaquina from "../Globals/Selects/SelectsMaquina";
-import { DropdownChangeEvent } from "primereact/dropdown";
 import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import Label from "../Globals/Label";
 import { Button } from "primereact/button";
-
+import { Toast, ToastMessage } from "primereact/toast";
+import { useToastStore } from "@/stores/useToastStore";
 export default function EventForm() {
   addLocale("es", {
     firstDayOfWeek: 1,
@@ -61,6 +61,11 @@ export default function EventForm() {
   const handleMachineChange = (value: IMaquina | null) => {
     setSelectMaquina(value);
     console.log(value);
+  };
+  const { setMessage } = useToastStore();
+
+  const handleClick = () => {
+    setMessage("Guardado Exitoso");
   };
   return (
     <>
@@ -133,6 +138,7 @@ export default function EventForm() {
                 icon={PrimeIcons.SAVE}
                 size="small"
                 severity="success"
+                onClick={handleClick}
               />
             </div>
           </div>

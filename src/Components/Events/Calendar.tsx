@@ -7,6 +7,7 @@ import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
 import interactionPlugin from "@fullcalendar/interaction";
 import DialogEventList from "./DialogEventList";
+import EventContent from "./EventContent";
 
 function Calendar() {
   const [visible, setVisible] = useState<boolean>(false);
@@ -56,6 +57,7 @@ function Calendar() {
           { title: "event 2", date: "2024-03-02" },
         ]}
         dateClick={handleDateClick}
+        eventContent={(eventInfo) => <EventContent eventInfo={eventInfo} />}
       />
 
       <DialogEvent

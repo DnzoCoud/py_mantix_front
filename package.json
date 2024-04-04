@@ -19,6 +19,7 @@
     "primereact": "^10.5.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-toastify": "^10.0.5",
     "tailwind-merge": "^2.2.1",
     "zustand": "^4.5.2"
   },

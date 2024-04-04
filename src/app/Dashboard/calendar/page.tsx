@@ -12,7 +12,7 @@ export default function CalendarPage() {
     <>
       <div>
         <div className="flex items-center justify-between my-4 px-4">
-          <h1 className="dark:text-white text-xl font-bold">
+          <h1 className="dark:text-white text-xl font-bold ">
             Programa de mantenimientos Preventivos
           </h1>
           <Button
@@ -29,6 +29,15 @@ export default function CalendarPage() {
         header="Agregar Mantenimiento"
         visible={activateAdd}
         onHide={() => setActivateAdd(false)}
+        style={{ width: "70vw" }}
+        pt={{
+          content: {
+            className: "max-h-[40rem]",
+          },
+          root: {
+            className: "dark:bg-dark_medium_bg",
+          },
+        }}
       >
         <EventForm />
       </Dialog>

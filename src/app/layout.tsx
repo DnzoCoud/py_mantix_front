@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <PrimeReactProvider value={{ unstyled: true, pt: Tailwind }}>
       <html lang="es">
-        <body className="dark">
+        <body className="transition-all ">
           <div id="app" className={inter.className}>
             {children}
           </div>
