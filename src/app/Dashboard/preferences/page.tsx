@@ -1,48 +1,61 @@
 "use client";
 import React, { useRef } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
+import CompanyForm from "@/Components/Preferences/Company/CompanyForm";
+import RoleForm from "@/Components/Preferences/Role/RoleForm";
+import Headers from "@/Components/Globals/Headers";
+import { PrimeIcons } from "primereact/api";
 export default function PreferencesPage() {
   const stepperRef = useRef(null);
   return (
     <>
       <div>
-        <TabView>
-          <TabPanel header="Header I" leftIcon="pi pi-calendar mr-2">
-            <p className="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-          </TabPanel>
-          <TabPanel header="Header II" rightIcon="pi pi-user ml-2">
-            <p className="m-0">
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-              quae ab illo inventore veritatis et quasi architecto beatae vitae
-              dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-              aspernatur aut odit aut fugit, sed quia consequuntur magni dolores
-              eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci
-              velit, sed quia non numquam eius modi.
-            </p>
+        <Headers
+          title="Configuracion del Sistema"
+          icon={PrimeIcons.COG}
+          subtitle="Configuracion de parametros del sistema"
+        />
+        <TabView
+          pt={{
+            inkbar: {
+              className:
+                "transition-all absolute border border-blue-400 dark:border-green-400 bottom-0",
+            },
+          }}
+        >
+          <TabPanel
+            pt={{
+              header: {
+                className:
+                  "cursor-pointer  hover:text-blue-400 dark:hover:text-green-400 m-2",
+              },
+              headerAction: {
+                className:
+                  "aria-selected:text-blue-400 dark:aria-selected:text-green-400 ",
+              },
+              content: { className: "p-4" },
+            }}
+            header="Empresa"
+            leftIcon="pi pi-calendar mr-2"
+          >
+            <CompanyForm />
           </TabPanel>
           <TabPanel
-            header="Header III"
-            leftIcon="pi pi-search mr-2"
-            rightIcon="pi pi-cog ml-2"
+            pt={{
+              header: {
+                className:
+                  "cursor-pointer focus:text-blue-400 hover:text-blue-400 dark:hover:text-green-400 m-2",
+              },
+              headerAction: {
+                className:
+                  "aria-selected:text-blue-400 dark:aria-selected:text-green-400",
+              },
+              content: { className: "p-4" },
+            }}
+            header="Roles"
+            leftIcon="pi pi-user mr-2"
           >
-            <p className="m-0">
-              At vero eos et accusamus et iusto odio dignissimos ducimus qui
-              blanditiis praesentium voluptatum deleniti atque corrupti quos
-              dolores et quas molestias excepturi sint occaecati cupiditate non
-              provident, similique sunt in culpa qui officia deserunt mollitia
-              animi, id est laborum et dolorum fuga. Et harum quidem rerum
-              facilis est et expedita distinctio. Nam libero tempore, cum soluta
-              nobis est eligendi optio cumque nihil impedit quo minus.
-            </p>
+            <RoleForm />
           </TabPanel>
         </TabView>
       </div>

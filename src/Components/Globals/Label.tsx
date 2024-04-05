@@ -7,7 +7,7 @@ export default function Label({
 }: {
   text: string;
   isObligatory: boolean;
-  idFor: string | undefined;
+  idFor?: string | undefined;
 }) {
   return (
     <label htmlFor={idFor} className="mb-1">
