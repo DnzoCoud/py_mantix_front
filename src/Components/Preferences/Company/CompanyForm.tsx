@@ -34,9 +34,10 @@ export default function CompanyForm() {
             <Label text="Nombre de la empresa" isObligatory={true} />
             <InputText
               {...register("name", {
-                required: "El nombre de la empresa es obligatorio",
+                required: "Este Campo es obligatorio",
                 maxLength: 40,
               })}
+              maxLength={40}
               tooltip="Nombre de la empresa"
               tooltipOptions={{ position: "top" }}
               pt={{ root: { className: "!w-full" } }}
@@ -46,11 +47,11 @@ export default function CompanyForm() {
           <div className="col-span-12 md:col-span-6 lg:col-span-4 ">
             <Label text="Nit" isObligatory={true} />
             <InputText
-              className="p-invalid"
               {...register("nit", {
-                required: "El NIT de la empresa es obligatorio",
+                required: "Este Campo es obligatorio",
                 maxLength: 9,
               })}
+              maxLength={9}
               tooltip="Nombre de la empresa"
               pt={{ root: { className: "!w-full" } }}
               tooltipOptions={{ position: "top" }}
@@ -60,7 +61,7 @@ export default function CompanyForm() {
           <div className="col-span-12 mt-4">
             <div className="w-full flex justify-center items-center">
               <Button
-                label="Guardar"
+                label="Guardar Cambios"
                 icon={PrimeIcons.SAVE}
                 size="small"
                 severity="success"

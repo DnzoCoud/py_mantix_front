@@ -49,6 +49,7 @@ div.maximixed {
   top: 0;
   bottom: 0;
   margin-top: 0;
+  overflow-y: auto;
 }
 
 html body.dark #app *.darkBgComponents {

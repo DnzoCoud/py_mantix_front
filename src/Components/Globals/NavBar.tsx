@@ -1,5 +1,7 @@
 "use client";
+import useThemeStore, { Theme } from "@/stores/themeStore";
 import { useRouter } from "next/navigation";
+import { PrimeIcons } from "primereact/api";
 import { Avatar } from "primereact/avatar";
 import { ContextMenu } from "primereact/contextmenu";
 import { Menubar } from "primereact/menubar";
@@ -30,6 +32,31 @@ export default function NavBar() {
       },
     },
   ];
+
+  const { theme, setTheme } = useThemeStore();
+
+  const handleToggleTheme = () => {
+    let nextTheme: Theme;
+    // Cambiar el tema secuencialmente entre "light", "dark" y "auto"
+    if (theme === "light") {
+      nextTheme = "dark";
+    } else if (theme === "dark") {
+      nextTheme = "auto";
+    } else {
+      nextTheme = "light";
+    }
+    setTheme(nextTheme);
+  };
+
+  // Determinar qué icono usar según el tema actual
+  let icon: string;
+  if (theme === "light") {
+    icon = PrimeIcons.SUN;
+  } else if (theme === "dark") {
+    icon = PrimeIcons.MOON;
+  } else {
+    icon = PrimeIcons.DESKTOP;
+  }
   return (
     <>
       <div className="w-full h-16 flex justify-center items-center sticky top-0 z-40">
@@ -50,9 +77,15 @@ export default function NavBar() {
             />
           </div>
           <div className="flex items-center justify-evenly">
+            <span
+              onClick={handleToggleTheme}
+              className={
+                icon + " mr-2 p-2 cursor-pointer text-xl dark:text-white"
+              }
+            ></span>
             <div className="flex flex-col mr-4">
               <span className="dark:text-white">Oscar Ladino</span>
-              <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg !">
+              <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg ">
                 Culinary
               </span>
             </div>

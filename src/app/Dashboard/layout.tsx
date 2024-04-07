@@ -5,12 +5,17 @@ import React, { useRef, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "primeicons/primeicons.css";
 import { PrimeIcons } from "primereact/api";
+import useThemeStore from "@/stores/themeStore";
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [maximixed, setMaximixed] = useState<boolean>(false);
+  const { theme } = useThemeStore();
+
+  // Determinar el tema a usar para ToastContainer
+  const toastTheme = theme === "auto" ? "light" : theme;
   return (
     <>
       <ToastContainer
@@ -23,7 +28,7 @@ export default function DashboardLayout({
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme={toastTheme}
       />
       <div className="flex gap-4 p-2 w-full h-full">
         <SideBar />

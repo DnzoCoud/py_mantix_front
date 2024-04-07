@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { PrimeIcons } from "primereact/api";
 import { Dialog } from "primereact/dialog";
 import EventForm from "@/Components/Events/EventForm";
+import Headers from "@/Components/Globals/Headers";
 export default function CalendarPage() {
   const [activateAdd, setActivateAdd] = useState<boolean>(false);
 
@@ -12,9 +13,11 @@ export default function CalendarPage() {
     <>
       <div>
         <div className="flex items-center justify-between my-4 px-4">
-          <h1 className="dark:text-white text-xl font-bold ">
-            Programa de mantenimientos Preventivos
-          </h1>
+          <Headers
+            title="Programa de mantenimientos Preventivos"
+            subtitle="Mantenimientos programados"
+            icon={PrimeIcons.CALENDAR}
+          />
           <Button
             label="Agregar Mantenimiento"
             icon={PrimeIcons.PLUS}
