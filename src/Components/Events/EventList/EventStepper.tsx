@@ -4,6 +4,9 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Steps } from "primereact/steps";
 import { MenuItem } from "primereact/menuitem";
 import { PrimeIcons } from "primereact/api";
+import EventFormProgram from "./EventFormProgram";
+import EventFormExecute from "./EventFormExecute";
+import EventFormComplete from "./EventFormComplete";
 export default function EventStepper() {
   const items: MenuItem[] = [
     {
@@ -89,7 +92,10 @@ export default function EventStepper() {
         }}
       />
       <div className="mt-4 w-11/12 flex flex-col tr">
-        <Dropdown
+        {activeIndex == 0 && <EventFormProgram />}
+        {activeIndex == 1 && <EventFormExecute />}
+        {activeIndex == 2 && <EventFormComplete />}
+        {/* <Dropdown
           options={countries}
           filter
           optionLabel="name"
@@ -109,7 +115,7 @@ export default function EventStepper() {
               className: "ariaOption",
             },
           }}
-        />
+        /> */}
       </div>
     </>
   );
