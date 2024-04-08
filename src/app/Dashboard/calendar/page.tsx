@@ -1,11 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import Calendar from "@/Components/Events/Calendar";
+// import Calendar from "@/Components/Events/Calendar";
 import { Button } from "primereact/button";
 import { PrimeIcons } from "primereact/api";
 import { Dialog } from "primereact/dialog";
-import EventForm from "@/Components/Events/EventForm";
+// import EventForm from "@/Components/Events/EventForm";
 import Headers from "@/Components/Globals/Headers";
+import dynamic from "next/dynamic";
+const Calendar = dynamic(() => import("@/Components/Events/Calendar"));
+const EventForm = dynamic(() => import("@/Components/Events/EventForm"));
 export default function CalendarPage() {
   const [activateAdd, setActivateAdd] = useState<boolean>(false);
 

@@ -40,8 +40,6 @@ export default function NavBar() {
     // Cambiar el tema secuencialmente entre "light", "dark" y "auto"
     if (theme === "light") {
       nextTheme = "dark";
-    } else if (theme === "dark") {
-      nextTheme = "auto";
     } else {
       nextTheme = "light";
     }
@@ -52,10 +50,8 @@ export default function NavBar() {
   let icon: string;
   if (theme === "light") {
     icon = PrimeIcons.SUN;
-  } else if (theme === "dark") {
-    icon = PrimeIcons.MOON;
   } else {
-    icon = PrimeIcons.DESKTOP;
+    icon = PrimeIcons.MOON;
   }
   return (
     <>
