@@ -7,7 +7,10 @@ import { Dialog } from "primereact/dialog";
 // import EventForm from "@/Components/Events/EventForm";
 import Headers from "@/Components/Globals/Headers";
 import dynamic from "next/dynamic";
-const Calendar = dynamic(() => import("@/Components/Events/Calendar"));
+import CalendarSkeleton from "@/Components/Globals/Skeleton/CalendarSkeleton";
+const Calendar = dynamic(() => import("@/Components/Events/Calendar"), {
+  loading: () => <CalendarSkeleton />,
+});
 const EventForm = dynamic(() => import("@/Components/Events/EventForm"));
 export default function CalendarPage() {
   const [activateAdd, setActivateAdd] = useState<boolean>(false);

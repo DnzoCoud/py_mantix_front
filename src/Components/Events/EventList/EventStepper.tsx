@@ -7,6 +7,9 @@ import { PrimeIcons } from "primereact/api";
 import EventFormProgram from "./EventFormProgram";
 import EventFormExecute from "./EventFormExecute";
 import EventFormComplete from "./EventFormComplete";
+
+import { MeterGroup } from 'primereact/metergroup';
+        
 export default function EventStepper() {
   const items: MenuItem[] = [
     {
