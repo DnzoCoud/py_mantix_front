@@ -30,9 +30,9 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
                 sidebarStore.isOpen ? "justify-start" : "justify-center"
               } items-center`}
             >
-              <i className={item.icon + " mr-2 dark:text-white"}></i>
+              <i className={item.icon + " mr-2 text-gray-400"}></i>
               {sidebarStore.isOpen && (
-                <span className="dark:text-white">{item.title}</span>
+                <span className="text-gray-400">{item.title}</span>
               )}
             </div>
             {item.items?.map((menu, menuIndex) => (

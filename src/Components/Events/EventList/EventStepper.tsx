@@ -8,8 +8,8 @@ import EventFormProgram from "./EventFormProgram";
 import EventFormExecute from "./EventFormExecute";
 import EventFormComplete from "./EventFormComplete";
 
-import { MeterGroup } from 'primereact/metergroup';
-        
+import { MeterGroup } from "primereact/metergroup";
+
 export default function EventStepper() {
   const items: MenuItem[] = [
     {
@@ -94,8 +94,13 @@ export default function EventStepper() {
           },
         }}
       />
-      <div className="mt-4 w-11/12 flex flex-col tr">
-        {activeIndex == 0 && <EventFormProgram />}
+      <div className="mt-4 w-full flex flex-col tr">
+        {activeIndex == 0 && (
+          <EventFormProgram
+            setActiveIndex={setActiveIndex}
+            activeIndex={activeIndex}
+          />
+        )}
         {activeIndex == 1 && <EventFormExecute />}
         {activeIndex == 2 && <EventFormComplete />}
         {/* <Dropdown

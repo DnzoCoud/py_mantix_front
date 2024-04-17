@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <PrimeReactProvider value={{ unstyled: true, pt: Tailwind }}>
+    <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}>
       <html lang="es">
         <body className="transition-all ">
           <div id="app" className={inter.className}>
