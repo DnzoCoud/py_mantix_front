@@ -1,6 +1,8 @@
+import Label from "@/Components/Globals/Label";
 import { IEventFormChange } from "@/interfaces/Props/IEventFormChange";
 import { PrimeIcons } from "primereact/api";
 import { Button } from "primereact/button";
+import { InputTextarea } from "primereact/inputtextarea";
 import React from "react";
 
 export default function EventFormExecute({
@@ -31,6 +33,39 @@ export default function EventFormExecute({
             severity="success"
             onClick={() => setActiveIndex(activeIndex + 1)}
           />
+        </div>
+
+        <div className="grid grid-cols-12 gap-4 mt-4">
+          <div className="col-span-12">
+            <div className="w-full flex flex-col">
+              <Label text="Actividades" isObligatory={true} idFor="" />
+              <InputTextarea
+                autoResize
+                rows={2}
+                cols={30}
+              />
+            </div>
+          </div>
+          <div className="col-span-12">
+            <div className="w-full flex flex-col">
+              <Label text="Causas" isObligatory={true} idFor="" />
+              <InputTextarea
+                autoResize
+                rows={2}
+                cols={30}
+              />
+            </div>
+          </div>
+          <div className="col-span-12">
+            <div className="w-full flex flex-col">
+              <Label text="Observaciones" isObligatory={true} idFor="" />
+              <InputTextarea
+                autoResize
+                rows={2}
+                cols={30}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </>
