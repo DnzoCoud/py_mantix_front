@@ -4,15 +4,12 @@ import React, { useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { PrimeIcons } from "primereact/api";
 import { Button } from "primereact/button";
+import { IEventFormChange } from "@/interfaces/Props/IEventFormChange";
 
-interface IEventFormProgram {
-  setActiveIndex: any;
-  activeIndex: number;
-}
 export default function EventFormProgram({
   setActiveIndex,
   activeIndex,
-}: IEventFormProgram) {
+}: IEventFormChange) {
   const [text, setText] = useState<string>("");
 
   const handleExecute = (): void => {

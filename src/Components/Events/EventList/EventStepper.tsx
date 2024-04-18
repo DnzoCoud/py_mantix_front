@@ -33,17 +33,6 @@ export default function EventStepper() {
       template: (item) => itemRenderer(item, 3),
     },
   ];
-  interface Country {
-    name: string;
-    code: string;
-  }
-
-  const countries: Country[] = [
-    { name: "Autralia", code: "Au" },
-    { name: "Colombia", code: "Co" },
-    { name: "Peru", code: "Pe" },
-  ];
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
@@ -101,7 +90,12 @@ export default function EventStepper() {
             activeIndex={activeIndex}
           />
         )}
-        {activeIndex == 1 && <EventFormExecute />}
+        {activeIndex == 1 && (
+          <EventFormExecute
+            setActiveIndex={setActiveIndex}
+            activeIndex={activeIndex}
+          />
+        )}
         {activeIndex == 2 && <EventFormComplete />}
         {/* <Dropdown
           options={countries}

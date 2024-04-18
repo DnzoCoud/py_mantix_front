@@ -19,6 +19,7 @@ export default function DialogEventList({
         draggable={false}
         header="Mantenimientos Programados"
         style={{ width: "80vw" }}
+        maximizable={true}
       >
         <div className="flex flex-col justify-evenly">
           <div className="grid grid-cols-12 gap-4">
