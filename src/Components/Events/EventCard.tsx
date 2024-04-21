@@ -32,7 +32,7 @@ export default function EventCard() {
       },
     ];
     return (
-      <div className={className}>
+      <div className={className} onClick={(e) => configMenu?.current?.toggle(e)}>
         <Menu
           model={menuPopup}
           popup
@@ -105,6 +105,8 @@ export default function EventCard() {
             className: "!w-full !shadow-md " + eventColor.shadow,
           },
         }}
+        collapsed={true}
+
       >
         <EventStepper />
       </Panel>

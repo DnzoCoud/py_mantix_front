@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 
 export default function UserCards() {
+
   return (
     <>
-      <div>UserCards</div>
+      <div className="rounded-md shadow-md h-40 bg-white"></div>
     </>
   );
 }
