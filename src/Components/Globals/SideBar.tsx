@@ -40,6 +40,12 @@ function SideBar() {
           link: "/Dashboard/users",
           tooltip: "Usuarios",
         },
+        {
+          label: "Locaciones",
+          icon: PrimeIcons.USERS,
+          link: "/Dashboard/locations",
+          tooltip: "Locaciones",
+        },
       ],
       icon: PrimeIcons.HOME,
     },

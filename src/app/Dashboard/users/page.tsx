@@ -16,7 +16,7 @@ const UserCards: React.ComponentType = dynamic(
   }
 );
 const UserDataTable: React.ComponentType = dynamic(
-  () => import("@/Components/Users/UserDataTable"),
+  () => import("@/Components/Users/UserDatatable"),
   {
     loading: () => <UserDataSkeleton />,
   }
