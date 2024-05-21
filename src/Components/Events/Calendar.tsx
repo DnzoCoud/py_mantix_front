@@ -58,6 +58,11 @@ function Calendar() {
         ]}
         dateClick={handleDateClick}
         eventContent={(eventInfo) => <EventContent eventInfo={eventInfo} />}
+        headerToolbar={{
+          left: 'title',
+          center: '',
+          right: 'prev,today,next'
+        }}
       />
 
       <DialogEvent

@@ -56,3 +56,21 @@ div.maximixed {
 html body.dark #app *.darkBgComponents {
   background-color: #222831 !important;
 }
+
+.fc-h-event{
+  background-color: transparent;
+  border:none;
+}
+
+.fc .fc-button-primary{
+  @apply bg-white dark:bg-dark_medium_bg text-black dark:text-white
+}
+
+.fc-today-button{
+  background:transparent;
+  @apply text-black dark:text-white;
+  border: none;
+}
+.fc .fc-button-primary:disabled{
+  border: none;
+}
