@@ -46,6 +46,12 @@ function SideBar() {
           link: "/Dashboard/locations",
           tooltip: "Locaciones",
         },
+        {
+          label: "Areas",
+          icon: PrimeIcons.BOOKMARK,
+          link: "/Dashboard/areas",
+          tooltip: "Areas",
+        },
       ],
       icon: PrimeIcons.HOME,
     },
@@ -61,6 +67,7 @@ function SideBar() {
       ],
       icon: PrimeIcons.COG,
     },
+    
   ];
 
   const sidebarStore = useSidebarStore();

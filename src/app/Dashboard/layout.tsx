@@ -15,7 +15,7 @@ export default function DashboardLayout({
   const { theme } = useThemeStore();
 
   // Determinar el tema a usar para ToastContainer
-  const toastTheme = theme === "auto" ? "light" : theme;
+  const toastTheme = theme.toString() === "auto" ? "light" : theme;
   return (
     <>
       <ToastContainer
