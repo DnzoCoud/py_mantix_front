@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Image } from "primereact/image";
@@ -7,22 +7,29 @@ import { Dialog } from "primereact/dialog";
 import { Password } from "primereact/password";
 import StackImg from "@/app/Login/stack.png";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/stores/auth/authStore";
+import {useAuthStore} from "@/stores/auth/authStore";
 export default function Login() {
-  const [value, setValue] = useState<string>("");
-
-  const [visible, setVisible] = useState<boolean>(false);
+  const [loginData, setLoginData] = useState({
+    email: '' as string,
+    password: '' as string
+  });
   const router = useRouter();
 
-  const { isLoggedIn, login } = useAuthStore();
+  const { login, user } = useAuthStore();
 
-  const handleLogin = () => {
-    login();
-    router.push("/Dashboard");
+  const handleLogin = async () => {
+    await login(loginData.email, loginData.password);
   };
 
+  const handleChange = (event: ChangeEvent<HTMLInputElement>):void =>{
+    setLoginData({
+      ...loginData,
+      [event.target.name] : event.target.value
+    })
+  }
+
   useEffect((): void => {
-    if (isLoggedIn) {
+    if (user !== null) {
       router.push("/Dashboard");
     }
   });
@@ -75,11 +82,9 @@ export default function Login() {
                     Correo Electronico
                   </label>
                   <InputText
-                    id="email"
-                    value={value}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setValue(e.target.value)
-                    }
+                    name="email"
+                    value={loginData.email}
+                    onChange={handleChange}
                     className="w-2/3 "
                   />
                 </div>
@@ -90,10 +95,9 @@ export default function Login() {
 
                   <Password
                     inputId="password"
-                    value={value}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setValue(e.target.value)
-                    }
+                    name="password"
+                    value={loginData.password}
+                    onChange={handleChange}
                     feedback={false}
                     tabIndex={1}
                     pt={{

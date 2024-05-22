@@ -1,4 +1,5 @@
 "use client";
+import {useAuthStore} from "@/stores/auth/authStore";
 import useThemeStore, { Theme } from "@/stores/themeStore";
 import { useRouter } from "next/navigation";
 import { PrimeIcons } from "primereact/api";
@@ -10,6 +11,7 @@ import { Tag } from "primereact/tag";
 import React, { useRef } from "react";
 
 export default function NavBar() {
+  const authData = useAuthStore()
   const cm = useRef<ContextMenu>(null);
   const contextMenuItems: MenuItem[] = [
     { label: "Perfil", icon: "pi pi-user" },
@@ -80,7 +82,7 @@ export default function NavBar() {
               }
             ></span>
             <div className="flex flex-col mr-4">
-              <span className="dark:text-white">Oscar Ladino</span>
+              <span className="dark:text-white">{authData.user?.user.username}</span>
               <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg ">
                 Culinary
               </span>

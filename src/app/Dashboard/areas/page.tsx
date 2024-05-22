@@ -28,7 +28,7 @@ export default function AreaPage() {
         </div>
         <div className="w-full h-auto flex items-center justify-end p-1">
         </div>
-        <AreaDatatable/>
+        <AreaDatatable />
 
         <Dialog
         header="Agregar Area"

@@ -1,9 +1,14 @@
 import { IRole } from "./IRole";
 
 export interface IUser {
-  id: bigint;
-  name: string;
-  lastname: string;
+  id: number;
+  username: string;
+  email: string;
   password: string;
-  role: IRole;
+  first_name: string|null
+  last_name: string | null
+  is_director: boolean
+  is_manager: boolean
+  role: number;
+  role_detail: IRole
 }
