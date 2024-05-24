@@ -15,12 +15,11 @@ export default function AreaDatatable() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
 
   const areaStore = useAreaStore()
+  const findAllAreas = async () => {
+    await areaStore.getAreas()
+    setAreas(areaStore.areas)
+  }
   useEffect(() => {
-    const findAllAreas = async () => {
-      await areaStore.getAreas()
-      setAreas(areaStore.areas)
-    }
-
     findAllAreas()
   }, [])
 
@@ -48,6 +47,13 @@ export default function AreaDatatable() {
         paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} dataKey="id"
         header={header}
         filters={filters}
+        pt={
+          {
+            root:{
+              className:"rounded-md"
+            }
+          }
+        }
       >
         <Column field="name" header="Nombre" sortable ></Column>
         <Column field="director_detail.username" header="Director" sortable></Column>

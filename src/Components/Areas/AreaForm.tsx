@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Label from '../Globals/Label'
 import { InputText } from 'primereact/inputtext'
+import SelectDirectors from '../Globals/Selects/SelectDirectors'
+import { IUser } from '@/interfaces/IUser'
 
 export default function AreaForm() {
+    const [director, setDirector] = useState<IUser | null>()
   return (
     <>
         <div className="flex flex-col justify-evenly">
@@ -14,6 +17,12 @@ export default function AreaForm() {
                         placeholder="Nombre del area"
                         size={'small'}
                     />
+                    </div>
+                </div>
+                <div className="col-span-6">
+                    <div className="w-full flex flex-col">
+                        <Label text="Director de area" isObligatory={true} idFor="" />
+                        <SelectDirectors value={director} onChange={setDirector}/>
                     </div>
                 </div>
             </div>

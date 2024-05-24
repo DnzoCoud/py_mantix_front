@@ -1,4 +1,5 @@
 import createServerInstance from "@/Utils/axios";
+import { IUser } from "@/interfaces/IUser";
 import { IAuth } from "@/interfaces/auth/IAuth";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -8,7 +9,9 @@ interface AuthState {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   user: IAuth | null;
-  getToken: () => string | undefined
+  getToken: () => string | undefined;
+  directors: IUser[] | []
+  getDirectors: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -16,6 +19,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       isLoggedIn: false,
       user: null,
+      directors: [],
       //Metodos
       login: async (username, password) => {
         try {
@@ -34,7 +38,13 @@ export const useAuthStore = create<AuthState>()(
         const currentUser = get().user;
         if (currentUser) await authLogout(currentUser.token);
       },
-      getToken: () => get().user?.token
+      getToken: () => get().user?.token,
+      getDirectors : async () => {
+        const directorInfo = await findDirectors()
+        set({
+          directors: directorInfo.data
+        })
+      }
     }),
     {
       name: 'auth-storage',
@@ -58,3 +68,10 @@ const authLogin = async (email: string, password: string) => {
 
   return response;
 };
+
+
+const findDirectors = async () => {
+  const server = createServerInstance();
+  const response = server.get('/api/sign/v1/findUserDirectors')
+  return response;
+}

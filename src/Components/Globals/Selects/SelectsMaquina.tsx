@@ -27,7 +27,7 @@ const SelectMaquina: React.FC<SelectMaquinaProps> = ({ value, onChange }) => {
       options={machines}
       onChange={(e: DropdownChangeEvent) => handleMachineChange(e.value)}
       placeholder="Seleccione una maquina"
-      optionLabel="name"
+      optionLabel="username"
       filter
       pt={{
         root: {

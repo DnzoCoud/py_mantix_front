@@ -24,7 +24,7 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
               !sidebarStore.isOpen ? ".custom-target-icon-" + index : ""
             }`}
           />
-          <div className={`flex flex-col mx-1`} key={index}>
+          <div className={`flex flex-col mx-1 overflow-y-auto`} key={index}>
             <div
               className={`flex ${
                 sidebarStore.isOpen ? "justify-start" : "justify-center"

@@ -1,4 +1,5 @@
 "use client";
+import { getFirstTwoLetters } from "@/Utils/useComposables";
 import {useAuthStore} from "@/stores/auth/authStore";
 import useThemeStore, { Theme } from "@/stores/themeStore";
 import { useRouter } from "next/navigation";
@@ -88,8 +89,9 @@ export default function NavBar() {
               </span>
             </div>
             <Avatar
-              image="https://primefaces.org/cdn/primereact/images/avatar/onyamalimba.png"
+              label={getFirstTwoLetters(authData.user?.user.username)}
               shape="circle"
+              style={{ backgroundColor: '#2196F3', color: '#ffffff' }}
               onContextMenu={(e) => cm.current?.show(e)}
             />
           </div>

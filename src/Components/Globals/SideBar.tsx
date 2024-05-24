@@ -77,10 +77,12 @@ function SideBar() {
       <div
         className={`${
           sidebarStore.isOpen ? "w-[20%]" : "w-[5%]"
-        } relative dark:bg-dark_bg bg-white_medium_bg rounded-md p-2 shadow-md dark:shadow-dark_medium_bg transition-all`}
+        } relative dark:bg-dark_bg bg-white_medium_bg rounded-md p-2 shadow-md dark:shadow-dark_medium_bg transition-all `}
       >
         SideBar
-        <MenuSidebar items={items} />
+        <div className="overflow-x-auto">
+          <MenuSidebar items={items} />
+        </div>
         <span
           onClick={() => sidebarStore.handleOpen()}
           className={`${
