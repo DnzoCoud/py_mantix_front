@@ -1,4 +1,4 @@
-import createServerInstance from "@/Utils/axios";
+import serverInstance from "@/Utils/axios";
 import { IUser } from "@/interfaces/IUser";
 import { IAuth } from "@/interfaces/auth/IAuth";
 import { create } from "zustand";
@@ -54,14 +54,12 @@ export const useAuthStore = create<AuthState>()(
 );
 
 const authLogout = async (token: string) => {
-  const server = createServerInstance();
-  server.post("/api/sign/v1/logout");
+  serverInstance.post("/api/sign/v1/logout");
 };
 
 const authLogin = async (email: string, password: string) => {
-  const server = createServerInstance();
 
-  const response = server.post<IAuth>("/api/sign/v1/login", {
+  const response = serverInstance.post<IAuth>("/api/sign/v1/login", {
     email,
     password,
   });
@@ -71,7 +69,6 @@ const authLogin = async (email: string, password: string) => {
 
 
 const findDirectors = async () => {
-  const server = createServerInstance();
-  const response = server.get('/api/sign/v1/findUserDirectors')
+  const response = serverInstance.get('/api/sign/v1/findUserDirectors')
   return response;
 }

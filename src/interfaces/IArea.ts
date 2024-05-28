@@ -4,5 +4,5 @@ export interface IArea{
     id:number
     name:string
     director:number
-    director_detail: IUser
+    director_detail: IUser | null
 }

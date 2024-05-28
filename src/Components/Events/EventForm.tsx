@@ -8,7 +8,6 @@ import SelectMaquina from "../Globals/Selects/SelectsMaquina";
 import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import Label from "../Globals/Label";
 import { Button } from "primereact/button";
-import { Toast, ToastMessage } from "primereact/toast";
 import { useToastStore } from "@/stores/useToastStore";
 export default function EventForm() {
   addLocale("es", {
@@ -69,7 +68,7 @@ export default function EventForm() {
   };
   return (
     <>
-      <div className="flex flex-col justify-evenly">
+      <form className="flex flex-col justify-evenly">
         <div className="grid grid-cols-12 gap-4 mt-4">
           <div className="col-span-12 md:col-span-6 lg:col-span-6 ">
             <div className="w-full flex flex-col">
@@ -143,7 +142,7 @@ export default function EventForm() {
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </>
   );
 }

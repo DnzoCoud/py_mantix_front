@@ -19,7 +19,7 @@ export default function AreaPage() {
             icon={PrimeIcons.BOOKMARK}
             />
             <Button
-                label="Agregar Locacion"
+                label="Agregar Area"
                 icon={PrimeIcons.PLUS}
                 size="small"
                 severity="success"

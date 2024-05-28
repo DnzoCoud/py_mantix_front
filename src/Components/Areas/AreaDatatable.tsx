@@ -6,18 +6,22 @@ import { useAreaStore } from "@/stores/useAreaStore";
 import { IArea } from "@/interfaces/IArea";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode } from "primereact/api";
+import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import AreaForm from "./AreaForm";
 
 export default function AreaDatatable() {
-  const [areas, setAreas] = useState<IArea[] | []>([])
+  const [area, setArea] = useState<IArea>()
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   })
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+  const [editArea, setEditArea] = useState<boolean>(false);
 
   const areaStore = useAreaStore()
   const findAllAreas = async () => {
     await areaStore.getAreas()
-    setAreas(areaStore.areas)
   }
   useEffect(() => {
     findAllAreas()
@@ -41,12 +45,38 @@ export default function AreaDatatable() {
       );
   };
   const header = renderHeader();
+
+  const actionHandler = (rowData:IArea) =>{
+    return(
+      <React.Fragment>
+          <Button icon="pi pi-pencil" rounded text className="mr-2" onClick={() => showDialog(rowData)}/>
+          <Button icon="pi pi-trash" rounded text severity="danger"  />
+      </React.Fragment>
+    )
+  }
+  const showDialog = (area: IArea) => {
+    setArea({...area})
+    setEditArea(true)
+    
+  }
+  const hideDialog = () => {
+    setEditArea(false)
+    setArea(undefined)
+  };
   return (
-    <div>
-      <DataTable value={areas} tableStyle={{ minWidth: "50rem" }} 
-        paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} dataKey="id"
+    <>
+      <DataTable
+        value={areaStore.areas} 
+        tableStyle={{ minWidth: "50rem" }} 
+        paginator 
+        rows={5} 
+        rowsPerPageOptions={[5, 10, 25, 50]} 
+        dataKey="id"
         header={header}
         filters={filters}
+        resizableColumns
+        stripedRows
+        showGridlines
         pt={
           {
             root:{
@@ -57,7 +87,13 @@ export default function AreaDatatable() {
       >
         <Column field="name" header="Nombre" sortable ></Column>
         <Column field="director_detail.username" header="Director" sortable></Column>
+        <Column body={actionHandler} exportable={false} style={{ minWidth: '12rem' }}></Column>
+
       </DataTable>
-    </div>
+
+      <Dialog visible={editArea} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Editar Area" modal className="p-1" onHide={hideDialog}>
+        <AreaForm id={area?.id}/>
+      </Dialog>
+    </>
   );
 }

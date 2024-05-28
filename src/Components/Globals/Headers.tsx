@@ -8,7 +8,7 @@ interface HeadersProps {
 export default function Headers({ title, icon, subtitle }: HeadersProps) {
   return (
     <>
-      <div className="w-full flex justify-start items-center mb-4">
+      <div className="w-auto flex justify-start items-center mb-4">
         <i
           className={`${icon} text-blue-400 dark:text-green-400 mr-4 text-xl`}
         ></i>
