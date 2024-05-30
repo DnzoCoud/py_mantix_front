@@ -2,6 +2,7 @@
 import { getFirstTwoLetters } from "@/Utils/useComposables";
 import {useAuthStore} from "@/stores/auth/authStore";
 import useThemeStore, { Theme } from "@/stores/themeStore";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { PrimeIcons } from "primereact/api";
 import { Avatar } from "primereact/avatar";
@@ -9,9 +10,13 @@ import { ContextMenu } from "primereact/contextmenu";
 import { Menubar } from "primereact/menubar";
 import { MenuItem } from "primereact/menuitem";
 import { Tag } from "primereact/tag";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 export default function NavBar() {
+  const {data: session, status} = useSession()
+  console.log({session, status})
+
+  
   const authData = useAuthStore()
   const cm = useRef<ContextMenu>(null);
   const contextMenuItems: MenuItem[] = [
@@ -56,6 +61,24 @@ export default function NavBar() {
   } else {
     icon = PrimeIcons.MOON;
   }
+
+  useEffect(() =>{
+    if(session?.user){
+      authData.setUser({
+        token: session.user.token,
+        user: {
+          id: parseInt(session.user.id, 10),
+          email: (session.user.email ) ? session.user.email : '',
+          first_name: (session.user.first_name ) ? session.user.first_name : '',
+          last_name: (session.user.last_name ) ? session.user.last_name : '',
+          is_director: session.user.is_director,
+          is_manager: session.user.is_manager,
+          username: (session.user.username ) ? session.user.username : '',
+          role_detail: session.user.role_detail,
+        }
+      })
+    }
+  }, [session])
   return (
     <>
       <div className="w-full h-16 flex justify-center items-center sticky top-0 z-40">

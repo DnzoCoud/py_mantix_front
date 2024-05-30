@@ -4,11 +4,11 @@ export interface IUser {
   id: number;
   username: string;
   email: string;
-  password: string;
+  password?: string;
   first_name: string|null
   last_name: string | null
   is_director: boolean
   is_manager: boolean
-  role: number;
+  role?: number;
   role_detail: IRole
 }

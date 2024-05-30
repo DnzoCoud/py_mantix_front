@@ -2,8 +2,10 @@
 import Headers from '@/Components/Globals/Headers'
 import Loader from '@/Components/Globals/Loader/Loader'
 import LocationDatatable from '@/Components/Locations/LocationDatatable'
+import LocationForm from '@/Components/Locations/LocationForm'
 import { PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
+import { Dialog } from 'primereact/dialog'
 import React, { useState } from 'react'
 
 export default function LocationPage() {
@@ -28,6 +30,24 @@ export default function LocationPage() {
         <div className="w-full h-auto flex items-center justify-end p-1">
         </div>
         <LocationDatatable/>
+
+        <Dialog
+        header="Agregar Locacion"
+        visible={activateAdd}
+        onHide={() => setActivateAdd(false)}
+        style={{ width: "70vw" }}
+        draggable={false}
+        pt={{
+          content: {
+            className: "max-h-[40rem]",
+          },
+          root: {
+            className: "dark:bg-dark_medium_bg",
+          },
+        }}
+      >
+            <LocationForm/>
+      </Dialog>
     </>
   )
 }

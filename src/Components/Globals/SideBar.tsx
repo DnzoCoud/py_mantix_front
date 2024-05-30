@@ -18,7 +18,7 @@ function SideBar() {
         {
           label: "Dashboard",
           icon: PrimeIcons.CHART_BAR,
-          link: "/Dashboard",
+          link: "/Maintenance",
           badge: 3,
           tooltip: "Dashboard",
         },
@@ -31,25 +31,25 @@ function SideBar() {
         {
           label: "Calendario",
           icon: PrimeIcons.CALENDAR,
-          link: "/Dashboard/calendar",
+          link: "/Maintenance/calendar",
           tooltip: "Calendario",
         },
         {
           label: "Usuarios",
           icon: PrimeIcons.USERS,
-          link: "/Dashboard/users",
+          link: "/Maintenance/users",
           tooltip: "Usuarios",
         },
         {
           label: "Locaciones",
           icon: PrimeIcons.USERS,
-          link: "/Dashboard/locations",
+          link: "/Maintenance/locations",
           tooltip: "Locaciones",
         },
         {
           label: "Areas",
           icon: PrimeIcons.BOOKMARK,
-          link: "/Dashboard/areas",
+          link: "/Maintenance/areas",
           tooltip: "Areas",
         },
       ],
@@ -61,7 +61,7 @@ function SideBar() {
         {
           label: "Configuracion",
           icon: PrimeIcons.BUILDING,
-          link: "/Dashboard/preferences",
+          link: "/Maintenance/preferences",
           tooltip: "Configuracion",
         },
       ],

@@ -3,6 +3,7 @@ import { IArea } from "@/interfaces/IArea";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { showToast } from "@/Utils/toast";
+import { findAll } from "@/services/areaService";
 
 interface AreaStore {
   areas: IArea[] | [];
@@ -51,12 +52,6 @@ export const useAreaStore = create<AreaStore>()(
     }
   )
 );
-
-const findAll = async () => {
-  const response = await serverInstance.get("/api/area/v1/findAll");
-  const areas: IArea[] = response.data.areas;
-  return areas;
-};
 
 const saveArea = async (name: string, director: number) => {
   const response = await serverInstance.post("/api/area/v1/save", {

@@ -74,3 +74,8 @@ html body.dark #app *.darkBgComponents {
 .fc .fc-button-primary:disabled{
   border: none;
 }
+
+
+.p-icon-field{
+  width: 100%;
+}
