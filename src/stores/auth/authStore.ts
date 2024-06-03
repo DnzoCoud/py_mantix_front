@@ -26,6 +26,9 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         const currentUser = get().user;
         if (currentUser) await authLogout();
+        set({
+          user:null
+        })
       },
       getToken: () => get().user?.token,
       getDirectors : async () => {

@@ -1,6 +1,6 @@
 import { IUser } from "./IUser"
 
-export interface IArea{
+export type IArea = {
     id:number
     name:string
     director:number

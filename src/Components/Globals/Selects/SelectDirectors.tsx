@@ -1,7 +1,7 @@
 import { IUser } from "@/interfaces/IUser";
 import { useAuthStore } from "@/stores/auth/authStore";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 interface SelectDirectorProps {
   value: IUser | null | undefined;
@@ -21,7 +21,7 @@ export default function SelectDirectors({
     onChange(event);
   };
 
-  const findAllDirectors = async () => {
+  const findAllDirectors = useCallback(async () => {
     setLoading(true);
     await authStore.getDirectors();
     setDirectors(authStore.directors);
@@ -34,11 +34,11 @@ export default function SelectDirectors({
         onChange(director);
       }
     }
-  };
+  },[authStore, onChange, selectedDirectorId])
 
   useEffect(() => {
     findAllDirectors();
-  }, []);
+  }, [findAllDirectors]);
   return (
     <Dropdown
       value={value}

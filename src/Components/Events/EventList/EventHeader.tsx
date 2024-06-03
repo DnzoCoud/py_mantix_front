@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 
-export default function EventHeader({ options }) {
+export default function EventHeader({ options }:any) {
   const configMenu = useRef<HTMLElement | null>(null);
   return (
     <>

@@ -28,7 +28,7 @@ export default function CompanyForm() {
       >
         <div className="grid grid-cols-12 gap-4 mt-4">
           <div className="col-span-12 md:col-span-6 lg:col-span-4 ">
-            <Image src={ImagenLogoEnterprise.src} preview />
+            <Image src={ImagenLogoEnterprise.src} preview alt="Logo Empresa"/>
           </div>
           <div className="col-span-12 md:col-span-6 lg:col-span-4 ">
             <Label text="Nombre de la empresa" isObligatory={true} />

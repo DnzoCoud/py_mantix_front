@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Label from "../Globals/Label";
 import { InputText } from "primereact/inputtext";
 import SelectDirectors from "../Globals/Selects/SelectDirectors";
@@ -9,6 +9,7 @@ import { Button } from "primereact/button";
 import { PrimeIcons } from "primereact/api";
 import { useAreaStore } from "@/stores/useAreaStore";
 import { useToastStore } from "@/stores/useToastStore";
+import { fetchErrors } from "@/Utils/manageError";
 
 export default function AreaForm({id}:{id?:number}) {
   const [director, setDirector] = useState<IUser | null>();
@@ -30,26 +31,27 @@ export default function AreaForm({id}:{id?:number}) {
   const saveArea = async (name:string, director:number) => {
     try {
         await areaStore.saveArea(name, director)
-        toastStore.setMessage("Area registrada correctamente", 2)
+        toastStore.setMessage("Area registrada correctamente", toastStore.SUCCES_TOAST)
     } catch (error:any) {
-        toastStore.setMessage("error.name", 1)
+      console.log(error);
+      toastStore.setMessage(error.message, toastStore.ERROR_TOAST)
     }
   }
 
-  const findAreaById = async (id:number) => {
+  const findAreaById = useCallback(async (id:number) => {
     const area = await areaStore.getArea(id)
     console.log(area)
     if(area){
       setValue("name", area.name);
       setDirector(area.director_detail)
     }
-  }
+  }, [areaStore, setValue])
 
   useEffect(() => {
     if(id){
       findAreaById(id)
     }
-  }, [id])
+  }, [id, findAreaById])
   return (
     <>
       <form

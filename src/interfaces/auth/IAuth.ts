@@ -1,6 +1,6 @@
 import { IUser } from "../IUser"
 
-export interface IAuth {
+export type IAuth = {
     token: string
     user: IUser
 }

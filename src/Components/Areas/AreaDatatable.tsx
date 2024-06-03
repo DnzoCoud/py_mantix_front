@@ -1,6 +1,6 @@
 import { Column } from "primereact/column";
 import { DataTable, DataTableFilterMeta } from "primereact/datatable";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { GetServerSideProps } from 'next';
 import { useAreaStore } from "@/stores/useAreaStore";
 import { IArea } from "@/interfaces/IArea";
@@ -10,6 +10,7 @@ import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import AreaForm from "./AreaForm";
+import Loader from "../Globals/Loader/Loader";
 
 export default function AreaDatatable() {
   const [area, setArea] = useState<IArea>()
@@ -18,14 +19,21 @@ export default function AreaDatatable() {
   })
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [editArea, setEditArea] = useState<boolean>(false);
+  const [load, setLoad] = useState<boolean>(false);
 
   const areaStore = useAreaStore()
-  const findAllAreas = async () => {
-    await areaStore.getAreas()
-  }
+  const { getAreas } = areaStore;
+
+  const findAllAreas = useCallback(async () => {
+    setLoad(true)
+    await getAreas()
+    setLoad(false)
+  }, [getAreas])
+
+
   useEffect(() => {
     findAllAreas()
-  }, [])
+  }, [findAllAreas])
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -65,6 +73,7 @@ export default function AreaDatatable() {
   };
   return (
     <>
+      <Loader isLoad={load}/>
       <DataTable
         value={areaStore.areas} 
         tableStyle={{ minWidth: "50rem" }} 

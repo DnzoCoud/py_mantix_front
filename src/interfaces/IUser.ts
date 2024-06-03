@@ -1,6 +1,6 @@
 import { IRole } from "./IRole";
 
-export interface IUser {
+export type IUser = {
   id: number;
   username: string;
   email: string;

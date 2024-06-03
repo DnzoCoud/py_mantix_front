@@ -6,6 +6,7 @@ import "@/app/globals.css";
 import useThemeStore from "@/stores/themeStore";
 import "primeicons/primeicons.css";
 import SessionAuthProvider from "@/context/SessionAuthProvider";
+import ReduxProviders from "@/redux/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,16 +21,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}>
-      <html lang="es">
-        <body className="transition-all ">
-          <div id="app" className={inter.className}>
-            <SessionAuthProvider>
-              {children}
-            </SessionAuthProvider>
-          </div>
-        </body>
-      </html>
-    </PrimeReactProvider>
+    <ReduxProviders>
+      <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}>
+        <html lang="es">
+          <body className="transition-all ">
+            <div id="app" className={inter.className}>
+              <SessionAuthProvider>
+                {children}
+              </SessionAuthProvider>
+            </div>
+          </body>
+        </html>
+      </PrimeReactProvider>
+    </ReduxProviders>
   );
 }

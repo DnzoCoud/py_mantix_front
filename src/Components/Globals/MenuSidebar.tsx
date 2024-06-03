@@ -18,13 +18,13 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
   return (
     <>
       {items?.map((item, index) => (
-        <>
+        <React.Fragment key={index}>
           <Tooltip
             target={`${
               !sidebarStore.isOpen ? ".custom-target-icon-" + index : ""
             }`}
           />
-          <div className={`flex flex-col mx-1 overflow-y-auto`} key={index}>
+          <div className={`flex flex-col mx-1 overflow-y-auto`}>
             <div
               className={`flex ${
                 sidebarStore.isOpen ? "justify-start" : "justify-center"
@@ -86,7 +86,7 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
             ))}
           </div>
           <Divider />
-        </>
+        </React.Fragment>
       ))}
     </>
   );

@@ -2,7 +2,7 @@
 import { getFirstTwoLetters } from "@/Utils/useComposables";
 import {useAuthStore} from "@/stores/auth/authStore";
 import useThemeStore, { Theme } from "@/stores/themeStore";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { PrimeIcons } from "primereact/api";
 import { Avatar } from "primereact/avatar";
@@ -21,7 +21,7 @@ export default function NavBar() {
   const cm = useRef<ContextMenu>(null);
   const contextMenuItems: MenuItem[] = [
     { label: "Perfil", icon: "pi pi-user" },
-    { label: "Cerrar Sesion", icon: "pi pi-sign-in" },
+    { label: "Cerrar Sesion", icon: "pi pi-sign-in", command: () => handleLogout() },
   ];
   const router = useRouter();
   const navBarMenuitems: MenuItem[] = [
@@ -79,6 +79,11 @@ export default function NavBar() {
       })
     }
   }, [session])
+
+  const handleLogout = async () =>{
+    await authData.logout()
+    await signOut({callbackUrl:'/Login'})
+  }
   return (
     <>
       <div className="w-full h-16 flex justify-center items-center sticky top-0 z-40">

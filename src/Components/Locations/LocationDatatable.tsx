@@ -53,6 +53,7 @@ export default function LocationDatatable() {
         resizableColumns
         stripedRows
         showGridlines
+        groupRowsBy="area_detail.name"
         pt={
           {
             root:{
