@@ -21,18 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReduxProviders>
-      <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}>
-        <html lang="es">
-          <body className="transition-all ">
-            <div id="app" className={inter.className}>
-              <SessionAuthProvider>
-                {children}
-              </SessionAuthProvider>
-            </div>
-          </body>
-        </html>
-      </PrimeReactProvider>
-    </ReduxProviders>
+    <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}>
+      <html lang="es">
+        <body className="transition-all ">
+          <div id="app" className={inter.className}>
+            <ReduxProviders>
+              <SessionAuthProvider>{children}</SessionAuthProvider>
+            </ReduxProviders>
+          </div>
+        </body>
+      </html>
+    </PrimeReactProvider>
   );
 }

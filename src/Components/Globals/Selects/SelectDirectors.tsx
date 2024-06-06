@@ -34,11 +34,11 @@ export default function SelectDirectors({
         onChange(director);
       }
     }
-  },[authStore, onChange, selectedDirectorId])
+  },[selectedDirectorId])
 
   useEffect(() => {
     findAllDirectors();
-  }, [findAllDirectors]);
+  }, []);
   return (
     <Dropdown
       value={value}

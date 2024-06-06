@@ -10,27 +10,44 @@ import { PrimeIcons } from "primereact/api";
 import { useAreaStore } from "@/stores/useAreaStore";
 import { useToastStore } from "@/stores/useToastStore";
 import { fetchErrors } from "@/Utils/manageError";
+import { useAddAreaMutation, useFindAreaByIdQuery } from "@/redux/services/areaService";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useDispatch } from "react-redux";
+import { setArea } from "@/redux/features/areaSlice";
 
 export default function AreaForm({id}:{id?:number}) {
   const [director, setDirector] = useState<IUser | null>();
-  const [area, setArea] = useState<IArea|null>(null)
+  // const [area, setArea] = useState<IArea|null>(null)
   const areaStore = useAreaStore()
   const toastStore = useToastStore()
+  const dispatch = useDispatch()
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue
   } = useForm<IArea>();
+
+  const [addArea] = useAddAreaMutation()
+  const {data:area, isLoading} = useFindAreaByIdQuery(id ? { id } : skipToken)
+
   const onSubmit: SubmitHandler<IArea> = async (data) => {
     if(director){
       await saveArea(data.name, director.id)
     }
   };
+  
 
   const saveArea = async (name:string, director:number) => {
     try {
-        await areaStore.saveArea(name, director)
+      
+        const areaSaved = await addArea({
+          name,
+          director
+        })
+        console.log(areaSaved)
+        if(areaSaved.data)
+          dispatch(setArea(areaSaved.data))
         toastStore.setMessage("Area registrada correctamente", toastStore.SUCCES_TOAST)
     } catch (error:any) {
       console.log(error);
@@ -38,20 +55,22 @@ export default function AreaForm({id}:{id?:number}) {
     }
   }
 
-  const findAreaById = useCallback(async (id:number) => {
-    const area = await areaStore.getArea(id)
-    console.log(area)
-    if(area){
-      setValue("name", area.name);
-      setDirector(area.director_detail)
-    }
-  }, [areaStore, setValue])
+  // const findAreaById = useCallback(async (id:number) => {
+  //   const area = await areaStore.getArea(id)
+  //   console.log(area)
+  //   if(area){
+  //     setValue("name", area.name);
+  //     setDirector(area.director_detail)
+  //   }
+  // }, [areaStore, setValue])
 
   useEffect(() => {
-    if(id){
-      findAreaById(id)
+    if (area) {
+      setValue("name", area.name);
+      setDirector(area.director_detail);
+      console.log("Rebuild area")
     }
-  }, [id, findAreaById])
+  }, [area, setValue]);
   return (
     <>
       <form

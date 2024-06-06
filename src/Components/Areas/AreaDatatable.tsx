@@ -11,6 +11,10 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import AreaForm from "./AreaForm";
 import Loader from "../Globals/Loader/Loader";
+import { useFetchAreasQuery } from "@/redux/services/areaService";
+import { useDispatch } from "react-redux";
+import { setAreas } from "@/redux/features/areaSlice";
+import { useAppSelector } from "@/redux/hooks";
 
 export default function AreaDatatable() {
   const [area, setArea] = useState<IArea>()
@@ -19,21 +23,15 @@ export default function AreaDatatable() {
   })
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [editArea, setEditArea] = useState<boolean>(false);
-  const [load, setLoad] = useState<boolean>(false);
-
-  const areaStore = useAreaStore()
-  const { getAreas } = areaStore;
-
-  const findAllAreas = useCallback(async () => {
-    setLoad(true)
-    await getAreas()
-    setLoad(false)
-  }, [getAreas])
-
+  const dispatch = useDispatch();
+  const { data: fetchAreas, isLoading, isError } = useFetchAreasQuery();
+  const areas = useAppSelector(state => state.area.areas);
 
   useEffect(() => {
-    findAllAreas()
-  }, [findAllAreas])
+    if (fetchAreas) {
+      dispatch(setAreas(fetchAreas));
+    }
+  }, [fetchAreas, dispatch]);
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -73,9 +71,9 @@ export default function AreaDatatable() {
   };
   return (
     <>
-      <Loader isLoad={load}/>
+      <Loader isLoad={isLoading}/>
       <DataTable
-        value={areaStore.areas} 
+        value={areas} 
         tableStyle={{ minWidth: "50rem" }} 
         paginator 
         rows={5} 

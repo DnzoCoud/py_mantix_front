@@ -1,4 +1,5 @@
-import { useAuthStore } from "@/stores/auth/authStore";
+import { useAppSelector } from "@/redux/hooks";
+import { store } from "@/redux/store";
 import axios, { AxiosInstance } from "axios";
 
 const createServerInstance = (): AxiosInstance => {
@@ -11,8 +12,11 @@ const createServerInstance = (): AxiosInstance => {
 
   axiosInstance.interceptors.request.use(
     (config) => {
-      const accesToken = useAuthStore.getState().getToken();
-      config.headers.Authorization = accesToken ? `Token ${accesToken}` : 'Token '
+      if (typeof window !== 'undefined') {
+        const accessToken = localStorage.getItem("serverToken");
+        console.log(accessToken);
+        config.headers.Authorization = accessToken ? `Token ${accessToken}` : 'Token ';
+      }
       
       return config
     },

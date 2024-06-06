@@ -1,4 +1,4 @@
-export interface IRole {
+export type IRole = {
   id: bigint;
   name: string;
 }

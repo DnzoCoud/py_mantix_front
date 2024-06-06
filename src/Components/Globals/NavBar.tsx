@@ -1,6 +1,9 @@
 "use client";
 import { getFirstTwoLetters } from "@/Utils/useComposables";
-import {useAuthStore} from "@/stores/auth/authStore";
+import { setAuthUser, clearAuthUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useLogoutMutation } from "@/redux/services/authService";
+import { useAuthStore } from "@/stores/auth/authStore";
 import useThemeStore, { Theme } from "@/stores/themeStore";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -13,15 +16,18 @@ import { Tag } from "primereact/tag";
 import React, { useEffect, useRef } from "react";
 
 export default function NavBar() {
-  const {data: session, status} = useSession()
-  console.log({session, status})
-
-  
-  const authData = useAuthStore()
+  const { data: session, status } = useSession();
+  console.log({ session, status });
+  const [logout, { isLoading }] = useLogoutMutation();
+  const dispatch = useAppDispatch();
   const cm = useRef<ContextMenu>(null);
   const contextMenuItems: MenuItem[] = [
     { label: "Perfil", icon: "pi pi-user" },
-    { label: "Cerrar Sesion", icon: "pi pi-sign-in", command: () => handleLogout() },
+    {
+      label: "Cerrar Sesion",
+      icon: "pi pi-sign-in",
+      command: () => handleLogout(),
+    },
   ];
   const router = useRouter();
   const navBarMenuitems: MenuItem[] = [
@@ -62,28 +68,36 @@ export default function NavBar() {
     icon = PrimeIcons.MOON;
   }
 
-  useEffect(() =>{
-    if(session?.user){
-      authData.setUser({
-        token: session.user.token,
-        user: {
-          id: parseInt(session.user.id, 10),
-          email: (session.user.email ) ? session.user.email : '',
-          first_name: (session.user.first_name ) ? session.user.first_name : '',
-          last_name: (session.user.last_name ) ? session.user.last_name : '',
-          is_director: session.user.is_director,
-          is_manager: session.user.is_manager,
-          username: (session.user.username ) ? session.user.username : '',
-          role_detail: session.user.role_detail,
-        }
-      })
+  useEffect(() => {
+    if (session?.user) {
+      dispatch(
+        setAuthUser({
+          token: session.user.token,
+          user: {
+            id: parseInt(session.user.id, 10),
+            email: session.user.email ? session.user.email : "",
+            first_name: session.user.first_name ? session.user.first_name : "",
+            last_name: session.user.last_name ? session.user.last_name : "",
+            is_director: session.user.is_director,
+            is_manager: session.user.is_manager,
+            username: session.user.username ? session.user.username : "",
+            role_detail: session.user.role_detail,
+          },
+        })
+      );
+      localStorage.setItem('serverToken', session.user.token);
     }
-  }, [session])
+  }, [session]);
 
-  const handleLogout = async () =>{
-    await authData.logout()
-    await signOut({callbackUrl:'/Login'})
-  }
+  const handleLogout = async () => {
+    // await authData.logout();
+    await logout().unwrap()
+    await signOut({ callbackUrl: "/Login" });
+    dispatch(clearAuthUser())
+    localStorage.removeItem('serverToken');
+  };
+
+  const authUser = useAppSelector(state => state.auth.authUser)
   return (
     <>
       <div className="w-full h-16 flex justify-center items-center sticky top-0 z-40">
@@ -111,15 +125,17 @@ export default function NavBar() {
               }
             ></span>
             <div className="flex flex-col mr-4">
-              <span className="dark:text-white">{authData.user?.user.username}</span>
+              <span className="dark:text-white">
+                {authUser?.user.username}
+              </span>
               <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg ">
                 Culinary
               </span>
             </div>
             <Avatar
-              label={getFirstTwoLetters(authData.user?.user.username)}
+              label={getFirstTwoLetters(authUser?.user.username)}
               shape="circle"
-              style={{ backgroundColor: '#2196F3', color: '#ffffff' }}
+              style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
               onContextMenu={(e) => cm.current?.show(e)}
             />
           </div>

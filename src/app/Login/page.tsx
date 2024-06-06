@@ -67,7 +67,7 @@ export default function Login() {
       <Loader isLoad={loading} />
       <div className="w-full h-full flex flex-col md:flex-row justify-center items-center bg-white relative  transiton-all">
         <div className="md:m-4 w-2/4 lg:w-[40%]">
-          <Image  src={Logo.src} alt="" className="object-cover" width={600} height={600}/>
+          <Image  src={Logo.src} alt="" className="object-cover" width={600} height={600} priority/>
         </div>
         <form
           className="flex flex-col items-center md:items-start w-full md:w-2/4 lg:w-[40%] lg:ml-4"

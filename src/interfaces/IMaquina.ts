@@ -1,4 +1,4 @@
-export interface IMaquina {
+export type IMaquina = {
   name: string;
   code: number;
 }

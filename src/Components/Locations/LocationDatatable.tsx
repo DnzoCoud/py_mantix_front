@@ -1,16 +1,27 @@
 import { ILocation } from "@/interfaces/ILocation";
+import { setLocations } from "@/redux/features/locationSlice";
+import { useAppSelector } from "@/redux/hooks";
+import { useFetchLocationsQuery } from "@/redux/services/locationService";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 export default function LocationDatatable() {
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   })
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+  const dispatch = useDispatch()
+  const {data:fetchLocations, isLoading} = useFetchLocationsQuery()
+  const locations = useAppSelector(state => state.location.locations)
+  useEffect(()=>{
+    if(fetchLocations)
+      dispatch(setLocations(fetchLocations))
+  },[fetchLocations, isLoading])
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -44,6 +55,7 @@ export default function LocationDatatable() {
     <div>
       <DataTable 
         tableStyle={{ minWidth: "50rem" }} 
+        value={locations}
         paginator 
         rows={5} 
         rowsPerPageOptions={[5, 10, 25, 50]} 

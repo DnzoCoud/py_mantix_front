@@ -1,7 +1,5 @@
 import serverInstance from "@/Utils/axios";
-import { IUser } from "@/interfaces/IUser";
 import { IAuth } from "@/interfaces/auth/IAuth";
-
 export const authLogin = async (
   email?: string,
   password?: string

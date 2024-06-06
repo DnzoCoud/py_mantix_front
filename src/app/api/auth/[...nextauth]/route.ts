@@ -31,9 +31,9 @@ const handler = NextAuth({
             is_director: auth.user.is_director,
             is_manager: auth.user.is_manager,
           };
-        } catch (error) {
+        } catch (error:any) {
           console.error("Authorize error:", error);
-          throw new Error("Invalid credentials");
+          throw new Error(error.message);
         }
       },
     }),

@@ -7,15 +7,16 @@ type AxiosBaseQueryArgs = {
   method: AxiosRequestConfig["method"];
   data?: AxiosRequestConfig["data"];
   params?: AxiosRequestConfig["params"];
+  headers?: AxiosRequestConfig["headers"];
 };
 
 const axiosBaseQuery: BaseQueryFn<
   AxiosBaseQueryArgs,
   unknown,
   unknown
-> = async ({ url, method, data, params }) => {
+> = async ({ url, method, data, params, headers }) => {
   try {
-    const result = await serverInstance({ url, method, data, params });
+    const result = await serverInstance({ url, method, data, params, headers });
     return { data: result.data };
   } catch (axiosError) {
     const err = axiosError as AxiosError;
