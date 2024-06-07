@@ -76,8 +76,8 @@ export default function AreaDatatable() {
         value={areas} 
         tableStyle={{ minWidth: "50rem" }} 
         paginator 
-        rows={5} 
-        rowsPerPageOptions={[5, 10, 25, 50]} 
+        rows={10} 
+        rowsPerPageOptions={[10, 25, 50]} 
         dataKey="id"
         header={header}
         filters={filters}

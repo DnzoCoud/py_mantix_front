@@ -35,7 +35,8 @@ export default function LocationPage() {
         header="Agregar Locacion"
         visible={activateAdd}
         onHide={() => setActivateAdd(false)}
-        style={{ width: "70vw" }}
+        style={{ width: '32rem' }} 
+        breakpoints={{ '960px': '75vw', '641px': '90vw' }}
         draggable={false}
         pt={{
           content: {

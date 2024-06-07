@@ -10,6 +10,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import createWebStorage from "redux-persist/es/storage/createWebStorage"; // Usa el almacenamiento local por defecto
 import { areaService } from "./services/areaService";
 import { locationService } from "./services/locationService";
+import { userService } from "./services/userService";
 
 //Noob storage
 const createNoobStorage = () => {
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   [authService.reducerPath]: authService.reducer,
   [areaService.reducerPath]: areaService.reducer,
   [locationService.reducerPath] : locationService.reducer,
+  [userService.reducerPath] : userService.reducer,
 });
 
 const persistConfig = {
@@ -56,7 +58,8 @@ export const store = configureStore({
     })
       .concat(authService.middleware)
       .concat(areaService.middleware)
-      .concat(locationService.middleware),
+      .concat(locationService.middleware)
+      .concat(userService.middleware),
 });
 
 setupListeners(store.dispatch);

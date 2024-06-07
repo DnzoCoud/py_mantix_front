@@ -6,22 +6,26 @@ import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable, DataTableFilterMeta } from "primereact/datatable";
+import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import LocationForm from "./LocationForm";
 
 export default function LocationDatatable() {
+  const [location, setLocation] = useState<ILocation>()
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   })
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+  const [editLocation, setEditLocation] = useState<boolean>(false);
   const dispatch = useDispatch()
   const {data:fetchLocations, isLoading} = useFetchLocationsQuery()
   const locations = useAppSelector(state => state.location.locations)
   useEffect(()=>{
     if(fetchLocations)
       dispatch(setLocations(fetchLocations))
-  },[fetchLocations, isLoading])
+  },[fetchLocations, dispatch])
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -44,21 +48,31 @@ export default function LocationDatatable() {
   const actionHandler = (rowData:ILocation) =>{
     return(
       <React.Fragment>
-          <Button icon="pi pi-pencil" rounded text className="mr-2"/>
+          <Button icon="pi pi-pencil" rounded text className="mr-2" onClick={() => showDialog(rowData)}/>
           <Button icon="pi pi-trash" rounded text severity="danger"  />
       </React.Fragment>
     )
   }
   const header = renderHeader();
 
+  const showDialog = (location: ILocation) => {
+    setLocation({...location})
+    setEditLocation(true)
+    
+  }
+  const hideDialog = () => {
+    setEditLocation(false)
+    setLocation(undefined)
+  };
+
   return (
-    <div>
+    <>
       <DataTable 
         tableStyle={{ minWidth: "50rem" }} 
         value={locations}
         paginator 
-        rows={5} 
-        rowsPerPageOptions={[5, 10, 25, 50]} 
+        rows={10} 
+        rowsPerPageOptions={[10, 25, 50]} 
         dataKey="id"
         header={header}
         filters={filters}
@@ -79,6 +93,10 @@ export default function LocationDatatable() {
         <Column field="manager_detail.username" header="Jefe de Locacion"></Column>
         <Column body={actionHandler} exportable={false} style={{ minWidth: '12rem' }}></Column>
       </DataTable>
-    </div>
+
+      <Dialog visible={editLocation} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Editar Locacion" modal className="p-1" onHide={hideDialog}>
+        <LocationForm id={location?.id}/>
+      </Dialog>
+    </>
   );
 }
