@@ -2,7 +2,8 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "@/redux/features/auth/authSlice";
 import areaReducer from "@/redux/features/areaSlice";
 import locationReducer from "@/redux/features/locationSlice";
-
+import machineReducer from "@/redux/features/machineSlice";
+import eventReducer from "@/redux/features/eventSlice";
 
 import { authService } from "./services/authService";
 import { setupListeners } from "@reduxjs/toolkit/query";
@@ -11,6 +12,8 @@ import createWebStorage from "redux-persist/es/storage/createWebStorage"; // Usa
 import { areaService } from "./services/areaService";
 import { locationService } from "./services/locationService";
 import { userService } from "./services/userService";
+import { machineService } from "./services/machineService";
+import { eventService } from "./services/eventService";
 
 //Noob storage
 const createNoobStorage = () => {
@@ -36,16 +39,20 @@ const rootReducer = combineReducers({
   auth: authReducer,
   area: areaReducer,
   location: locationReducer,
+  machine: machineReducer,
+  event: eventReducer,
   [authService.reducerPath]: authService.reducer,
   [areaService.reducerPath]: areaService.reducer,
-  [locationService.reducerPath] : locationService.reducer,
-  [userService.reducerPath] : userService.reducer,
+  [locationService.reducerPath]: locationService.reducer,
+  [userService.reducerPath]: userService.reducer,
+  [machineService.reducerPath]: machineService.reducer,
+  [eventService.reducerPath]: eventService.reducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "area", "location"], // Nombre del slice que quieres persistir
+  whitelist: ["auth", "area", "location", "machine", "event"], // Nombre del slice que quieres persistir
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -59,7 +66,9 @@ export const store = configureStore({
       .concat(authService.middleware)
       .concat(areaService.middleware)
       .concat(locationService.middleware)
-      .concat(userService.middleware),
+      .concat(userService.middleware)
+      .concat(machineService.middleware)
+      .concat(eventService.middleware),
 });
 
 setupListeners(store.dispatch);

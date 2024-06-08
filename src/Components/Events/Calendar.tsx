@@ -1,38 +1,31 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
-import { EventClickArg } from "@fullcalendar/core/index.js";
+import { EventClickArg, EventInput } from "@fullcalendar/core/index.js";
 import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
 import interactionPlugin from "@fullcalendar/interaction";
 import DialogEventList from "./DialogEventList";
 import EventContent from "./EventContent";
+import { useFetchEventsQuery } from "@/redux/services/eventService";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "@/redux/hooks";
+import { setEvent, setEvents } from "@/redux/features/eventSlice";
 
 function Calendar() {
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleDate, setVisibleDate] = useState<boolean>(false);
+  const {data:fetchEvents, isLoading:eventsLoading} = useFetchEventsQuery()
+  const dispatch = useDispatch()
+  const events = useAppSelector(state => state.event.events)
 
-  const [eventInfo, setEventInfo] = useState<IEvent>({
-    title: "",
-    start: new Date(),
-    end: new Date(),
-    maquina: {
-      name: "",
-      code: 0,
-    },
-  });
+  useEffect(() => {
+    if(fetchEvents) dispatch(setEvents(fetchEvents))
+  }, [fetchEvents, dispatch])
 
   const handleEventClick = (evento: EventClickArg) => {
-    setEventInfo({
-      title: evento.event.title,
-      start: evento.event.start,
-      end: evento.event.end,
-      maquina: {
-        name: "",
-        code: 0,
-      },
-    });
+
     setVisible(true);
   };
 
@@ -44,6 +37,26 @@ function Calendar() {
   const handleEventClose = () => setVisible(false);
   const handleDateClose = () => setVisibleDate(false);
 
+  const convertToEventInputs = (events: IEvent[]): EventInput[] => {
+    return events.map(event => convertToEventInput(event));
+  }
+
+  const convertToEventInput = (event: IEvent): EventInput => {
+    const start = event.start instanceof Date ? event.start.toISOString() : new Date(event.start);
+    const end = event.end instanceof Date ? event.end.toISOString() : new Date(event.end);
+    return {
+      id: event.id.toString(), // Convertir el id a string
+      title: event.machine_detail.name, // Opcional: usar un campo de maquina_detail como título
+      start: start, // Convertir la fecha a string en formato ISO 8601
+      end: end, // Convertir la fecha a string en formato ISO 8601
+      // Otras propiedades según sea necesario
+      status: event.status_detail
+    };
+  }
+
+  const eventsForFullCalendar: EventInput[] = convertToEventInputs(events);
+  console.log(eventsForFullCalendar)
+
   return (
     <>
       <FullCalendar
@@ -52,10 +65,7 @@ function Calendar() {
         locale={"es"}
         nowIndicator
         eventClick={(e: EventClickArg) => handleEventClick(e)}
-        events={[
-          { title: "event 1", date: "2024-03-01" },
-          { title: "event 2", date: "2024-03-02" },
-        ]}
+        events={eventsForFullCalendar}
         dateClick={handleDateClick}
         eventContent={(eventInfo) => <EventContent eventInfo={eventInfo} />}
         headerToolbar={{
@@ -65,11 +75,11 @@ function Calendar() {
         }}
       />
 
-      <DialogEvent
+      {/* <DialogEvent
         eventInfo={eventInfo}
         visible={visible}
         onClose={handleEventClose}
-      />
+      /> */}
 
       <DialogEventList visible={visibleDate} onClose={handleDateClose} />
     </>

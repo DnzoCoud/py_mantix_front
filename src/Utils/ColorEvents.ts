@@ -1,47 +1,49 @@
 interface IColorClasses {
   background: string;
+  hover_background:string
   light_background: string;
-  shadow: string;
+  badge_mark: string;
   badges: string;
 }
 
-export const getColorEvents = (state: number = 1): IColorClasses => {
+export const getColorEvents = (state: number): IColorClasses => {
   let colorClasses: IColorClasses;
 
   switch (state) {
     case 1: //Programado
       colorClasses = {
-        background: "bg-gray-400",
+        background: "bg-gray-300",
+        hover_background: "bg-gray-400",
         light_background: "bg-gray-200",
-        shadow: "shadow-gray-400",
-        badges: "bg-gray-700",
+        badge_mark: "bg-gray-600",
+        badges: "bg-gray-500",
       };
       break;
     case 2: //En ejecucion
       colorClasses = {
-        background: "bg-blue-400",
+        background: "bg-blue-300",
         light_background: "bg-blue-200",
-
-        shadow: "shadow-blue-400",
-        badges: "bg-blue-700",
+        hover_background: "bg-blue-400",
+        badge_mark: "bg-blue-600",
+        badges: "bg-blue-500",
       };
       break;
     case 3: //Completado
       colorClasses = {
-        background: "bg-green-400",
+        background: "bg-green-300",
         light_background: "bg-green-200",
-
-        shadow: "shadow-green-400",
-        badges: "bg-green-700",
+        hover_background: "bg-green-400",
+        badge_mark: "bg-green-600",
+        badges: "bg-green-500",
       };
       break;
     default: //Reprogramado
       colorClasses = {
-        background: "bg-yellow-400",
+        background: "bg-yellow-300",
         light_background: "bg-yellow-200",
-
-        shadow: "shadow-yellow-400",
-        badges: "bg-yellow-700",
+        hover_background: "bg-yellow-400",
+        badge_mark: "bg-yellow-600",
+        badges: "bg-yellow-500",
       };
       break;
   }

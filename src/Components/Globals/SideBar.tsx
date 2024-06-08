@@ -35,6 +35,12 @@ function SideBar() {
           tooltip: "Calendario",
         },
         {
+          label: "Maquinas",
+          icon: "pi pi-truck",
+          link: "/Maintenance/machine",
+          tooltip: "Maquina",
+        },
+        {
           label: "Usuarios",
           icon: PrimeIcons.USERS,
           link: "/Maintenance/users",

@@ -1,7 +1,7 @@
-import { ILocation } from "@/interfaces/ILocation";
-import { setLocations } from "@/redux/features/locationSlice";
+import { IMaquina } from "@/interfaces/IMaquina";
+import { setMachines } from "@/redux/features/machineSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { useFetchLocationsQuery } from "@/redux/services/locationService";
+import { useFetchMachinesQuery } from "@/redux/services/machineService";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -10,21 +10,26 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import LocationForm from "./LocationForm";
+import MachineForm from "./MachineForm";
 
-export default function LocationDatatable() {
-  const [location, setLocation] = useState<ILocation>();
+export default function MachinaDatatable() {
+  const [machine, setMachine] = useState<IMaquina>();
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
-  const [editLocation, setEditLocation] = useState<boolean>(false);
+  const [editMachine, setEditMachine] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { data: fetchLocations, isLoading } = useFetchLocationsQuery();
-  const locations = useAppSelector((state) => state.location.locations);
+  const { data: fetchMachines, isLoading, isError } = useFetchMachinesQuery();
+  const machines = useAppSelector((state) => state.machine.machines);
+
   useEffect(() => {
-    if (fetchLocations) dispatch(setLocations(fetchLocations));
-  }, [fetchLocations, dispatch]);
+    console.log("remount component")
+    if (fetchMachines) {
+      console.log("fetching Dataaaa")
+      dispatch(setMachines(fetchMachines))
+    };
+  }, [fetchMachines, dispatch ]);
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -48,7 +53,7 @@ export default function LocationDatatable() {
     );
   };
 
-  const actionHandler = (rowData: ILocation) => {
+  const actionHandler = (rowData: IMaquina) => {
     return (
       <React.Fragment>
         <Button
@@ -64,20 +69,22 @@ export default function LocationDatatable() {
   };
   const header = renderHeader();
 
-  const showDialog = (location: ILocation) => {
-    setLocation({ ...location });
-    setEditLocation(true);
+  const showDialog = (maquina: IMaquina) => {
+    setMachine({ ...maquina });
+    setEditMachine(true);
+    console.log(maquina)
+    
   };
   const hideDialog = () => {
-    setEditLocation(false);
-    setLocation(undefined);
+    setEditMachine(false);
+    setMachine(undefined);
   };
-
   return (
     <>
+      {/* <Loader isLoad={isLoading}/> */}
       <DataTable
         tableStyle={{ minWidth: "50rem" }}
-        value={locations}
+        value={machines}
         paginator
         rows={10}
         rowsPerPageOptions={[10, 25, 50]}
@@ -87,18 +94,24 @@ export default function LocationDatatable() {
         resizableColumns
         stripedRows
         showGridlines
-        groupRowsBy="area_detail.name"
         pt={{
           root: {
             className: "rounded-md",
           },
         }}
       >
-        <Column field="name" header="Nombre"></Column>
-        <Column field="area_detail.name" header="Area"></Column>
+        <Column field="name" header="Maquina" sortable></Column>
+        <Column field="model" header="Modelo" sortable></Column>
+        <Column field="serial" header="Serial" sortable></Column>
         <Column
-          field="manager_detail.username"
-          header="Jefe de Locacion"
+          field="location_detail.name"
+          header="Locacion"
+          sortable
+        ></Column>
+        <Column
+          field="last_maintenance"
+          header="Ultimo Mantenimiento"
+          sortable
         ></Column>
         <Column
           body={actionHandler}
@@ -108,15 +121,15 @@ export default function LocationDatatable() {
       </DataTable>
 
       <Dialog
-        visible={editLocation}
-        style={{ width: "32rem" }}
+        visible={editMachine}
+        style={{ width: "52rem" }}
         breakpoints={{ "960px": "75vw", "641px": "90vw" }}
-        header="Editar Locacion"
+        header="Editar Maquina"
         modal
         className="p-1"
         onHide={hideDialog}
       >
-        <LocationForm id={location?.id} />
+        <MachineForm id={machine?.id} />
       </Dialog>
     </>
   );

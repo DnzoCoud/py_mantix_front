@@ -2,7 +2,7 @@ import { IArea } from "./IArea";
 import { IUser } from "./IUser";
 
 export type ILocation = {
-  id?: number;
+  id: number;
   name: string;
   area:number
   area_detail: IArea
