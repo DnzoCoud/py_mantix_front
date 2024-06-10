@@ -9,32 +9,35 @@ import EventFormExecute from "./EventFormExecute";
 import EventFormComplete from "./EventFormComplete";
 
 import { MeterGroup } from "primereact/metergroup";
+import { useAppSelector } from "@/redux/hooks";
 
-export default function EventStepper() {
+export default function EventStepper({id, state}:{id:number; state:number}) {
+  const eventStates = useAppSelector(state => state.event.eventState)
+  console.log(eventStates)
   const items: MenuItem[] = [
     {
       label: "Programado",
       icon: PrimeIcons.CLOCK,
-      template: (item) => itemRenderer(item, 0),
+      template: (item) => itemRenderer(item, eventStates.PROGRAMADO ?? 1),
     },
     {
       label: "En Ejecucion",
       icon: PrimeIcons.STEP_BACKWARD,
-      template: (item) => itemRenderer(item, 1),
+      template: (item) => itemRenderer(item, eventStates.EN_EJECUCION ?? 2),
     },
     {
       label: "Completado",
       icon: PrimeIcons.DOWNLOAD,
-      template: (item) => itemRenderer(item, 2),
+      template: (item) => itemRenderer(item, eventStates.COMPLETADO ?? 3),
     },
     {
       label: "Reprogramado",
       icon: PrimeIcons.CALENDAR_MINUS,
-      template: (item) => itemRenderer(item, 3),
+      template: (item) => itemRenderer(item, eventStates.REPROGRAMADO ?? 4),
     },
   ];
 
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [activeIndex, setActiveIndex] = useState<number>(state);
 
   const itemRenderer = (item: MenuItem, itemIndex: number) => {
     const isActiveItem = activeIndex === itemIndex;
@@ -42,16 +45,16 @@ export default function EventStepper() {
     console.log(activeIndex);
     if (isActiveItem) {
       switch (activeIndex) {
-        case 0:
+        case eventStates.PROGRAMADO:
           backgroundColor = "bg-gray-300"; // Color para el primer ítem activo
           break;
-        case 1:
+        case eventStates.EN_EJECUCION:
           backgroundColor = "bg-blue-300"; // Color para el segundo ítem activo
           break;
-        case 2:
+        case eventStates.COMPLETADO:
           backgroundColor = "bg-green-300"; // Color para el cuarto ítem activo
           break;
-        case 3:
+        case eventStates.REPROGRAMADO:
           backgroundColor = "bg-yellow-300"; // Color para el quinto ítem activo
           break;
         default:
@@ -84,19 +87,21 @@ export default function EventStepper() {
         }}
       />
       <div className="mt-4 w-full flex flex-col tr">
-        {activeIndex == 0 && (
+        {activeIndex ==  eventStates.PROGRAMADO && (
           <EventFormProgram
             setActiveIndex={setActiveIndex}
             activeIndex={activeIndex}
+            idEvent={id}
           />
         )}
-        {activeIndex == 1 && (
+        {activeIndex == eventStates.EN_EJECUCION && (
           <EventFormExecute
             setActiveIndex={setActiveIndex}
             activeIndex={activeIndex}
+            idEvent={id}
           />
         )}
-        {activeIndex == 2 && <EventFormComplete />}
+        {activeIndex == eventStates.COMPLETADO && <EventFormComplete />}
         {/* <Dropdown
           options={countries}
           filter

@@ -5,7 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import { EventClickArg, EventInput } from "@fullcalendar/core/index.js";
 import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
-import interactionPlugin from "@fullcalendar/interaction";
+import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import DialogEventList from "./DialogEventList";
 import EventContent from "./EventContent";
 import { useFetchEventsQuery } from "@/redux/services/eventService";
@@ -16,6 +16,7 @@ import { setEvent, setEvents } from "@/redux/features/eventSlice";
 function Calendar() {
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleDate, setVisibleDate] = useState<boolean>(false);
+  const[dateSelect, setDateSelect] = useState<Date | string>("")
   const {data:fetchEvents, isLoading:eventsLoading} = useFetchEventsQuery()
   const dispatch = useDispatch()
   const events = useAppSelector(state => state.event.events)
@@ -29,9 +30,10 @@ function Calendar() {
     setVisible(true);
   };
 
-  const handleDateClick = () => {
+  const handleDateClick = (info: DateClickArg) => {
     setVisibleDate(true);
     console.log("Date Click");
+    setDateSelect(info.dateStr)
   };
 
   const handleEventClose = () => setVisible(false);
@@ -42,13 +44,13 @@ function Calendar() {
   }
 
   const convertToEventInput = (event: IEvent): EventInput => {
-    const start = event.start instanceof Date ? event.start.toISOString() : new Date(event.start);
-    const end = event.end instanceof Date ? event.end.toISOString() : new Date(event.end);
+    // const start = event.start instanceof Date ? event.start.toISOString() : new Date(event.start);
+    // const end = event.end instanceof Date ? event.end.toISOString() : new Date(event.end);
     return {
       id: event.id.toString(), // Convertir el id a string
       title: event.machine_detail.name, // Opcional: usar un campo de maquina_detail como título
-      start: start, // Convertir la fecha a string en formato ISO 8601
-      end: end, // Convertir la fecha a string en formato ISO 8601
+      start: event.start, // Mantener la fecha en formato "yyyy-MM-dd"
+      end: event.end, // Mantener la fecha en formato "yyyy-MM-dd"ss
       // Otras propiedades según sea necesario
       status: event.status_detail
     };
@@ -62,7 +64,7 @@ function Calendar() {
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
-        locale={"es"}
+        // locale={"es"}
         nowIndicator
         eventClick={(e: EventClickArg) => handleEventClick(e)}
         events={eventsForFullCalendar}
@@ -73,6 +75,7 @@ function Calendar() {
           center: '',
           right: 'prev,today,next'
         }}
+        timeZone='local'
       />
 
       {/* <DialogEvent
@@ -81,7 +84,7 @@ function Calendar() {
         onClose={handleEventClose}
       /> */}
 
-      <DialogEventList visible={visibleDate} onClose={handleDateClose} />
+      { dateSelect && <DialogEventList visible={visibleDate} onClose={handleDateClose} dateSelected={dateSelect}/>}
     </>
   );
 }

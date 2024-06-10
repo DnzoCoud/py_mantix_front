@@ -1,6 +1,5 @@
 "use client";
 import Headers from "@/Components/Globals/Headers";
-import UserDataSkeleton from "@/Components/Globals/Skeleton/UserDataSkeleton";
 import UserSkeleton from "@/Components/Globals/Skeleton/UserSkeleton";
 import UserForm from "@/Components/Users/UserForm";
 import { useUserStore } from "@/stores/useUserStore";
@@ -18,7 +17,7 @@ const UserCards: React.ComponentType = dynamic(
 const UserDataTable: React.ComponentType = dynamic(
   () => import("@/Components/Users/UserDatatable"),
   {
-    loading: () => <UserDataSkeleton />,
+    loading: () => <span>loading</span>,
   }
 );
 export default function UserPage() {

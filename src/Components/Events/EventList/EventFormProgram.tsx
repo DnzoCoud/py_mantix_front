@@ -9,6 +9,7 @@ import { IEventFormChange } from "@/interfaces/Props/IEventFormChange";
 export default function EventFormProgram({
   setActiveIndex,
   activeIndex,
+  idEvent
 }: IEventFormChange) {
   const [text, setText] = useState<string>("");
 

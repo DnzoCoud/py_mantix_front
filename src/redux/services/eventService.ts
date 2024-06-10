@@ -6,14 +6,14 @@ export const eventService = createApi({
   reducerPath: "eventApi",
   baseQuery: axiosBaseQuery,
   endpoints: (builder) => ({
-    addEvent: builder.mutation<IEvent, { start: Date; end?:Date; maquina:string; status: number }>({
-      query: ({ start, end, maquina, status=1 }) => ({
+    addEvent: builder.mutation<IEvent, { start: string; end:string; machine:number; status: number }>({
+      query: ({ start, end, machine, status=1 }) => ({
         url: "/event/save",
         method: "POST", 
         data: {
             start,
             end,
-            maquina,
+            machine,
             status
         },
       }),
@@ -30,8 +30,14 @@ export const eventService = createApi({
         method: "GET",
       }),
     }),
+    findEventsByDay: builder.query<IEvent[] | [], {date:Date|string}>({
+      query: ({date}) => ({
+        url: `/event/findByDay/?start=${date}`,
+        method: "GET",
+      })
+    })
   }),
 });
 
-export const { useAddEventMutation, useFetchEventsQuery, useFindEventByIdQuery } =
+export const { useAddEventMutation, useFetchEventsQuery, useFindEventByIdQuery, useFindEventsByDayQuery } =
 eventService;

@@ -13,10 +13,11 @@ import { getColorEvents } from "@/Utils/ColorEvents";
 import { Tag } from "primereact/tag";
 import { MenuItem } from "primereact/menuitem";
 import { Menu } from "primereact/menu";
+import { IEvent } from "@/interfaces/IEvent";
 
-export default function EventCard() {
+export default function EventCard({event}:{event:IEvent}) {
   const configMenu = useRef<HTMLElement | null>(null);
-  const eventColor = getColorEvents(2);
+  const eventColor = getColorEvents(event.status_detail.id);
   const menuRight = useRef<Menu>(null);
   const headerTemplate = (options: PanelHeaderTemplateOptions) => {
     const className = `${options.className} justify-between ${eventColor.background} px-2 items-center p-4 rounded-tl-md rounded-tr-md`;
@@ -32,7 +33,10 @@ export default function EventCard() {
       },
     ];
     return (
-      <div className={className} onClick={(e) => configMenu?.current?.toggle(e)}>
+      <header className={className} onClick={
+        //@ts-ignore
+        (e) => configMenu?.current?.toggle(e)
+        }>
         <Menu
           model={menuPopup}
           popup
@@ -42,25 +46,31 @@ export default function EventCard() {
         />
         <div className="flex items-center gap-2 ">
           <span className="font-bold dark:text-black">
-            Maquina de Lavado Culinary
+            {event.machine_detail.name}
           </span>
           <Tag severity="warning" value="A" data-pr-tooltip="Turno" />
         </div>
         <div>
           <button
             className="p-panel-header-icon p-link mr-2"
-            onClick={(e) => configMenu?.current?.toggle(e)}
+            onClick={
+              //@ts-ignore
+              (e) => configMenu?.current?.toggle(e)
+            }
           >
             <span
               className="pi pi-cog dark:text-black"
-              onClick={(event) => menuRight.current?.toggle(event)}
+              onClick={
+                //@ts-ignore
+                (event) => menuRight.current?.toggle(event)
+              }
               aria-controls="popup_menu_right"
               aria-haspopup
             ></span>
           </button>
           {options.togglerElement}
         </div>
-      </div>
+      </header>
     );
   };
 
@@ -68,10 +78,10 @@ export default function EventCard() {
     const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.light_background} rounded-bl-md rounded-br-md`;
 
     return (
-      <div className={className}>
+      <footer className={className}>
         <div className="flex items-center gap-2">
           <span className="dark:text-black font-bold">
-            Daniel Esteban Rodriguez Velasco
+            NOMBRE DEL TECNICO 
           </span>
 
           <div className="flex items-center justify-start ml-4">
@@ -79,7 +89,7 @@ export default function EventCard() {
               className={`${eventColor.background} w-2 h-2 rounded-full  mr-1`}
             ></div>
             <span className="dark:text-black">
-              Estado actual del mantenimiento
+              {event.status_detail.name}
             </span>
           </div>
         </div>
@@ -89,7 +99,7 @@ export default function EventCard() {
           outlined
           size="small"
         />
-      </div>
+      </footer>
     );
   };
 
@@ -102,13 +112,13 @@ export default function EventCard() {
         toggleable
         pt={{
           root: {
-            className: "!w-full !shadow-md " + eventColor.shadow,
+            className: "!w-full !shadow-md ",
           },
         }}
         collapsed={true}
 
       >
-        <EventStepper />
+        <EventStepper id={event.id} state={event.status_detail.id} />
       </Panel>
     </>
   );

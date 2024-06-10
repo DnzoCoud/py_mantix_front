@@ -25,7 +25,7 @@ export default function DialogEvent({
         onHide={onClose}
         draggable={false}
       >
-        <EventStepper />
+        {/* <EventStepper /> */}
       </Dialog>
     </>
   );
