@@ -14,8 +14,9 @@ import { Tag } from "primereact/tag";
 import { MenuItem } from "primereact/menuitem";
 import { Menu } from "primereact/menu";
 import { IEvent } from "@/interfaces/IEvent";
+import { EVENT_STATE } from "@/Utils/constants";
 
-export default function EventCard({event}:{event:IEvent}) {
+export default function EventCard({ event }: { event: IEvent }) {
   const configMenu = useRef<HTMLElement | null>(null);
   const eventColor = getColorEvents(event.status_detail.id);
   const menuRight = useRef<Menu>(null);
@@ -33,10 +34,13 @@ export default function EventCard({event}:{event:IEvent}) {
       },
     ];
     return (
-      <header className={className} onClick={
-        //@ts-ignore
-        (e) => configMenu?.current?.toggle(e)
-        }>
+      <header
+        className={className}
+        onClick={
+          //@ts-ignore
+          (e) => configMenu?.current?.toggle(e)
+        }
+      >
         <Menu
           model={menuPopup}
           popup
@@ -48,26 +52,33 @@ export default function EventCard({event}:{event:IEvent}) {
           <span className="font-bold dark:text-black">
             {event.machine_detail.name}
           </span>
-          <Tag severity="warning" value="A" data-pr-tooltip="Turno" />
+          <Tag
+            severity="warning"
+            value={event.shift.toUpperCase()}
+            data-pr-tooltip="Turno"
+          />
         </div>
         <div>
-          <button
-            className="p-panel-header-icon p-link mr-2"
-            onClick={
-              //@ts-ignore
-              (e) => configMenu?.current?.toggle(e)
-            }
-          >
-            <span
-              className="pi pi-cog dark:text-black"
+          {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
+            <button
+              className="p-panel-header-icon p-link mr-2"
               onClick={
                 //@ts-ignore
-                (event) => menuRight.current?.toggle(event)
+                (e) => configMenu?.current?.toggle(e)
               }
-              aria-controls="popup_menu_right"
-              aria-haspopup
-            ></span>
-          </button>
+            >
+              <span
+                className="pi pi-cog dark:text-black"
+                onClick={
+                  //@ts-ignore
+                  (event) => menuRight.current?.toggle(event)
+                }
+                aria-controls="popup_menu_right"
+                aria-haspopup
+              ></span>
+            </button>
+          )}
+
           {options.togglerElement}
         </div>
       </header>
@@ -80,25 +91,23 @@ export default function EventCard({event}:{event:IEvent}) {
     return (
       <footer className={className}>
         <div className="flex items-center gap-2">
-          <span className="dark:text-black font-bold">
-            NOMBRE DEL TECNICO 
-          </span>
+          <span className="dark:text-black font-bold">NOMBRE DEL TECNICO</span>
 
           <div className="flex items-center justify-start ml-4">
             <div
               className={`${eventColor.background} w-2 h-2 rounded-full  mr-1`}
             ></div>
-            <span className="dark:text-black">
-              {event.status_detail.name}
-            </span>
+            <span className="dark:text-black">{event.status_detail.name}</span>
           </div>
         </div>
-        <Button
-          label="Reprogramar mantenimiento"
-          severity="warning"
-          outlined
-          size="small"
-        />
+        {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
+          <Button
+            label="Reprogramar mantenimiento"
+            severity="warning"
+            outlined
+            size="small"
+          />
+        )}
       </footer>
     );
   };
@@ -108,7 +117,6 @@ export default function EventCard({event}:{event:IEvent}) {
       <Panel
         headerTemplate={headerTemplate}
         footerTemplate={(e) => footerTemplate(e)}
-        header="Header"
         toggleable
         pt={{
           root: {
@@ -116,9 +124,8 @@ export default function EventCard({event}:{event:IEvent}) {
           },
         }}
         collapsed={true}
-
       >
-        <EventStepper id={event.id} state={event.status_detail.id} />
+        <EventStepper event={event} />
       </Panel>
     </>
   );

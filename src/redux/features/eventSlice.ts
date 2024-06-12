@@ -38,10 +38,21 @@ export const eventSlice = createSlice({
     },
     setEventsByDay: (state, action: PayloadAction<IEvent[] | []>) => {
       state.eventsByDay = action.payload
-    }
+    },
+    setUpdateEvent: (state, action: PayloadAction<IEvent>) => {
+      const updatedEvent = action.payload;
+      const index = state.events.findIndex(event => event.id === updatedEvent.id);
+      if (index !== -1) {
+        state.events[index] = updatedEvent;
+      }
+      const indexByDay = state.eventsByDay.findIndex(event => event.id === updatedEvent.id)
+      if (indexByDay !== -1) {
+        state.eventsByDay[indexByDay] = updatedEvent;
+      }
+    },
   },
 });
 
 
-export const { setEvents, clearEvents, setEvent, setEventsByDay } = eventSlice.actions;
+export const { setEvents, clearEvents, setEvent, setEventsByDay, setUpdateEvent } = eventSlice.actions;
 export default eventSlice.reducer;

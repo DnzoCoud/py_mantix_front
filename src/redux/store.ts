@@ -4,6 +4,7 @@ import areaReducer from "@/redux/features/areaSlice";
 import locationReducer from "@/redux/features/locationSlice";
 import machineReducer from "@/redux/features/machineSlice";
 import eventReducer from "@/redux/features/eventSlice";
+import workOrderReducer from "@/redux/features/workOrderSlice"
 
 import { authService } from "./services/authService";
 import { setupListeners } from "@reduxjs/toolkit/query";
@@ -14,6 +15,7 @@ import { locationService } from "./services/locationService";
 import { userService } from "./services/userService";
 import { machineService } from "./services/machineService";
 import { eventService } from "./services/eventService";
+import { workOrderService } from "./services/workOrderService";
 
 //Noob storage
 const createNoobStorage = () => {
@@ -41,18 +43,20 @@ const rootReducer = combineReducers({
   location: locationReducer,
   machine: machineReducer,
   event: eventReducer,
+  workOrder: workOrderReducer,
   [authService.reducerPath]: authService.reducer,
   [areaService.reducerPath]: areaService.reducer,
   [locationService.reducerPath]: locationService.reducer,
   [userService.reducerPath]: userService.reducer,
   [machineService.reducerPath]: machineService.reducer,
   [eventService.reducerPath]: eventService.reducer,
+  [workOrderService.reducerPath]: workOrderService.reducer
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "area", "location", "machine", "event"], // Nombre del slice que quieres persistir
+  whitelist: ["auth", "area", "location", "machine", "event", "workOrder"], // Nombre del slice que quieres persistir
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -68,7 +72,8 @@ export const store = configureStore({
       .concat(locationService.middleware)
       .concat(userService.middleware)
       .concat(machineService.middleware)
-      .concat(eventService.middleware),
+      .concat(eventService.middleware)
+      .concat(workOrderService.middleware),
 });
 
 setupListeners(store.dispatch);

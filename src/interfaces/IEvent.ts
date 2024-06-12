@@ -1,3 +1,4 @@
+import { IActivity } from "./IActivity";
 import { IMaquina } from "./IMaquina";
 import { IStatus } from "./IStatus";
 
@@ -6,8 +7,13 @@ export type IEvent = {
   title:string
   start: Date;
   end: Date;
+  init_time: string
+  end_time: string
+  shift:string
   maquina: number;
   machine_detail: IMaquina
   status:number
   status_detail:IStatus
+  activities:IActivity[] | []
+  activity_data:IActivity[] | []
 }

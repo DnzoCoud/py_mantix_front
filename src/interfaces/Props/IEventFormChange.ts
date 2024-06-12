@@ -1,5 +1,7 @@
+import { IEvent } from "../IEvent";
+
 export interface IEventFormChange {
   setActiveIndex: any;
   activeIndex: number;
-  idEvent: number;
+  event: IEvent;
 }
