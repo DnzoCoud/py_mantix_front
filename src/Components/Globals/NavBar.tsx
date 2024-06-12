@@ -109,14 +109,14 @@ export default function NavBar() {
             <h1 className="dark:text-white font-extrabold mr-1">Mantix</h1>
             <Tag severity="warning" value="Pro" />
           </div>
-          <div className="flex justify-evenly items-center">
+          {/* <div className="flex justify-evenly items-center">
             <Menubar
               model={navBarMenuitems}
               className="p-0"
               style={{ padding: "0!important" }}
               pt={{ root: { className: "dark:!bg-dark_bg" } }}
             />
-          </div>
+          </div> */}
           <div className="flex items-center justify-evenly">
             <span
               onClick={handleToggleTheme}

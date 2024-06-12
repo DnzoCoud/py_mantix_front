@@ -59,7 +59,7 @@ export default function EventCard({ event }: { event: IEvent }) {
           />
         </div>
         <div>
-          {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
+          {/* {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
             <button
               className="p-panel-header-icon p-link mr-2"
               onClick={
@@ -77,7 +77,7 @@ export default function EventCard({ event }: { event: IEvent }) {
                 aria-haspopup
               ></span>
             </button>
-          )}
+          )} */}
 
           {options.togglerElement}
         </div>
@@ -91,7 +91,7 @@ export default function EventCard({ event }: { event: IEvent }) {
     return (
       <footer className={className}>
         <div className="flex items-center gap-2">
-          <span className="dark:text-black font-bold">NOMBRE DEL TECNICO</span>
+          {/* <span className="dark:text-black font-bold">NOMBRE DEL TECNICO</span> */}
 
           <div className="flex items-center justify-start ml-4">
             <div
@@ -100,14 +100,14 @@ export default function EventCard({ event }: { event: IEvent }) {
             <span className="dark:text-black">{event.status_detail.name}</span>
           </div>
         </div>
-        {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
+        {/* {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
           <Button
             label="Reprogramar mantenimiento"
             severity="warning"
             outlined
             size="small"
           />
-        )}
+        )} */}
       </footer>
     );
   };
