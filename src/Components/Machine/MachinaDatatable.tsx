@@ -24,9 +24,7 @@ export default function MachinaDatatable() {
   const machines = useAppSelector((state) => state.machine.machines);
 
   useEffect(() => {
-    console.log("remount component")
     if (fetchMachines) {
-      console.log("fetching Dataaaa")
       dispatch(setMachines(fetchMachines))
     };
   }, [fetchMachines, dispatch ]);

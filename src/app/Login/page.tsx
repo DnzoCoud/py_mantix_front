@@ -39,7 +39,7 @@ export default function Login() {
       return;
     }
     toast.success("Ingreso correcto")
-    router.push("/Maintenance");
+    router.push("/Maintenance/calendar");
     setLoading(false)
     // await login(loginData.email, loginData.password);
   };

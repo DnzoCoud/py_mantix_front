@@ -1,10 +1,12 @@
 import { ILocation } from "@/interfaces/ILocation";
 import { IMaquina } from "@/interfaces/IMaquina";
-import { setMachine } from "@/redux/features/machineSlice";
+import { setMachine, setUpdateMachine } from "@/redux/features/machineSlice";
 import { useFetchLocationsQuery } from "@/redux/services/locationService";
 import {
   useAddMachineMutation,
   useFindMachineByIdQuery,
+  useUpdateMachineMutation,
+  useUploadMachinesMutation,
 } from "@/redux/services/machineService";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { PrimeIcons } from "primereact/api";
@@ -16,6 +18,11 @@ import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { serialize } from "v8";
+import LoaderComponents from "../Globals/Loader/LoaderComponents";
+import { Fieldset } from "primereact/fieldset";
+import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
+import { useToastStore } from "@/stores/useToastStore";
+import { getBase64 } from "@/Utils/useComposables";
 
 export default function MachineForm({ id }: { id?: number }) {
   const {
@@ -23,14 +30,15 @@ export default function MachineForm({ id }: { id?: number }) {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch
+    watch,
   } = useForm<IMaquina>();
-  const name = watch("name", "")
-  const model= watch("model", "")
-  const serial = watch("serial", "")
+  const name = watch("name", "");
+  const model = watch("model", "");
+  const serial = watch("serial", "");
 
-
-
+  const toastStore = useToastStore();
+  const [uploadMachines] = useUploadMachinesMutation();
+  const [updateMachine] = useUpdateMachineMutation();
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [location, setLocation] = useState<ILocation | null>();
   const [saveLoad, setSaveLoad] = useState<boolean>(false);
@@ -43,10 +51,9 @@ export default function MachineForm({ id }: { id?: number }) {
   const [addMachine] = useAddMachineMutation();
 
   useEffect(() => {
-    register("name", {required:"Este campo es obligatorio"})
-    register("model", {required:"Este campo es obligatorio"})
-    register("serial", {required:"Este campo es obligatorio"})
-
+    register("name", { required: "Este campo es obligatorio" });
+    register("model", { required: "Este campo es obligatorio" });
+    register("serial", { required: "Este campo es obligatorio" });
 
     if (fetchLocations) setLocations(fetchLocations);
 
@@ -74,15 +81,64 @@ export default function MachineForm({ id }: { id?: number }) {
     location: number
   ) => {
     setSaveLoad(true);
-    const savedMachine = await addMachine({
-      name,
-      model,
-      serial,
-      location,
-    });
-    if (savedMachine.data) dispatch(setMachine(savedMachine.data));
+    try {
+      if (!id) {
+        const savedMachine = await addMachine({
+          name,
+          model,
+          serial,
+          location,
+        });
+        if (savedMachine.data) dispatch(setMachine(savedMachine.data));
+      } else {
+        const machineUpdated = await updateMachine({
+          name,
+          model,
+          serial,
+          location,
+        }).unwrap();
+        if (machineUpdated) dispatch(setUpdateMachine(machineUpdated));
+      }
 
+      toastStore.setMessage(
+        id
+          ? "Maquina actualizada correctamente"
+          : "Maquina registrada correctamente",
+        toastStore.SUCCES_TOAST
+      );
+    } catch (error: any) {
+      console.log(error);
+      toastStore.setMessage(error.message, toastStore.ERROR_TOAST);
+    } finally {
+      setSaveLoad(false);
+    }
     setSaveLoad(false);
+  };
+  const onUpload = async (event: FileUploadHandlerEvent) => {
+    const files = event.files;
+    if (files.length > 0) {
+      setSaveLoad(true);
+      try {
+        const base64File = await getBase64(files[0]);
+        const newMachines = await uploadMachines({
+          excel_base64: base64File,
+        }).unwrap();
+        newMachines.map((machine) => {
+          dispatch(setMachine(machine));
+        });
+        toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST);
+        // await uploadFile({ file: base64File });
+        // console.log('File uploaded successfully', base64File);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        toastStore.setMessage(
+          "Error durante el cargue",
+          toastStore.ERROR_TOAST
+        );
+      } finally {
+        setSaveLoad(false);
+      }
+    }
   };
   return (
     <>
@@ -90,7 +146,44 @@ export default function MachineForm({ id }: { id?: number }) {
         className="flex flex-col justify-evenly"
         onSubmit={handleSubmit(onSubmit)}
       >
+        <LoaderComponents isLoad={saveLoad} />
+
         <div className="grid grid-cols-12 gap-4 mt-4">
+          {!id && (
+            <div className="col-span-12 mb-4">
+              <Fieldset legend="Cargue Masivo" toggleable>
+                <FileUpload
+                  uploadLabel="Subir Archivo"
+                  chooseLabel="Cargue Masivo"
+                  cancelLabel="Cancelar"
+                  mode="advanced"
+                  name="demo[]"
+                  accept=".xls,.xlsx"
+                  maxFileSize={1000000}
+                  customUpload
+                  uploadHandler={onUpload}
+                  emptyTemplate={
+                    <p className="m-0">Arrastra y suelta el archivo a subir.</p>
+                  }
+                  pt={{
+                    chooseButton: {
+                      className: "!bg-green-400",
+                    },
+                    progressbar: {
+                      root: {
+                        className: "hidden",
+                      },
+                    },
+                    badge: {
+                      root: {
+                        className: "hidden",
+                      },
+                    },
+                  }}
+                />
+              </Fieldset>
+            </div>
+          )}
           <div className="col-span-12 md:col-span-6">
             <div className="w-full flex flex-col mt-2">
               <FloatLabel>

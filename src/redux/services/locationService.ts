@@ -32,6 +32,24 @@ export const locationService = createApi({
         method: "GET",
       }),
     }),
+    updateLocation: builder.mutation<ILocation, Partial<ILocation>>({
+      query: (updatedLocationData) => ({
+        url: "/location/update",
+        method: "PATCH",
+        data: {
+          ...updatedLocationData,
+        },
+      }),
+    }),
+    uploadLocations: builder.mutation<ILocation[], {excel_base64:string}>({
+      query: ({excel_base64} ) => ({
+        url: "/location/importLocationsByExcel",
+        method: "POST",
+        data: {
+          excel_base64
+        },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+      }),
+    })   
   }),
 });
 
@@ -39,4 +57,6 @@ export const {
   useAddLocationMutation,
   useFetchLocationsQuery,
   useFindLocationByIdQuery,
+  useUpdateLocationMutation,
+  useUploadLocationsMutation
 } = locationService;

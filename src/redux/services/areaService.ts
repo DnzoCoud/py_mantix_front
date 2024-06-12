@@ -9,7 +9,7 @@ export const areaService = createApi({
     addArea: builder.mutation<IArea, { name: string; director: number }>({
       query: ({ name, director }) => ({
         url: "/area/save",
-        method: "POST", 
+        method: "POST",
         data: {
           name,
           director,
@@ -22,14 +22,37 @@ export const areaService = createApi({
         method: "GET",
       }),
     }),
-    findAreaById: builder.query<IArea|null, { id?: number }>({
+    findAreaById: builder.query<IArea | null, { id?: number }>({
       query: ({ id }) => ({
         url: `/area/findById/${id}`,
         method: "GET",
       }),
     }),
+    updateArea: builder.mutation<IArea, Partial<IArea>>({
+      query: (updatedAreaData) => ({
+        url: "/area/update",
+        method: "PATCH",
+        data: {
+          ...updatedAreaData,
+        },
+      }),
+    }),
+    uploadAreas: builder.mutation<IArea[], { excel_base64: string }>({
+      query: ({ excel_base64 }) => ({
+        url: "/area/importAreasByExcel",
+        method: "POST",
+        data: {
+          excel_base64,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useAddAreaMutation, useFetchAreasQuery, useFindAreaByIdQuery } =
-  areaService;
+export const {
+  useAddAreaMutation,
+  useFetchAreasQuery,
+  useFindAreaByIdQuery,
+  useUpdateAreaMutation,
+  useUploadAreasMutation,
+} = areaService;

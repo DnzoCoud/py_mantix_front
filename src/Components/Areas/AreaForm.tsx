@@ -10,50 +10,77 @@ import { PrimeIcons } from "primereact/api";
 import { useAreaStore } from "@/stores/useAreaStore";
 import { useToastStore } from "@/stores/useToastStore";
 import { fetchErrors } from "@/Utils/manageError";
-import { useAddAreaMutation, useFindAreaByIdQuery } from "@/redux/services/areaService";
+import {
+  useAddAreaMutation,
+  useFindAreaByIdQuery,
+  useUpdateAreaMutation,
+  useUploadAreasMutation,
+} from "@/redux/services/areaService";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useDispatch } from "react-redux";
-import { setArea } from "@/redux/features/areaSlice";
+import { setArea, setUpdateArea } from "@/redux/features/areaSlice";
+import { Fieldset } from "primereact/fieldset";
+import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
+import { getBase64 } from "@/Utils/useComposables";
+import LoaderComponents from "../Globals/Loader/LoaderComponents";
 
-export default function AreaForm({id}:{id?:number}) {
+export default function AreaForm({ id }: { id?: number }) {
   const [director, setDirector] = useState<IUser | null>();
   // const [area, setArea] = useState<IArea|null>(null)
-  const areaStore = useAreaStore()
-  const toastStore = useToastStore()
-  const dispatch = useDispatch()
+  // const areaStore = useAreaStore();
+  const [saveLoad, setSaveLoad] = useState<boolean>(false);
+
+  const toastStore = useToastStore();
+  const dispatch = useDispatch();
+  const [uploadAreas] = useUploadAreasMutation()
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
   } = useForm<IArea>();
 
-  const [addArea] = useAddAreaMutation()
-  const {data:area, isLoading} = useFindAreaByIdQuery(id ? { id } : skipToken)
+  const [addArea] = useAddAreaMutation();
+  const [updateArea] = useUpdateAreaMutation()
+  const { data: area, isLoading } = useFindAreaByIdQuery(
+    id ? { id } : skipToken
+  );
 
   const onSubmit: SubmitHandler<IArea> = async (data) => {
-    if(director){
-      await saveArea(data.name, director.id)
+    if (director) {
+      await saveArea(data.name, director.id);
     }
   };
-  
 
-  const saveArea = async (name:string, director:number) => {
+  const saveArea = async (name: string, director: number) => {
+    setSaveLoad(true);
     try {
-      
+      if (!id) {
         const areaSaved = await addArea({
           name,
+          director,
+        });
+        if (areaSaved.data) dispatch(setArea(areaSaved.data));
+      } else {
+        const areaUpdated = await updateArea({
+          id,
+          name,
           director
-        })
-        console.log(areaSaved)
-        if(areaSaved.data)
-          dispatch(setArea(areaSaved.data))
-        toastStore.setMessage("Area registrada correctamente", toastStore.SUCCES_TOAST)
-    } catch (error:any) {
+        }).unwrap()
+        if(areaUpdated) dispatch(setUpdateArea(areaUpdated))
+      }
+      toastStore.setMessage(
+        id ? "Area actualizada correctamente" : "Area registrada correctamente",
+        toastStore.SUCCES_TOAST
+      );
+    } catch (error: any) {
       console.log(error);
-      toastStore.setMessage(error.message, toastStore.ERROR_TOAST)
+      toastStore.setMessage(error.message, toastStore.ERROR_TOAST);
+    }finally{
+      setSaveLoad(false);
+
     }
-  }
+  };
 
   // const findAreaById = useCallback(async (id:number) => {
   //   const area = await areaStore.getArea(id)
@@ -68,16 +95,77 @@ export default function AreaForm({id}:{id?:number}) {
     if (area) {
       setValue("name", area.name);
       setDirector(area.director_detail);
-      console.log("Rebuild area")
+      console.log("Rebuild area");
     }
   }, [area, setValue]);
+
+  const onUpload = async (event: FileUploadHandlerEvent) => {
+    const files = event.files;
+      if (files.length > 0) {
+          setSaveLoad(true);
+          try {
+              const base64File = await getBase64(files[0]);
+              const newAreas = await uploadAreas({
+                excel_base64:base64File
+              }).unwrap()
+              newAreas.map(area => {
+                dispatch(setArea(area))
+              })
+              toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST)
+              // await uploadFile({ file: base64File });
+              // console.log('File uploaded successfully', base64File);
+          } catch (error) {
+              console.error('Error uploading file:', error);
+              toastStore.setMessage("Error durante el cargue", toastStore.ERROR_TOAST)
+          }
+          finally{
+            setSaveLoad(false);
+          }
+      }
+  };
   return (
     <>
       <form
-        className="flex flex-col justify-evenly"
+        className="flex flex-col justify-evenly relative"
         onSubmit={handleSubmit(onSubmit)}
       >
+        <LoaderComponents isLoad={saveLoad}/>
         <div className="grid grid-cols-12 gap-4 mt-4">
+          {!id && (
+            <div className="col-span-12 mb-4">
+              <Fieldset legend="Cargue Masivo" toggleable>
+                <FileUpload
+                  uploadLabel="Subir Archivo"
+                  chooseLabel="Cargue Masivo"
+                  cancelLabel="Cancelar"
+                  mode="advanced"
+                  name="demo[]"
+                  accept=".xls,.xlsx"
+                  maxFileSize={1000000}
+                  customUpload
+                  uploadHandler={onUpload}
+                  emptyTemplate={
+                    <p className="m-0">Arrastra y suelta el archivo a subir.</p>
+                  }
+                  pt={{
+                    chooseButton: {
+                      className: "!bg-green-400",
+                    },
+                    progressbar: {
+                      root: {
+                        className: "hidden",
+                      },
+                    },
+                    badge: {
+                      root: {
+                        className: "hidden",
+                      },
+                    },
+                  }}
+                />
+              </Fieldset>
+            </div>
+          )}
           <div className="col-span-12 md:col-span-6 ">
             <div className="w-full flex flex-col">
               <Label text="Nombre del area" isObligatory={true} idFor="" />
@@ -95,10 +183,7 @@ export default function AreaForm({id}:{id?:number}) {
           <div className="col-span-12 md:col-span-6">
             <div className="w-full flex flex-col">
               <Label text="Director de area" isObligatory={true} idFor="" />
-              <SelectDirectors
-                value={director}
-                onChange={setDirector}
-              />
+              <SelectDirectors value={director} onChange={setDirector} />
             </div>
           </div>
           <div className="col-span-12 mt-4">
@@ -108,6 +193,7 @@ export default function AreaForm({id}:{id?:number}) {
                 icon={PrimeIcons.SAVE}
                 size="small"
                 severity="success"
+                loading={saveLoad}
               />
             </div>
           </div>

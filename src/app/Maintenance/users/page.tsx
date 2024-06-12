@@ -50,7 +50,7 @@ export default function UserPage() {
           size="small"
           onClick={() => userStore.handleChangeDataOption(1)}
         />
-        <Button
+        {/* <Button
           icon={PrimeIcons.TH_LARGE}
           rounded
           outlined
@@ -59,7 +59,7 @@ export default function UserPage() {
           className="mr-2"
           size="small"
           onClick={() => userStore.handleChangeDataOption(2)}
-        />
+        /> */}
       </div>
       {userStore.dataOption == 1 && <UserDataTable />}
       {userStore.dataOption == 2 && <UserCards />}

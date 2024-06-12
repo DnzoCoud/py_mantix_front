@@ -18,10 +18,17 @@ export const areaSlice = createSlice({
     },
     setArea: (state, action: PayloadAction<IArea>) => {
         state.areas.push(action.payload);
-    }
+    },
+    setUpdateArea: (state, action: PayloadAction<IArea>) => {
+      const updatedArea = action.payload;
+      const index = state.areas.findIndex(area => area.id === updatedArea.id);
+      if (index !== -1) {
+        state.areas[index] = updatedArea;
+      }
+    },
   },
 });
 
 
-export const { setAreas, clearAreas, setArea } = areaSlice.actions;
+export const { setAreas, clearAreas, setArea, setUpdateArea } = areaSlice.actions;
 export default areaSlice.reducer;

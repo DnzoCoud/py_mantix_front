@@ -4,7 +4,8 @@ import areaReducer from "@/redux/features/areaSlice";
 import locationReducer from "@/redux/features/locationSlice";
 import machineReducer from "@/redux/features/machineSlice";
 import eventReducer from "@/redux/features/eventSlice";
-import workOrderReducer from "@/redux/features/workOrderSlice"
+import workOrderReducer from "@/redux/features/workOrderSlice";
+import userReducer from "@/redux/features/userSlice";
 
 import { authService } from "./services/authService";
 import { setupListeners } from "@reduxjs/toolkit/query";
@@ -44,19 +45,28 @@ const rootReducer = combineReducers({
   machine: machineReducer,
   event: eventReducer,
   workOrder: workOrderReducer,
+  user: userReducer,
   [authService.reducerPath]: authService.reducer,
   [areaService.reducerPath]: areaService.reducer,
   [locationService.reducerPath]: locationService.reducer,
   [userService.reducerPath]: userService.reducer,
   [machineService.reducerPath]: machineService.reducer,
   [eventService.reducerPath]: eventService.reducer,
-  [workOrderService.reducerPath]: workOrderService.reducer
+  [workOrderService.reducerPath]: workOrderService.reducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "area", "location", "machine", "event", "workOrder"], // Nombre del slice que quieres persistir
+  whitelist: [
+    "auth",
+    "area",
+    "location",
+    "machine",
+    "event",
+    "workOrder",
+    "user",
+  ], // Nombre del slice que quieres persistir
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

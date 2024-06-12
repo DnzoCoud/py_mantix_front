@@ -50,7 +50,16 @@ export const eventService = createApi({
         },
       }),
     }),
-  }),
+    uploadEvents: builder.mutation<IEvent[], {excel_base64:string}>({
+      query: ({excel_base64} ) => ({
+        url: "/event/importEventsByExcel",
+        method: "POST",
+        data: {
+          excel_base64
+        },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+      }),
+    })                                                                                                                                                                                                  
+  }),                                         
 });
 
 export const {
@@ -59,4 +68,5 @@ export const {
   useFindEventByIdQuery,
   useFindEventsByDayQuery,
   useUpdateEventMutation,
+  useUploadEventsMutation
 } = eventService;

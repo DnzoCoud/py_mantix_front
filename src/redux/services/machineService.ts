@@ -32,8 +32,26 @@ export const machineService = createApi({
         method: "GET",
       }),
     }),
+    updateMachine: builder.mutation<IMaquina, Partial<IMaquina>>({
+      query: (updatedMachineData) => ({
+        url: "/machine/update",
+        method: "PATCH",
+        data: {
+          ...updatedMachineData,
+        },
+      }),
+    }),
+    uploadMachines: builder.mutation<IMaquina[], {excel_base64:string}>({
+      query: ({excel_base64} ) => ({
+        url: "/machine/importMachinesByExcel",
+        method: "POST",
+        data: {
+          excel_base64
+        },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+      }),
+    })  
   }),
 });
 
-export const { useAddMachineMutation, useFetchMachinesQuery, useFindMachineByIdQuery } =
+export const { useAddMachineMutation, useFetchMachinesQuery, useFindMachineByIdQuery, useUpdateMachineMutation, useUploadMachinesMutation } =
   machineService;

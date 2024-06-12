@@ -11,11 +11,21 @@ import { IUser } from "@/interfaces/IUser";
 import { useFetchManagersQuery } from "@/redux/services/userService";
 import { useFetchAreasQuery } from "@/redux/services/areaService";
 import { IArea } from "@/interfaces/IArea";
-import { useAddLocationMutation, useFindLocationByIdQuery } from "@/redux/services/locationService";
+import {
+  useAddLocationMutation,
+  useFindLocationByIdQuery,
+  useUpdateLocationMutation,
+  useUploadLocationsMutation,
+} from "@/redux/services/locationService";
 import { useAppDispatch } from "@/redux/hooks";
 import { useDispatch } from "react-redux";
-import { setLocation } from "@/redux/features/locationSlice";
+import { setLocation, setUpdateLocation } from "@/redux/features/locationSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
+import LoaderComponents from "../Globals/Loader/LoaderComponents";
+import { Fieldset } from "primereact/fieldset";
+import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
+import { getBase64 } from "@/Utils/useComposables";
+import { useToastStore } from "@/stores/useToastStore";
 
 export default function LocationForm({ id }: { id?: number }) {
   const {
@@ -29,22 +39,25 @@ export default function LocationForm({ id }: { id?: number }) {
   const [areas, setAreas] = useState<IArea[] | []>([]);
   const [area, setArea] = useState<IArea | null>();
   const [saveLoad, setSaveLoad] = useState<boolean>(false);
-
+  const toastStore = useToastStore();
+  const [uploadLocations] = useUploadLocationsMutation()
+  const [updateLocation] = useUpdateLocationMutation()
   const { data: fetchManagers, isLoading: managersLoading } =
     useFetchManagersQuery();
   const { data: fetchAreas, isLoading: areasLoading } = useFetchAreasQuery();
   const [addLocation] = useAddLocationMutation();
   const dispatch = useDispatch();
-  const {data:location, isLoading:locationLoading} = useFindLocationByIdQuery(id ? { id } : skipToken)
+  const { data: location, isLoading: locationLoading } =
+    useFindLocationByIdQuery(id ? { id } : skipToken);
 
   useEffect(() => {
     if (fetchManagers) setManagers(fetchManagers);
     if (fetchAreas) setAreas(fetchAreas);
 
-    if(location){
+    if (location) {
       setValue("name", location.name);
       setManager(location.manager_detail);
-      setArea(location.area_detail)
+      setArea(location.area_detail);
     }
   }, [fetchManagers, fetchAreas, location]);
 
@@ -62,23 +75,105 @@ export default function LocationForm({ id }: { id?: number }) {
   };
   const saveLocation = async (name: string, manager: number, area: number) => {
     setSaveLoad(true);
-    const savedLocation = await addLocation({
-      name,
-      area,
-      manager,
-    });
-    if (savedLocation.data) dispatch(setLocation(savedLocation.data));
+    try {
+      if (!id){
+        const savedLocation = await addLocation({
+          name,
+          area,
+          manager,
+        });
+        if (savedLocation.data) dispatch(setLocation(savedLocation.data));
+    
+      }else{
+        const locationUpdated = await updateLocation({
+          name,
+          area,
+          manager,
+        }).unwrap()
+        if(locationUpdated) dispatch(setUpdateLocation(locationUpdated))
+      }
 
-    setSaveLoad(false);
+      toastStore.setMessage(
+        id ? "Locativo actualizado correctamente" : "Locativo registrado correctamente",
+        toastStore.SUCCES_TOAST
+      );
+    } catch (error: any) {
+      console.log(error);
+      toastStore.setMessage(error.message, toastStore.ERROR_TOAST);
+    }finally{
+      setSaveLoad(false);
+    }
+  };
+
+  const onUpload = async (event: FileUploadHandlerEvent) => {
+    const files = event.files;
+      if (files.length > 0) {
+          setSaveLoad(true);
+          try {
+              const base64File = await getBase64(files[0]);
+              const newLocations = await uploadLocations({
+                excel_base64:base64File
+              }).unwrap()
+              newLocations.map(locations => {
+                dispatch(setLocation(locations))
+              })
+              toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST)
+              // await uploadFile({ file: base64File });
+              // console.log('File uploaded successfully', base64File);
+          } catch (error) {
+              console.error('Error uploading file:', error);
+              toastStore.setMessage("Error durante el cargue", toastStore.ERROR_TOAST)
+          }
+          finally{
+            setSaveLoad(false);
+          }
+      }
   };
 
   return (
     <>
       <form
-        className="flex flex-col justify-evenly"
+        className="flex flex-col justify-evenly relative"
         onSubmit={handleSubmit(onSubmit)}
       >
+        <LoaderComponents isLoad={saveLoad} />
+
         <div className="grid grid-cols-12 gap-4 mt-4">
+          {!id && (
+            <div className="col-span-12 mb-4">
+              <Fieldset legend="Cargue Masivo" toggleable>
+                <FileUpload
+                  uploadLabel="Subir Archivo"
+                  chooseLabel="Cargue Masivo"
+                  cancelLabel="Cancelar"
+                  mode="advanced"
+                  name="demo[]"
+                  accept=".xls,.xlsx"
+                  maxFileSize={1000000}
+                  customUpload
+                  uploadHandler={onUpload}
+                  emptyTemplate={
+                    <p className="m-0">Arrastra y suelta el archivo a subir.</p>
+                  }
+                  pt={{
+                    chooseButton: {
+                      className: "!bg-green-400",
+                    },
+                    progressbar: {
+                      root: {
+                        className: "hidden",
+                      },
+                    },
+                    badge: {
+                      root: {
+                        className: "hidden",
+                      },
+                    },
+                  }}
+                />
+              </Fieldset>
+            </div>
+          )}
           <div className="col-span-12">
             <div className="w-full flex flex-col mt-2">
               <FloatLabel>

@@ -12,19 +12,19 @@ function SideBar() {
   const router = useRouter();
 
   const items: IMenuSidebar[] = [
-    {
-      title: "Home",
-      items: [
-        {
-          label: "Dashboard",
-          icon: PrimeIcons.CHART_BAR,
-          link: "/Maintenance",
-          badge: 3,
-          tooltip: "Dashboard",
-        },
-      ],
-      icon: PrimeIcons.HOME,
-    },
+    // {
+    //   title: "Home",
+    //   items: [
+    //     {
+    //       label: "Dashboard",
+    //       icon: PrimeIcons.CHART_BAR,
+    //       link: "/Maintenance",
+    //       badge: 3,
+    //       tooltip: "Dashboard",
+    //     },
+    //   ],
+    //   icon: PrimeIcons.HOME,
+    // },
     {
       title: "Funciones",
       items: [
@@ -40,12 +40,12 @@ function SideBar() {
           link: "/Maintenance/machine",
           tooltip: "Maquina",
         },
-        {
-          label: "Usuarios",
-          icon: PrimeIcons.USERS,
-          link: "/Maintenance/users",
-          tooltip: "Usuarios",
-        },
+        // {
+        //   label: "Usuarios",
+        //   icon: PrimeIcons.USERS,
+        //   link: "/Maintenance/users",
+        //   tooltip: "Usuarios",
+        // },
         {
           label: "Locaciones",
           icon: PrimeIcons.USERS,
@@ -61,18 +61,18 @@ function SideBar() {
       ],
       icon: PrimeIcons.HOME,
     },
-    {
-      title: "Preferencias",
-      items: [
-        {
-          label: "Configuracion",
-          icon: PrimeIcons.BUILDING,
-          link: "/Maintenance/preferences",
-          tooltip: "Configuracion",
-        },
-      ],
-      icon: PrimeIcons.COG,
-    },
+    // {
+    //   title: "Preferencias",
+    //   items: [
+    //     {
+    //       label: "Configuracion",
+    //       icon: PrimeIcons.BUILDING,
+    //       link: "/Maintenance/preferences",
+    //       tooltip: "Configuracion",
+    //     },
+    //   ],
+    //   icon: PrimeIcons.COG,
+    // },
     
   ];
 
@@ -80,12 +80,11 @@ function SideBar() {
 
   return (
     <>
-      <div
+      <aside
         className={`${
           sidebarStore.isOpen ? "w-[20%]" : "w-[5%]"
         } relative dark:bg-dark_bg bg-white_medium_bg rounded-md p-2 shadow-md dark:shadow-dark_medium_bg transition-all `}
       >
-        SideBar
         <div className="overflow-x-auto">
           <MenuSidebar items={items} />
         </div>
@@ -95,7 +94,7 @@ function SideBar() {
             sidebarStore.isOpen ? PrimeIcons.ANGLE_LEFT : PrimeIcons.ANGLE_RIGHT
           } absolute top-4 -right-4 p-2 rounded-full shadow-md bg-white_medium_bg dark:bg-dark_bg cursor-pointer hover:bg-gray-200 transition-all`}
         ></span>
-      </div>
+      </aside>
     </>
   );
 }
