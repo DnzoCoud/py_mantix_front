@@ -20,9 +20,12 @@ export default function MachinaDatatable() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [editMachine, setEditMachine] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { data: fetchMachines, isLoading, isError } = useFetchMachinesQuery();
+  const { data: fetchMachines, isLoading, isError, refetch } = useFetchMachinesQuery();
   const machines = useAppSelector((state) => state.machine.machines);
 
+  useEffect(() => {
+    refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
+  }, [refetch]);
   useEffect(() => {
     if (fetchMachines) {
       dispatch(setMachines(fetchMachines))

@@ -21,7 +21,7 @@ export default function UserDataTable() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [editUser, setEditUser] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { data: fetchUsers, isLoading, isError } = useFetchUsersQuery();
+  const { data: fetchUsers, isLoading, isError, refetch } = useFetchUsersQuery();
   const users = useAppSelector((state) => state.user.users);
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +71,9 @@ export default function UserDataTable() {
     setUser(undefined);
   };
 
+  useEffect(() => {
+    refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
+  }, [refetch]);
   useEffect(() => {
     if (fetchUsers) {
       dispatch(setUsers(fetchUsers))

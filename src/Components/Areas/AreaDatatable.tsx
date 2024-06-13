@@ -24,9 +24,12 @@ export default function AreaDatatable() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [editArea, setEditArea] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { data: fetchAreas, isLoading, isError } = useFetchAreasQuery();
+  const { data: fetchAreas, isLoading, isError, refetch } = useFetchAreasQuery();
   const areas = useAppSelector(state => state.area.areas);
 
+  useEffect(() => {
+    refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
+  }, [refetch]);
   useEffect(() => {
     if (fetchAreas) {
       dispatch(setAreas(fetchAreas));

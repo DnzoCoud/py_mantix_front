@@ -20,8 +20,12 @@ export default function LocationDatatable() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [editLocation, setEditLocation] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { data: fetchLocations, isLoading } = useFetchLocationsQuery();
+  const { data: fetchLocations, isLoading, refetch } = useFetchLocationsQuery();
   const locations = useAppSelector((state) => state.location.locations);
+
+  useEffect(() => {
+    refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
+  }, [refetch]);
   useEffect(() => {
     if (fetchLocations) dispatch(setLocations(fetchLocations));
   }, [fetchLocations, dispatch]);
