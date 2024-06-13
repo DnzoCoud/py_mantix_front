@@ -11,6 +11,7 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import UserForm from "./UserForm";
 
 export default function UserDataTable() {
   const [user, setUser] = useState<IUser>();
@@ -117,7 +118,7 @@ export default function UserDataTable() {
         className="p-1"
         onHide={hideDialog}
       >
-        {/* <MachineForm id={machine?.id} /> */}
+        <UserForm id={user?.id}/>
       </Dialog>
     </div>
   );

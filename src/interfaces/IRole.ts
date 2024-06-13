@@ -1,4 +1,4 @@
 export type IRole = {
-  id: bigint;
+  id: number;
   name: string;
 }

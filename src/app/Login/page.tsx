@@ -18,8 +18,8 @@ import "react-toastify/dist/ReactToastify.css";
 export default function Login() {
   const [loading, setLoading] = useState<boolean>(false);
   const [loginData, setLoginData] = useState({
-    email: "admin@admin.com" as string,
-    password: "admin123" as string,
+    email: "" as string,
+    password: "" as string,
   });
   const router = useRouter();
 
@@ -39,7 +39,11 @@ export default function Login() {
       return;
     }
     toast.success("Ingreso correcto")
-    router.push("/Maintenance/calendar");
+    if(loginData.password === "mantixnwusr2024*"){
+      router.push("/Login/changePassword")
+    }else{
+      router.push("/Maintenance/calendar");
+    }
     setLoading(false)
     // await login(loginData.email, loginData.password);
   };

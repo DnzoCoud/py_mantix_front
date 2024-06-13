@@ -17,12 +17,11 @@ import React, { useEffect, useRef } from "react";
 
 export default function NavBar() {
   const { data: session, status } = useSession();
-  console.log({ session, status });
   const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useAppDispatch();
   const cm = useRef<ContextMenu>(null);
   const contextMenuItems: MenuItem[] = [
-    { label: "Perfil", icon: "pi pi-user" },
+    // { label: "Perfil", icon: "pi pi-user" },
     {
       label: "Cerrar Sesion",
       icon: "pi pi-sign-in",
@@ -129,12 +128,11 @@ export default function NavBar() {
                 {authUser?.user.username}
               </span>
               <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg ">
-                Culinary
+                {authUser?.user.role_detail.name}
               </span>
             </div>
             <Avatar
               label={getFirstTwoLetters(authUser?.user.username)}
-              shape="circle"
               style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
               onContextMenu={(e) => cm.current?.show(e)}
             />

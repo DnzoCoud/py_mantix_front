@@ -1,4 +1,5 @@
 import { IArea } from "@/interfaces/IArea";
+import { IRole } from "@/interfaces/IRole";
 import { IUser } from "@/interfaces/IUser";
 import axiosBaseQuery from "@/lib/axiosBaseQuery";
 import { createApi } from "@reduxjs/toolkit/query/react";
@@ -25,9 +26,9 @@ export const userService = createApi({
         method: "GET",
       }),
     }),
-    uploadUsers: builder.mutation<IUser[], {excel_base64:string}>({
-      query: ({excel_base64} ) => ({
-        url: "/sign/importUsersByExcel",
+    uploadUsers: builder.mutation<IUser[], {excel_base64:string; type:string}>({
+      query: ({excel_base64, type} ) => ({
+        url: `/sign/importUsersByExcel/${type}`,
         method: "POST",
         data: {
           excel_base64
@@ -43,6 +44,37 @@ export const userService = createApi({
         },
       }),
     }),
+    fetchRoles: builder.query<IRole[] | [], void>({
+      query: () => ({
+        url: `/role/findAllRoles`,
+        method: "GET",
+      }),
+    }),
+    saveUser: builder.mutation<IUser, {
+      username:string;
+      email:string;
+      first_name:string;
+      last_name:string;
+      role:number
+    }>({
+      query: ({ username, email, first_name, last_name, role }) => ({
+        url: "/sign/save",
+        method: "POST", 
+        data: {
+          username,
+          email,
+          first_name,
+          last_name,
+          role
+        },
+      }),
+    }),
+    fetchUserById: builder.query<IUser, {id:number}>({
+      query: ({id}) => ({
+        url: `/sign/findById/${id}`,
+        method: "GET",
+      }),
+    })
   }),
 });
 
@@ -51,5 +83,8 @@ export const {
   useFetchManagersQuery,
   useFetchUsersQuery,
   useUploadUsersMutation,
-  useUpdateUserMutation
+  useUpdateUserMutation,
+  useFetchRolesQuery,
+  useSaveUserMutation,
+  useFetchUserByIdQuery
 } = userService;

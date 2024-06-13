@@ -49,6 +49,9 @@ export default function MachineForm({ id }: { id?: number }) {
   );
   const dispatch = useDispatch();
   const [addMachine] = useAddMachineMutation();
+  const [uploadErrors, setUploadErrors] = useState<
+  { fila: number; columna: string; message: string }[]
+  >([]);
 
   useEffect(() => {
     register("name", { required: "Este campo es obligatorio" });
@@ -92,6 +95,7 @@ export default function MachineForm({ id }: { id?: number }) {
         if (savedMachine.data) dispatch(setMachine(savedMachine.data));
       } else {
         const machineUpdated = await updateMachine({
+          id,
           name,
           model,
           serial,
@@ -129,8 +133,9 @@ export default function MachineForm({ id }: { id?: number }) {
         toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST);
         // await uploadFile({ file: base64File });
         // console.log('File uploaded successfully', base64File);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error uploading file:", error);
+        setUploadErrors(error.data?.error || []);
         toastStore.setMessage(
           "Error durante el cargue",
           toastStore.ERROR_TOAST
@@ -152,6 +157,18 @@ export default function MachineForm({ id }: { id?: number }) {
           {!id && (
             <div className="col-span-12 mb-4">
               <Fieldset legend="Cargue Masivo" toggleable>
+                {uploadErrors.length > 0 && (
+                  <div className="mb-4 p-4 border border-red-500 bg-red-50 text-red-700 rounded">
+                    <h4 className="font-semibold">Errores de Carga:</h4>
+                    <ul className="list-disc pl-5">
+                      {uploadErrors.map((error, index) => (
+                        <li key={index}>
+                          <strong>Fila {error.fila}:</strong> {error.columna} - {error.message}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <FileUpload
                   uploadLabel="Subir Archivo"
                   chooseLabel="Cargue Masivo"
