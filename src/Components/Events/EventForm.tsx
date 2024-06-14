@@ -14,13 +14,17 @@ import { IEvent } from "@/interfaces/IEvent";
 import { useFetchMachinesQuery } from "@/redux/services/machineService";
 import { useDispatch } from "react-redux";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { useAddEventMutation, useUploadEventsMutation } from "@/redux/services/eventService";
+import {
+  useAddEventMutation,
+  useUploadEventsMutation,
+} from "@/redux/services/eventService";
 import { setEvent } from "@/redux/features/eventSlice";
 import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
 import { Fieldset } from "primereact/fieldset";
 import { EVENT_STATE } from "@/Utils/constants";
 import { getBase64 } from "@/Utils/useComposables";
 import LoaderComponents from "../Globals/Loader/LoaderComponents";
+import UploadErrors from "../Globals/UploadErrors";
 export default function EventForm() {
   const {
     register,
@@ -29,7 +33,7 @@ export default function EventForm() {
     setValue,
     watch,
   } = useForm<IEvent>();
-  const toast = useToastStore()
+  const toast = useToastStore();
   const start = watch("start", new Date());
   const end = watch("end", new Date());
   const [saveLoad, setSaveLoad] = useState<boolean>(false);
@@ -39,17 +43,17 @@ export default function EventForm() {
   const { data: fetchMachines, isLoading: machinesLoading } =
     useFetchMachinesQuery();
   const [addEvent] = useAddEventMutation();
-  const [uploadEvents] =useUploadEventsMutation()
-
+  const [uploadEvents] = useUploadEventsMutation();
+  const [uploadErrors, setUploadErrors] = useState<
+    { fila: number; columna: string; message: string }[]
+  >([]);
   useEffect(() => {
     register("start", { required: "Este campo es obligatorio" });
     register("end", { required: "Este campo es obligatorio" });
-    console.log("Entro FORM");
     if (fetchMachines) setMachines(fetchMachines);
   }, [fetchMachines, dispatch]);
 
   const handleMachineChange = (event: IMaquina | null) => {
-    console.log("change maquina");
     setMachine(event);
   };
 
@@ -69,16 +73,12 @@ export default function EventForm() {
         status: EVENT_STATE.PROGRAMADO,
       });
       if (savedEvent.data) dispatch(setEvent(savedEvent.data));
-      toast.setMessage("Registro exitoso", toast.SUCCES_TOAST)
-
+      toast.setMessage("Registro exitoso", toast.SUCCES_TOAST);
     } catch (error) {
-      console.error('Error uploading file:', error);
-      toast.setMessage("Error durante el cargue", toast.ERROR_TOAST)
-    }finally{
+      toast.setMessage("Error durante el cargue", toast.ERROR_TOAST);
+    } finally {
       setSaveLoad(false);
     }
-
-    
   };
 
   //UTIL
@@ -100,27 +100,25 @@ export default function EventForm() {
   };
   const onUpload = async (event: FileUploadHandlerEvent) => {
     const files = event.files;
-      if (files.length > 0) {
-          setSaveLoad(true);
-          try {
-              const base64File = await getBase64(files[0]);
-              const newEvents = await uploadEvents({
-                excel_base64:base64File
-              }).unwrap()
-              newEvents.map(event => {
-                dispatch(setEvent(event))
-              })
-              toast.setMessage("Cargue exitoso", toast.SUCCES_TOAST)
-              // await uploadFile({ file: base64File });
-              console.log('File uploaded successfully', base64File);
-          } catch (error) {
-              console.error('Error uploading file:', error);
-              toast.setMessage("Error durante el cargue", toast.ERROR_TOAST)
-          }
-          finally{
-            setSaveLoad(false);
-          }
+    if (files.length > 0) {
+      setSaveLoad(true);
+      try {
+        const base64File = await getBase64(files[0]);
+        const newEvents = await uploadEvents({
+          excel_base64: base64File,
+        }).unwrap();
+        newEvents.map((event) => {
+          dispatch(setEvent(event));
+        });
+        toast.setMessage("Cargue exitoso", toast.SUCCES_TOAST);
+        // await uploadFile({ file: base64File });
+      } catch (error: any) {
+        setUploadErrors(error.data?.error || []);
+        toast.setMessage("Error durante el cargue", toast.ERROR_TOAST);
+      } finally {
+        setSaveLoad(false);
       }
+    }
   };
   return (
     <>
@@ -128,10 +126,13 @@ export default function EventForm() {
         className="flex flex-col justify-evenly relative"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <LoaderComponents isLoad={saveLoad}/>
+        <LoaderComponents isLoad={saveLoad} />
         <div className="grid grid-cols-12 gap-4 mt-4">
           <div className="col-span-12 mb-4">
             <Fieldset legend="Cargue Masivo" toggleable>
+              {uploadErrors.length > 0 && (
+                <UploadErrors errors={uploadErrors} />
+              )}
               <FileUpload
                 uploadLabel="Subir Archivo"
                 chooseLabel="Cargue Masivo"
@@ -149,16 +150,16 @@ export default function EventForm() {
                   chooseButton: {
                     className: "!bg-green-400",
                   },
-                  progressbar:{
-                    root:{
-                      className:'hidden'
-                    }
+                  progressbar: {
+                    root: {
+                      className: "hidden",
+                    },
                   },
-                  badge:{
-                    root:{
-                      className:'hidden'
-                    }
-                  }
+                  badge: {
+                    root: {
+                      className: "hidden",
+                    },
+                  },
                 }}
               />
             </Fieldset>

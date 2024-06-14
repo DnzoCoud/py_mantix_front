@@ -23,16 +23,20 @@ import { Fieldset } from "primereact/fieldset";
 import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
 import { getBase64 } from "@/Utils/useComposables";
 import LoaderComponents from "../Globals/Loader/LoaderComponents";
+import UploadErrors from "../Globals/UploadErrors";
 
 export default function AreaForm({ id }: { id?: number }) {
   const [director, setDirector] = useState<IUser | null>();
   // const [area, setArea] = useState<IArea|null>(null)
   // const areaStore = useAreaStore();
   const [saveLoad, setSaveLoad] = useState<boolean>(false);
+  const [uploadErrors, setUploadErrors] = useState<
+    { fila: number; columna: string; message: string }[]
+  >([]);
 
   const toastStore = useToastStore();
   const dispatch = useDispatch();
-  const [uploadAreas] = useUploadAreasMutation()
+  const [uploadAreas] = useUploadAreasMutation();
   const {
     register,
     handleSubmit,
@@ -41,7 +45,7 @@ export default function AreaForm({ id }: { id?: number }) {
   } = useForm<IArea>();
 
   const [addArea] = useAddAreaMutation();
-  const [updateArea] = useUpdateAreaMutation()
+  const [updateArea] = useUpdateAreaMutation();
   const { data: area, isLoading } = useFindAreaByIdQuery(
     id ? { id } : skipToken
   );
@@ -65,9 +69,9 @@ export default function AreaForm({ id }: { id?: number }) {
         const areaUpdated = await updateArea({
           id,
           name,
-          director
-        }).unwrap()
-        if(areaUpdated) dispatch(setUpdateArea(areaUpdated))
+          director,
+        }).unwrap();
+        if (areaUpdated) dispatch(setUpdateArea(areaUpdated));
       }
       toastStore.setMessage(
         id ? "Area actualizada correctamente" : "Area registrada correctamente",
@@ -76,9 +80,8 @@ export default function AreaForm({ id }: { id?: number }) {
     } catch (error: any) {
       console.log(error);
       toastStore.setMessage(error.message, toastStore.ERROR_TOAST);
-    }finally{
+    } finally {
       setSaveLoad(false);
-
     }
   };
 
@@ -101,27 +104,29 @@ export default function AreaForm({ id }: { id?: number }) {
 
   const onUpload = async (event: FileUploadHandlerEvent) => {
     const files = event.files;
-      if (files.length > 0) {
-          setSaveLoad(true);
-          try {
-              const base64File = await getBase64(files[0]);
-              const newAreas = await uploadAreas({
-                excel_base64:base64File
-              }).unwrap()
-              newAreas.map(area => {
-                dispatch(setArea(area))
-              })
-              toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST)
-              // await uploadFile({ file: base64File });
-              // console.log('File uploaded successfully', base64File);
-          } catch (error) {
-              console.error('Error uploading file:', error);
-              toastStore.setMessage("Error durante el cargue", toastStore.ERROR_TOAST)
-          }
-          finally{
-            setSaveLoad(false);
-          }
+    if (files.length > 0) {
+      setSaveLoad(true);
+      try {
+        const base64File = await getBase64(files[0]);
+        const newAreas = await uploadAreas({
+          excel_base64: base64File,
+        }).unwrap();
+        newAreas.map((area) => {
+          dispatch(setArea(area));
+        });
+        toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST);
+        // await uploadFile({ file: base64File });
+        // console.log('File uploaded successfully', base64File);
+      } catch (error: any) {
+        setUploadErrors(error.data?.error || []);
+        toastStore.setMessage(
+          "Error durante el cargue",
+          toastStore.ERROR_TOAST
+        );
+      } finally {
+        setSaveLoad(false);
       }
+    }
   };
   return (
     <>
@@ -129,11 +134,14 @@ export default function AreaForm({ id }: { id?: number }) {
         className="flex flex-col justify-evenly relative"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <LoaderComponents isLoad={saveLoad}/>
+        <LoaderComponents isLoad={saveLoad} />
         <div className="grid grid-cols-12 gap-4 mt-4">
           {!id && (
             <div className="col-span-12 mb-4">
               <Fieldset legend="Cargue Masivo" toggleable>
+                {uploadErrors.length > 0 && (
+                  <UploadErrors errors={uploadErrors} />
+                )}
                 <FileUpload
                   uploadLabel="Subir Archivo"
                   chooseLabel="Cargue Masivo"

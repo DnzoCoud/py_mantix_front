@@ -26,6 +26,7 @@ import { Fieldset } from "primereact/fieldset";
 import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
 import { getBase64 } from "@/Utils/useComposables";
 import { useToastStore } from "@/stores/useToastStore";
+import UploadErrors from "../Globals/UploadErrors";
 
 export default function LocationForm({ id }: { id?: number }) {
   const {
@@ -34,14 +35,17 @@ export default function LocationForm({ id }: { id?: number }) {
     formState: { errors },
     setValue,
   } = useForm<ILocation>();
+  const [uploadErrors, setUploadErrors] = useState<
+    { fila: number; columna: string; message: string }[]
+  >([]);
   const [managers, setManagers] = useState<IUser[] | []>([]);
   const [manager, setManager] = useState<IUser | null>();
   const [areas, setAreas] = useState<IArea[] | []>([]);
   const [area, setArea] = useState<IArea | null>();
   const [saveLoad, setSaveLoad] = useState<boolean>(false);
   const toastStore = useToastStore();
-  const [uploadLocations] = useUploadLocationsMutation()
-  const [updateLocation] = useUpdateLocationMutation()
+  const [uploadLocations] = useUploadLocationsMutation();
+  const [updateLocation] = useUpdateLocationMutation();
   const { data: fetchManagers, isLoading: managersLoading } =
     useFetchManagersQuery();
   const { data: fetchAreas, isLoading: areasLoading } = useFetchAreasQuery();
@@ -76,58 +80,61 @@ export default function LocationForm({ id }: { id?: number }) {
   const saveLocation = async (name: string, manager: number, area: number) => {
     setSaveLoad(true);
     try {
-      if (!id){
+      if (!id) {
         const savedLocation = await addLocation({
           name,
           area,
           manager,
         });
         if (savedLocation.data) dispatch(setLocation(savedLocation.data));
-    
-      }else{
+      } else {
         const locationUpdated = await updateLocation({
           name,
           area,
           manager,
-        }).unwrap()
-        if(locationUpdated) dispatch(setUpdateLocation(locationUpdated))
+        }).unwrap();
+        if (locationUpdated) dispatch(setUpdateLocation(locationUpdated));
       }
 
       toastStore.setMessage(
-        id ? "Locativo actualizado correctamente" : "Locativo registrado correctamente",
+        id
+          ? "Locativo actualizado correctamente"
+          : "Locativo registrado correctamente",
         toastStore.SUCCES_TOAST
       );
     } catch (error: any) {
       console.log(error);
       toastStore.setMessage(error.message, toastStore.ERROR_TOAST);
-    }finally{
+    } finally {
       setSaveLoad(false);
     }
   };
 
   const onUpload = async (event: FileUploadHandlerEvent) => {
     const files = event.files;
-      if (files.length > 0) {
-          setSaveLoad(true);
-          try {
-              const base64File = await getBase64(files[0]);
-              const newLocations = await uploadLocations({
-                excel_base64:base64File
-              }).unwrap()
-              newLocations.map(locations => {
-                dispatch(setLocation(locations))
-              })
-              toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST)
-              // await uploadFile({ file: base64File });
-              // console.log('File uploaded successfully', base64File);
-          } catch (error) {
-              console.error('Error uploading file:', error);
-              toastStore.setMessage("Error durante el cargue", toastStore.ERROR_TOAST)
-          }
-          finally{
-            setSaveLoad(false);
-          }
+    if (files.length > 0) {
+      setSaveLoad(true);
+      try {
+        const base64File = await getBase64(files[0]);
+        const newLocations = await uploadLocations({
+          excel_base64: base64File,
+        }).unwrap();
+        newLocations.map((locations) => {
+          dispatch(setLocation(locations));
+        });
+        toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST);
+        // await uploadFile({ file: base64File });
+        // console.log('File uploaded successfully', base64File);
+      } catch (error:any) {
+        setUploadErrors(error.data?.error || []);
+        toastStore.setMessage(
+          "Error durante el cargue",
+          toastStore.ERROR_TOAST
+        );
+      } finally {
+        setSaveLoad(false);
       }
+    }
   };
 
   return (
@@ -142,6 +149,9 @@ export default function LocationForm({ id }: { id?: number }) {
           {!id && (
             <div className="col-span-12 mb-4">
               <Fieldset legend="Cargue Masivo" toggleable>
+                {uploadErrors.length > 0 && (
+                  <UploadErrors errors={uploadErrors} />
+                )}
                 <FileUpload
                   uploadLabel="Subir Archivo"
                   chooseLabel="Cargue Masivo"

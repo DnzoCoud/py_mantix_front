@@ -23,6 +23,7 @@ import { Fieldset } from "primereact/fieldset";
 import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
 import { useToastStore } from "@/stores/useToastStore";
 import { getBase64 } from "@/Utils/useComposables";
+import UploadErrors from "../Globals/UploadErrors";
 
 export default function MachineForm({ id }: { id?: number }) {
   const {
@@ -157,18 +158,7 @@ export default function MachineForm({ id }: { id?: number }) {
           {!id && (
             <div className="col-span-12 mb-4">
               <Fieldset legend="Cargue Masivo" toggleable>
-                {uploadErrors.length > 0 && (
-                  <div className="mb-4 p-4 border border-red-500 bg-red-50 text-red-700 rounded">
-                    <h4 className="font-semibold">Errores de Carga:</h4>
-                    <ul className="list-disc pl-5">
-                      {uploadErrors.map((error, index) => (
-                        <li key={index}>
-                          <strong>Fila {error.fila}:</strong> {error.columna} - {error.message}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+              {uploadErrors.length > 0 && <UploadErrors errors={uploadErrors} />}
                 <FileUpload
                   uploadLabel="Subir Archivo"
                   chooseLabel="Cargue Masivo"
