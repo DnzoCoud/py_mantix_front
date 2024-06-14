@@ -26,9 +26,16 @@ export const machineSlice = createSlice({
         state.machines[index] = updatedMachine;
       }
     },
+    setDeleteMachine: (state, action: PayloadAction<number>) => {
+      const machineId = action.payload;
+      const index = state.machines.findIndex((machine) => machine.id === machineId);
+      if (index !== -1) {
+        state.machines.splice(index, 1); // Elimina el elemento en la posición `index`
+      }
+    },
   },
 });
 
 
-export const { setMachines, clearMachines, setMachine, setUpdateMachine } = machineSlice.actions;
+export const { setMachines, clearMachines, setMachine, setUpdateMachine, setDeleteMachine } = machineSlice.actions;
 export default machineSlice.reducer;

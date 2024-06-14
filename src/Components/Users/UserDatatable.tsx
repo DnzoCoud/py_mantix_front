@@ -1,8 +1,8 @@
 'use client'
 import { IUser } from "@/interfaces/IUser";
-import { setUsers } from "@/redux/features/userSlice";
+import { setDeleteUser, setUsers } from "@/redux/features/userSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { useFetchUsersQuery } from "@/redux/services/userService";
+import { useDeleteUserMutation, useFetchUsersQuery } from "@/redux/services/userService";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -12,6 +12,8 @@ import { InputText } from "primereact/inputtext";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import UserForm from "./UserForm";
+import { useToastStore } from "@/stores/useToastStore";
+import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 
 export default function UserDataTable() {
   const [user, setUser] = useState<IUser>();
@@ -23,6 +25,9 @@ export default function UserDataTable() {
   const dispatch = useDispatch();
   const { data: fetchUsers, isLoading, isError, refetch } = useFetchUsersQuery();
   const users = useAppSelector((state) => state.user.users);
+  const [deleteUser] = useDeleteUserMutation()
+  const [saveLoad, setSaveLoad] = useState<boolean>(false);
+  const toastStore = useToastStore();
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -46,6 +51,33 @@ export default function UserDataTable() {
     );
   };
   const header = renderHeader();
+
+  const handleDelete = async (user:IUser) => {
+    setSaveLoad(true)
+    try {
+      await deleteUser({id: user.id}).unwrap()
+      dispatch(setDeleteUser(user.id))
+      toastStore.setMessage("Eliminacion Correcta", toastStore.SUCCES_TOAST)
+    } catch (error:any) {
+      toastStore.setMessage("Error al eliminar", toastStore.ERROR_TOAST)
+    }finally{
+      setSaveLoad(false)
+    }
+  }
+  const confirmDelete = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>, user:IUser) =>{
+    confirmPopup({
+      target: event.currentTarget,
+      message: 'Deseas eliminar este elemento?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept: () => {
+        handleDelete(user)
+      },
+      reject:() => {return false}
+
+    })
+  }
   const actionHandler = (rowData: IUser) => {
     return (
       <React.Fragment>
@@ -56,7 +88,7 @@ export default function UserDataTable() {
           className="mr-2"
           onClick={() => showDialog(rowData)}
         />
-        <Button icon="pi pi-trash" rounded text severity="danger" />
+        <Button icon="pi pi-trash" rounded text severity="danger" onClick={(e) => confirmDelete(e, rowData)} loading={saveLoad}/>
       </React.Fragment>
     );
   };
@@ -81,6 +113,7 @@ export default function UserDataTable() {
   }, [fetchUsers, dispatch ]);
   return (
     <div>
+      <ConfirmPopup/>
       <DataTable
         tableStyle={{ minWidth: "50rem" }}
         value={users}

@@ -20,6 +20,12 @@ export const userService = createApi({
         method: "GET",
       }),
     }),
+    fetchTechnicals: builder.query<IUser[] | [], void>({
+      query: () => ({
+        url: `/sign/findTechnicals`,
+        method: "GET",
+      }),
+    }),
     fetchUsers: builder.query<IUser[] | [], void>({
       query: () => ({
         url: `/sign/findAll`,
@@ -74,7 +80,13 @@ export const userService = createApi({
         url: `/sign/findById/${id}`,
         method: "GET",
       }),
-    })
+    }),
+    deleteUser: builder.mutation<IUser, { id: number }>({
+      query: ({ id }) => ({
+        url: `/sign/delete/${id}`,
+        method: "DELETE"
+      }),
+    }),
   }),
 });
 
@@ -86,5 +98,7 @@ export const {
   useUpdateUserMutation,
   useFetchRolesQuery,
   useSaveUserMutation,
-  useFetchUserByIdQuery
+  useFetchUserByIdQuery,
+  useDeleteUserMutation,
+  useFetchTechnicalsQuery
 } = userService;

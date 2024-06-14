@@ -7,14 +7,23 @@ export const workOrderService = createApi({
   reducerPath: "workOrderApi",
   baseQuery: axiosBaseQuery,
   endpoints: (builder) => ({
-    addWorkOrder: builder.mutation<IWorkOrder, { diagnosis: string; event: number; observation:string|null; cause:string|null  }>({
-      query: ({ diagnosis, event, observation , cause}) => ({
+    addWorkOrder: builder.mutation<
+      IWorkOrder,
+      {
+        diagnosis: string;
+        event: number;
+        observation: string | null;
+        cause: string | null;
+      }
+    >({
+      query: ({ diagnosis, event, observation, cause }) => ({
         url: "/workOrder/save",
-        method: "POST", 
+        method: "POST",
         data: {
-            diagnosis,
-            event,
-            observation, cause
+          diagnosis,
+          event,
+          observation,
+          cause,
         },
       }),
     }),
@@ -24,7 +33,10 @@ export const workOrderService = createApi({
         method: "GET",
       }),
     }),
-    findWorkOrderByEventId: builder.query<IWorkOrder|null, { eventId?: number }>({
+    findWorkOrderByEventId: builder.query<
+      IWorkOrder | null,
+      { eventId?: number }
+    >({
       query: ({ eventId }) => ({
         url: `/workOrder/findWorkOrderByEventId/${eventId}`,
         method: "GET",
@@ -34,13 +46,25 @@ export const workOrderService = createApi({
       query: (dataUpdated) => ({
         url: `/workOrder/update`,
         method: "PATCH",
-        data:{
-          ...dataUpdated
-        }
+        data: {
+          ...dataUpdated,
+        },
       }),
-    })
+    }),
+    generateWorkOrderPDF: builder.query<string, { id: number }>({
+      query: ({ id }) => ({
+        url: `/workOrder/generateWorkOrderPDF/${id}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useAddWorkOrderMutation, useFetchWorkOrdersQuery, useFindWorkOrderByEventIdQuery, useUpdateWorkOrderMutation } =
-  workOrderService;
+export const {
+  useAddWorkOrderMutation,
+  useFetchWorkOrdersQuery,
+  useFindWorkOrderByEventIdQuery,
+  useUpdateWorkOrderMutation,
+  useGenerateWorkOrderPDFQuery,
+  useLazyGenerateWorkOrderPDFQuery
+} = workOrderService;

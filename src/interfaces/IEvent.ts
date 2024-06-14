@@ -1,6 +1,7 @@
 import { IActivity } from "./IActivity";
 import { IMaquina } from "./IMaquina";
 import { IStatus } from "./IStatus";
+import { IUser } from "./IUser";
 
 export type IDay = {
   date:string
@@ -22,4 +23,6 @@ export type IEvent = {
   activity_data:IActivity[] | []
   day:number
   day_detail:IDay
+  technical:number
+  technical_detail:IUser
 }

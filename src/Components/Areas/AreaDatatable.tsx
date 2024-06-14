@@ -11,10 +11,12 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import AreaForm from "./AreaForm";
 import Loader from "../Globals/Loader/Loader";
-import { useFetchAreasQuery } from "@/redux/services/areaService";
+import { useDeleteAreaMutation, useFetchAreasQuery } from "@/redux/services/areaService";
 import { useDispatch } from "react-redux";
-import { setAreas } from "@/redux/features/areaSlice";
+import { setAreas, setDeleteArea } from "@/redux/features/areaSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
+import { useToastStore } from "@/stores/useToastStore";
 
 export default function AreaDatatable() {
   const [area, setArea] = useState<IArea>()
@@ -26,6 +28,9 @@ export default function AreaDatatable() {
   const dispatch = useDispatch();
   const { data: fetchAreas, isLoading, isError, refetch } = useFetchAreasQuery();
   const areas = useAppSelector(state => state.area.areas);
+  const [deleteArea] = useDeleteAreaMutation()
+  const [saveLoad, setSaveLoad] = useState<boolean>(false);
+  const toastStore = useToastStore();
 
   useEffect(() => {
     refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
@@ -55,11 +60,38 @@ export default function AreaDatatable() {
   };
   const header = renderHeader();
 
+  const handleDelete = async (area:IArea) => {
+    setSaveLoad(true)
+    try {
+      await deleteArea({id: area.id}).unwrap()
+      dispatch(setDeleteArea(area.id))
+      toastStore.setMessage("Eliminacion Correcta", toastStore.SUCCES_TOAST)
+    } catch (error:any) {
+      toastStore.setMessage("Error al eliminar", toastStore.ERROR_TOAST)
+    }finally{
+      setSaveLoad(false)
+    }
+  }
+  const confirmDelete = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>, area:IArea) =>{
+    confirmPopup({
+      target: event.currentTarget,
+      message: 'Deseas eliminar este elemento?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept: () => {
+        handleDelete(area)
+      },
+      reject:() => {return false}
+
+    })
+  }
+
   const actionHandler = (rowData:IArea) =>{
     return(
       <React.Fragment>
           <Button icon="pi pi-pencil" rounded text className="mr-2" onClick={() => showDialog(rowData)}/>
-          <Button icon="pi pi-trash" rounded text severity="danger"  />
+          <Button icon="pi pi-trash" rounded text severity="danger" onClick={(e) => confirmDelete(e, rowData)} loading={saveLoad}/>
       </React.Fragment>
     )
   }
@@ -74,6 +106,7 @@ export default function AreaDatatable() {
   };
   return (
     <>
+      <ConfirmPopup/>
       <Loader isLoad={isLoading}/>
       <DataTable
         value={areas} 

@@ -19,6 +19,9 @@ import { useUpdateEventMutation } from "@/redux/services/eventService";
 import { setUpdateEvent } from "@/redux/features/eventSlice";
 import { EVENT_STATE } from "@/Utils/constants";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useFetchTechnicalsQuery } from "@/redux/services/userService";
+import { IUser } from "@/interfaces/IUser";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 
 export default function EventFormProgram({
   setActiveIndex,
@@ -32,6 +35,10 @@ export default function EventFormProgram({
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
   );
+  const [technicals, setTechnicals] = useState<IUser[]>([])
+  const [technical, setTechnical] = useState<IUser|null>()
+  const { data: fetchTechnicals, isLoading:technicalLoading } = useFetchTechnicalsQuery()
+
   const dispatch = useDispatch();
   const {
     register,
@@ -46,7 +53,8 @@ export default function EventFormProgram({
   const onSubmit: SubmitHandler<IWorkOrder> = async (data) => {
     try {
       if (event.status_detail.id === EVENT_STATE.PROGRAMADO) {
-        await ejecutionEvent(data.diagnosis.trim(), event.id);
+        if(technical)
+          await ejecutionEvent(data.diagnosis.trim(), event.id, technical.id);
       }
       setActiveIndex(activeIndex + 1);
     } catch (error) {
@@ -55,7 +63,7 @@ export default function EventFormProgram({
     }
   };
 
-  const ejecutionEvent = async (diagnosis: string, eventId: number) => {
+  const ejecutionEvent = async (diagnosis: string, eventId: number, technicalId:number) => {
     try {
       setSubmitLoad(true);
       const saveWorkOrder = await addWorkOrder({
@@ -70,6 +78,7 @@ export default function EventFormProgram({
         id: eventId,
         init_time: new Date().toLocaleTimeString(),
         activity_data: activity,
+        technical: technicalId,
         status: EVENT_STATE.EN_EJECUCION,
       }).unwrap();
       dispatch(setUpdateEvent(updatedEvent));
@@ -82,12 +91,22 @@ export default function EventFormProgram({
   };
 
   useEffect(() => {
+    if(fetchTechnicals){
+      setTechnicals(fetchTechnicals)
+    }
+  }, [fetchTechnicals])
+
+  useEffect(() => {
     register("diagnosis", { required: "Este campo es obligatorio" });
     if (fetchWorkOrder) {
       if (fetchWorkOrder.diagnosis)
         setValue("diagnosis", fetchWorkOrder.diagnosis);
     }
   }, [fetchWorkOrder, register, setValue]);
+
+  const handleTechnicalChange = (event: IUser | null) => {
+    setTechnical(event)
+  }
   return (
     <>
       <form
@@ -136,6 +155,34 @@ export default function EventFormProgram({
               {errors.diagnosis && (
                 <span className="text-red-500">{errors.diagnosis.message}</span>
               )}
+            </div>
+          </div>
+          <div className="col-span-12">
+            <div className="w-full flex flex-col mt-2">
+              <FloatLabel>
+                <Dropdown
+                  value={technical}
+                  options={technicals}
+                  optionLabel="username"
+                  dataKey="id"
+                  filter
+                  pt={{
+                    root: {
+                      className: "selectMaquina",
+                    },
+                  }}
+                  loading={technicalLoading}
+                  onChange={(e: DropdownChangeEvent) =>
+                    handleTechnicalChange(e.value)
+                  }
+                />
+                <label
+                  htmlFor="username"
+                  style={{ left: "3%", transition: "all .2s ease" }}
+                >
+                  Tecnico encargado
+                </label>
+              </FloatLabel>
             </div>
           </div>
           <div className="col-span-12">

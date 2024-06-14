@@ -7,16 +7,19 @@ export const machineService = createApi({
   reducerPath: "machineApi",
   baseQuery: axiosBaseQuery,
   endpoints: (builder) => ({
-    addMachine: builder.mutation<IMaquina, { name: string; model:string; serial:string;location: number }>({
+    addMachine: builder.mutation<
+      IMaquina,
+      { name: string; model: string; serial: string; location: number }
+    >({
       query: ({ name, model, serial, location }) => ({
         url: "/machine/save",
-        method: "POST", 
+        method: "POST",
         data: {
           name,
           model,
           serial,
           location,
-          status: 1
+          status: 1,
         },
       }),
     }),
@@ -26,7 +29,7 @@ export const machineService = createApi({
         method: "GET",
       }),
     }),
-    findMachineById: builder.query<IMaquina|null, { id?: number }>({
+    findMachineById: builder.query<IMaquina | null, { id?: number }>({
       query: ({ id }) => ({
         url: `/machine/findById/${id}`,
         method: "GET",
@@ -41,17 +44,29 @@ export const machineService = createApi({
         },
       }),
     }),
-    uploadMachines: builder.mutation<IMaquina[], {excel_base64:string}>({
-      query: ({excel_base64} ) => ({
+    uploadMachines: builder.mutation<IMaquina[], { excel_base64: string }>({
+      query: ({ excel_base64 }) => ({
         url: "/machine/importMachinesByExcel",
         method: "POST",
         data: {
-          excel_base64
-        },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+          excel_base64,
+        },
       }),
-    })  
+    }),
+    deleteMachine: builder.mutation<IMaquina, { id: number }>({
+      query: ({ id }) => ({
+        url: `/machine/delete/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
-export const { useAddMachineMutation, useFetchMachinesQuery, useFindMachineByIdQuery, useUpdateMachineMutation, useUploadMachinesMutation } =
-  machineService;
+export const {
+  useAddMachineMutation,
+  useFetchMachinesQuery,
+  useFindMachineByIdQuery,
+  useUpdateMachineMutation,
+  useUploadMachinesMutation,
+  useDeleteMachineMutation
+} = machineService;

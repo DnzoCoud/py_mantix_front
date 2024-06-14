@@ -1,7 +1,7 @@
 import { ILocation } from "@/interfaces/ILocation";
-import { setLocations } from "@/redux/features/locationSlice";
+import { setDeleteLocation, setLocations } from "@/redux/features/locationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { useFetchLocationsQuery } from "@/redux/services/locationService";
+import { useDeleteLocationMutation, useFetchLocationsQuery } from "@/redux/services/locationService";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -11,6 +11,8 @@ import { InputText } from "primereact/inputtext";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import LocationForm from "./LocationForm";
+import { useToastStore } from "@/stores/useToastStore";
+import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 
 export default function LocationDatatable() {
   const [location, setLocation] = useState<ILocation>();
@@ -22,6 +24,9 @@ export default function LocationDatatable() {
   const dispatch = useDispatch();
   const { data: fetchLocations, isLoading, refetch } = useFetchLocationsQuery();
   const locations = useAppSelector((state) => state.location.locations);
+  const [saveLoad, setSaveLoad] = useState<boolean>(false);
+  const toastStore = useToastStore();
+  const [deleteLocation] = useDeleteLocationMutation()
 
   useEffect(() => {
     refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
@@ -52,6 +57,34 @@ export default function LocationDatatable() {
     );
   };
 
+  const handleDelete = async (location:ILocation) =>{
+    setSaveLoad(true)
+    try {
+      await deleteLocation({id: location.id}).unwrap()
+      dispatch(setDeleteLocation(location.id))
+      toastStore.setMessage("Eliminacion Correcta", toastStore.SUCCES_TOAST)
+    } catch (error:any) {
+      toastStore.setMessage("Error al eliminar", toastStore.ERROR_TOAST)
+    }finally{
+      setSaveLoad(false)
+    }
+  }
+
+  const confirmDelete = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>, location:ILocation) =>{
+    confirmPopup({
+      target: event.currentTarget,
+      message: 'Deseas eliminar este elemento?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept: () => {
+        handleDelete(location)
+      },
+      reject:() => {return false}
+
+    })
+  }
+
   const actionHandler = (rowData: ILocation) => {
     return (
       <React.Fragment>
@@ -62,7 +95,7 @@ export default function LocationDatatable() {
           className="mr-2"
           onClick={() => showDialog(rowData)}
         />
-        <Button icon="pi pi-trash" rounded text severity="danger" />
+        <Button icon="pi pi-trash" rounded text severity="danger" onClick={(e) => confirmDelete(e, rowData)} loading={saveLoad} />
       </React.Fragment>
     );
   };
@@ -79,6 +112,8 @@ export default function LocationDatatable() {
 
   return (
     <>
+      <ConfirmPopup/>
+
       <DataTable
         tableStyle={{ minWidth: "50rem" }}
         value={locations}

@@ -46,6 +46,12 @@ export const areaService = createApi({
         },
       }),
     }),
+    deleteArea: builder.mutation<IArea, { id: number }>({
+      query: ({ id }) => ({
+        url: `/area/delete/${id}`,
+        method: "DELETE"
+      }),
+    }),
   }),
 });
 
@@ -55,4 +61,5 @@ export const {
   useFindAreaByIdQuery,
   useUpdateAreaMutation,
   useUploadAreasMutation,
+  useDeleteAreaMutation
 } = areaService;

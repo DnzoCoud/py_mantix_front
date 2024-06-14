@@ -49,7 +49,13 @@ export const locationService = createApi({
           excel_base64
         },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
       }),
-    })   
+    }),
+    deleteLocation: builder.mutation<ILocation, { id: number }>({
+      query: ({ id }) => ({
+        url: `/location/delete/${id}`,
+        method: "DELETE"
+      }),
+    }),
   }),
 });
 
@@ -58,5 +64,6 @@ export const {
   useFetchLocationsQuery,
   useFindLocationByIdQuery,
   useUpdateLocationMutation,
-  useUploadLocationsMutation
+  useUploadLocationsMutation,
+  useDeleteLocationMutation
 } = locationService;

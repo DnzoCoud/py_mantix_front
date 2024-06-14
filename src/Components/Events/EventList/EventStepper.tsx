@@ -105,7 +105,7 @@ export default function EventStepper({event}:{event:IEvent}) {
             event={event}
           />
         )}
-        {activeIndex === eventStates.COMPLETADO && <EventFormComplete />}
+        {activeIndex === eventStates.COMPLETADO && <EventFormComplete event={event}/>}
       </div>
     </>
   );

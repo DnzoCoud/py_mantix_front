@@ -1,7 +1,7 @@
 import { IMaquina } from "@/interfaces/IMaquina";
-import { setMachines } from "@/redux/features/machineSlice";
+import { setDeleteMachine, setMachines } from "@/redux/features/machineSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { useFetchMachinesQuery } from "@/redux/services/machineService";
+import { useDeleteMachineMutation, useFetchMachinesQuery } from "@/redux/services/machineService";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -11,6 +11,8 @@ import { InputText } from "primereact/inputtext";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import MachineForm from "./MachineForm";
+import { useToastStore } from "@/stores/useToastStore";
+import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 
 export default function MachinaDatatable() {
   const [machine, setMachine] = useState<IMaquina>();
@@ -22,6 +24,9 @@ export default function MachinaDatatable() {
   const dispatch = useDispatch();
   const { data: fetchMachines, isLoading, isError, refetch } = useFetchMachinesQuery();
   const machines = useAppSelector((state) => state.machine.machines);
+  const [deleteMachine] = useDeleteMachineMutation()
+  const [saveLoad, setSaveLoad] = useState<boolean>(false);
+  const toastStore = useToastStore();
 
   useEffect(() => {
     refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
@@ -54,6 +59,33 @@ export default function MachinaDatatable() {
     );
   };
 
+  const handleDelete = async (maquina:IMaquina) => {
+    setSaveLoad(true)
+    try {
+      await deleteMachine({id: maquina.id}).unwrap()
+      dispatch(setDeleteMachine(maquina.id))
+      toastStore.setMessage("Eliminacion Correcta", toastStore.SUCCES_TOAST)
+    } catch (error:any) {
+      toastStore.setMessage("Error al eliminar", toastStore.ERROR_TOAST)
+    }finally{
+      setSaveLoad(false)
+    }
+  }
+  const confirmDelete = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>, maquina:IMaquina) =>{
+    confirmPopup({
+      target: event.currentTarget,
+      message: 'Deseas eliminar este elemento?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept: () => {
+        handleDelete(maquina)
+      },
+      reject:() => {return false}
+
+    })
+  }
+
   const actionHandler = (rowData: IMaquina) => {
     return (
       <React.Fragment>
@@ -64,7 +96,7 @@ export default function MachinaDatatable() {
           className="mr-2"
           onClick={() => showDialog(rowData)}
         />
-        <Button icon="pi pi-trash" rounded text severity="danger" />
+        <Button icon="pi pi-trash" rounded text severity="danger" onClick={(e) => confirmDelete(e, rowData)} loading={saveLoad} />
       </React.Fragment>
     );
   };
@@ -73,8 +105,6 @@ export default function MachinaDatatable() {
   const showDialog = (maquina: IMaquina) => {
     setMachine({ ...maquina });
     setEditMachine(true);
-    console.log(maquina)
-    
   };
   const hideDialog = () => {
     setEditMachine(false);
@@ -83,6 +113,8 @@ export default function MachinaDatatable() {
   return (
     <>
       {/* <Loader isLoad={isLoading}/> */}
+      <ConfirmPopup/>
+
       <DataTable
         tableStyle={{ minWidth: "50rem" }}
         value={machines}

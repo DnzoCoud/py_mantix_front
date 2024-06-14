@@ -27,9 +27,16 @@ export const locationSlice = createSlice({
         state.locations[index] = updatedLocation;
       }
     },
+    setDeleteLocation: (state, action: PayloadAction<number>) => {
+      const locationId = action.payload;
+      const index = state.locations.findIndex((location) => location.id === locationId);
+      if (index !== -1) {
+        state.locations.splice(index, 1); // Elimina el elemento en la posición `index`
+      }
+    },
   },
 });
 
 
-export const { setLocations, clearLocations, setLocation, setUpdateLocation } = locationSlice.actions;
+export const { setLocations, clearLocations, setLocation, setUpdateLocation, setDeleteLocation } = locationSlice.actions;
 export default locationSlice.reducer;

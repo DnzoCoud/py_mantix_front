@@ -26,9 +26,16 @@ export const areaSlice = createSlice({
         state.areas[index] = updatedArea;
       }
     },
+    setDeleteArea: (state, action: PayloadAction<number>) => {
+      const areaIdToDelete = action.payload;
+      const index = state.areas.findIndex((area) => area.id === areaIdToDelete);
+      if (index !== -1) {
+        state.areas.splice(index, 1); // Elimina el elemento en la posición `index`
+      }
+    },
   },
 });
 
 
-export const { setAreas, clearAreas, setArea, setUpdateArea } = areaSlice.actions;
+export const { setAreas, clearAreas, setArea, setUpdateArea, setDeleteArea } = areaSlice.actions;
 export default areaSlice.reducer;

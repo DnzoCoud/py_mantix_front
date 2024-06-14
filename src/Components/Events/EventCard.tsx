@@ -91,7 +91,7 @@ export default function EventCard({ event }: { event: IEvent }) {
     return (
       <footer className={className}>
         <div className="flex items-center gap-2">
-          {/* <span className="dark:text-black font-bold">NOMBRE DEL TECNICO</span> */}
+          <span className="dark:text-black font-bold">{event.technical_detail ? `${event.technical_detail.first_name} ${event.technical_detail.last_name}` : "No tiene tecnico asignado"}</span>
 
           <div className="flex items-center justify-start ml-4">
             <div
