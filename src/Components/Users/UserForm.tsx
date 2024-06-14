@@ -1,9 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import Label from "../Globals/Label";
 import { InputText } from "primereact/inputtext";
-
-import { Messages } from "primereact/messages";
 import { IUser } from "@/interfaces/IUser";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IRole } from "@/interfaces/IRole";
@@ -27,6 +24,7 @@ import { setUpdateUser, setUser } from "@/redux/features/userSlice";
 import { getBase64 } from "@/Utils/useComposables";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { RadioButton, RadioButtonChangeEvent } from "primereact/radiobutton";
+import UploadErrors from "../Globals/UploadErrors";
 
 export default function UserForm({ id }: { id?: number }) {
   const {
@@ -36,6 +34,9 @@ export default function UserForm({ id }: { id?: number }) {
     setValue,
     watch,
   } = useForm<IUser>();
+  const [uploadErrors, setUploadErrors] = useState<
+    { fila: number; columna: string; message: string }[]
+  >([]);
   const username = watch("username", "");
   const email = watch("email", "");
   const first_name = watch("first_name", "");
@@ -78,17 +79,17 @@ export default function UserForm({ id }: { id?: number }) {
     if (files.length > 0) {
       setSaveLoad(true);
       try {
-        if(uploadType !== ""){
+        if (uploadType !== "") {
           const base64File = await getBase64(files[0]);
           const newUsers = await uploadUsers({
             excel_base64: base64File,
-            type:uploadType
+            type: uploadType,
           }).unwrap();
           newUsers.map((user) => {
             dispatch(setUser(user));
           });
           toastStore.setMessage("Cargue exitoso", toastStore.SUCCES_TOAST);
-        }else{
+        } else {
           toastStore.setMessage(
             "Selecciona lo que vas a cargar",
             toastStore.ERROR_TOAST
@@ -96,8 +97,9 @@ export default function UserForm({ id }: { id?: number }) {
         }
         // await uploadFile({ file: base64File });
         // console.log('File uploaded successfully', base64File);
-      } catch (error) {
-        console.error("Error uploading file:", error);
+      } catch (error:any) {
+        setUploadErrors(error.data?.error || []);
+
         toastStore.setMessage(
           "Error durante el cargue",
           toastStore.ERROR_TOAST
@@ -174,6 +176,9 @@ export default function UserForm({ id }: { id?: number }) {
           {!id && (
             <div className="col-span-12 mb-4">
               <Fieldset legend="Cargue Masivo" toggleable>
+                {uploadErrors.length > 0 && (
+                  <UploadErrors errors={uploadErrors} />
+                )}
                 <h2 className="font-bold">Que vas a cargar?</h2>
                 <div className="flex flex-wrap gap-3 my-2">
                   <div className="flex items-center">
