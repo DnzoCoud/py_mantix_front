@@ -34,6 +34,8 @@ Con yarn:
 ```bash
 yarn install
 ```
+### 3. Poner el archivo .env.local en la raiz del proyecto
+El desarrollador les brindara el archivo .env.local para que puedan ejecutar la aplicacion
 
 ### 3. Ejecutar el servidor de desarrollo
 Inicia el servidor de desarrollo de React:
