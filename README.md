@@ -8,7 +8,7 @@ Antes de comenzar, asegúrate de tener instalados los siguientes componentes:
 
 - Node.js (versión 22.1.0 o superior)
 - npm (versión 10.8.1 o superior) o yarn (opcional)
-- Backend de la palicacion previamente configurado
+- Backend de la aplicacion previamente configurado
 
 ## Instalación
 
