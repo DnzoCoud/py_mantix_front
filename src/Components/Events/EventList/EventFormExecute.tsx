@@ -18,6 +18,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { setUpdateEvent } from "@/redux/features/eventSlice";
 import { setUpdateWorkOrder } from "@/redux/features/workOrderSlice";
 import { FloatLabel } from "primereact/floatlabel";
+import { useUpdateMachineMutation } from "@/redux/services/machineService";
 
 export default function EventFormExecute({
   setActiveIndex,
@@ -30,6 +31,7 @@ export default function EventFormExecute({
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
   );
+  const [updateMachine] = useUpdateMachineMutation()
   const [updateEvent] = useUpdateEventMutation();
   const [updateWorkOrder] = useUpdateWorkOrderMutation();
   const dispatch = useDispatch();
@@ -65,6 +67,11 @@ export default function EventFormExecute({
         status: EVENT_STATE.COMPLETADO,
       }).unwrap();
       dispatch(setUpdateEvent(updatedEvent));
+
+      await updateMachine({
+        id: event.machine_detail.id,
+        last_maintenance: new Date()
+      })
     }
     catch(error) {
       console.error("Error saving execution:", error);

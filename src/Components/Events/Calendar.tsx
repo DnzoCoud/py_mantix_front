@@ -17,10 +17,14 @@ function Calendar() {
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleDate, setVisibleDate] = useState<boolean>(false);
   const[dateSelect, setDateSelect] = useState<Date | string>("")
-  const {data:fetchEvents, isLoading:eventsLoading} = useFetchEventsQuery()
+  const {data:fetchEvents, isLoading:eventsLoading, refetch} = useFetchEventsQuery()
   const dispatch = useDispatch()
   const events = useAppSelector(state => state.event.events)
 
+
+  useEffect(() => {
+    refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
+  }, [refetch]);
   useEffect(() => {
     if(fetchEvents) dispatch(setEvents(fetchEvents))
   }, [fetchEvents, dispatch])
