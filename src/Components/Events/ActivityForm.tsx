@@ -1,100 +1,222 @@
 "use client";
 import { Checkbox } from "primereact/checkbox";
+import { Dropdown } from "primereact/dropdown";
 import { IActivity } from "@/interfaces/IActivity";
 import React, { useEffect, useRef, useState } from "react";
+import { IUser } from "@/interfaces/IUser";
+import { FloatLabel } from "primereact/floatlabel";
+import { useFetchTechnicalsQuery } from "@/redux/services/userService";
 
 interface ActivityFormProps {
-  setActivities: React.Dispatch<React.SetStateAction<IActivity[]>>;
+  setActivities: React.Dispatch<React.SetStateAction<TechnicianActivities[]>>;
   initialTasks?: IActivity[];
 }
 
-export default function ActivityForm({ setActivities, initialTasks }: ActivityFormProps) {
-  const [tasks, setTasks] = useState<IActivity[]>(initialTasks || [{ id: null, name: "", completed: false }]);
-  const inputRefs = useRef<Map<number, HTMLInputElement | null>>(new Map());
+export interface TechnicianActivities {
+  technician: number | null;
+  activities: IActivity[];
+}
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+export default function ActivityForm({
+  setActivities,
+  initialTasks,
+}: ActivityFormProps) {
+  const [technicianActivities, setTechnicianActivities] = useState<
+    TechnicianActivities[]
+  >([
+    {
+      technician: null,
+      activities: initialTasks || [
+        { id: null, name: "", completed: false, technical: null },
+      ],
+    },
+  ]);
+  const inputRefs = useRef<Map<number, HTMLInputElement | null>>(new Map());
+  const [technicians, setTechnicians] = useState<IUser[]>([]);
+  const {
+    data: fetchTechnicians,
+    isLoading: technicalLoading,
+    refetch,
+  } = useFetchTechnicalsQuery();
+
+  useEffect(() => {
+    refetch();
+  }, []);
+  useEffect(() => {
+    if (fetchTechnicians) {
+      setTechnicians(fetchTechnicians);
+    }
+  }, [fetchTechnicians]);
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+    techIndex: number
+  ) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      addTask();
+      addTask(techIndex);
     } else if (e.key === "Backspace" && e.currentTarget.value === "") {
       e.preventDefault();
-      removeTask(index);
+      removeTask(index, techIndex);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const newTasks = tasks.map((task, i) =>
-      i === index ? { ...task, name: e.target.value } : task
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    techIndex: number
+  ) => {
+    const newActivities = technicianActivities.map((techAct, i) =>
+      i === techIndex
+        ? {
+            ...techAct,
+            activities: techAct.activities.map((task, j) =>
+              j === index ? { ...task, name: e.target.value } : task
+            ),
+          }
+        : techAct
     );
-    setTasks(newTasks);
+    setTechnicianActivities(newActivities);
   };
 
-  const addTask = () => {
-    const newTask: IActivity = { id: null, name: "", completed: false };
-    setTasks([...tasks, newTask]);
-  };
-
-  const removeTask = (index: number) => {
-    if (tasks.length === 1) return;
-    const newTasks = tasks.filter((_, i) => i !== index);
-    setTasks(newTasks);
-  };
-
-  const toggleComplete = (index: number) => {
-    const newTasks = tasks.map((task, i) =>
-      i === index ? { ...task, completed: !task.completed } : task
+  const addTask = (techIndex: number) => {
+    const newTask: IActivity = {
+      id: null,
+      name: "",
+      completed: false,
+      technical: null,
+    };
+    const newActivities = technicianActivities.map((techAct, i) =>
+      i === techIndex
+        ? { ...techAct, activities: [...techAct.activities, newTask] }
+        : techAct
     );
-    setTasks(newTasks);
+    setTechnicianActivities(newActivities);
+  };
+
+  const removeTask = (index: number, techIndex: number) => {
+    if (technicianActivities[techIndex].activities.length === 1) return;
+    const newActivities = technicianActivities.map((techAct, i) =>
+      i === techIndex
+        ? {
+            ...techAct,
+            activities: techAct.activities.filter((_, j) => j !== index),
+          }
+        : techAct
+    );
+    setTechnicianActivities(newActivities);
+  };
+
+  const toggleComplete = (index: number, techIndex: number) => {
+    const newActivities = technicianActivities.map((techAct, i) =>
+      i === techIndex
+        ? {
+            ...techAct,
+            activities: techAct.activities.map((task, j) =>
+              j === index ? { ...task, completed: !task.completed } : task
+            ),
+          }
+        : techAct
+    );
+    setTechnicianActivities(newActivities);
+  };
+
+  const addTechnician = () => {
+    setTechnicianActivities([
+      ...technicianActivities,
+      {
+        technician: null,
+        activities: [{ id: null, name: "", completed: false, technical: null }],
+      },
+    ]);
   };
 
   useEffect(() => {
-    setActivities(tasks);
-  }, [tasks, setActivities]);
+    // const allActivities = technicianActivities.flatMap(
+    //   (techAct) => techAct.activities
+    // );
+    setActivities(technicianActivities);
+  }, [technicianActivities, setActivities]);
 
-  useEffect(() => {
-    if (tasks.length > 0) {
-      const lastIndex = tasks.length - 1;
-      const lastInput = inputRefs.current.get(lastIndex);
-      if (lastInput) {
-        lastInput.focus();
-      }
-    }
-  }, [tasks]);
+  console.log("Technicians: ", technicians); // Add this line to see the technicians data
 
   return (
     <>
-      <span>actividades</span>
-      {tasks.map((task, index) => (
-        <div key={index} className="flex items-center justify-start mt-2">
-          <Checkbox
-            onChange={() => toggleComplete(index)}
-            checked={task.completed}
-            disabled={task.name.trim() === ""}
-            pt={{
-              root: {
-                className: "mr-1",
-              },
-            }}
-          />
-          <input
-            ref={(el) => {
-              if (el) {
-                inputRefs.current.set(index, el);
-              }
-            }}
-            type="text"
-            placeholder="Describe la tarea aqui..."
-            value={task.name}
-            onChange={(e) => handleChange(e, index)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            style={{
-              textDecoration: task.completed ? "line-through" : "none",
-              fontStyle: task.completed ? "italic" : "normal",
-            }}
-            className="bg-slate-200 w-full p-[0.2rem] rounded-md"
-          />
-        </div>
-      ))}
+      {technicianActivities.map((techAct, techIndex) => {
+        console.log(techAct);
+        return (
+          <div key={techIndex} className="my-4 w-full flex flex-col">
+            <FloatLabel
+              pt={{
+                root: {
+                  className: "!w-full",
+                },
+              }}
+            >
+              <Dropdown
+                value={techAct.technician}
+                options={technicians}
+                loading={technicalLoading}
+                optionLabel="username"
+                dataKey="id"
+                filter
+                onChange={(e) => {
+                  const newTechnicianActivities = technicianActivities.map(
+                    (ta, i) =>
+                      i === techIndex ? { ...ta, technician: e.value } : ta
+                  );
+                  setTechnicianActivities(newTechnicianActivities);
+                }}
+                className="!w-full mb-2"
+              />
+              <label
+                htmlFor="username"
+                style={{ left: "3%", transition: "all .2s ease" }}
+              >
+                Técnico encargado
+              </label>
+            </FloatLabel>
+            {techAct.activities.map((task, index) => (
+              <div key={index} className="flex items-center justify-start mt-2">
+                <Checkbox
+                  onChange={() => toggleComplete(index, techIndex)}
+                  checked={task.completed}
+                  disabled={task.name.trim() === ""}
+                  pt={{
+                    root: {
+                      className: "mr-1",
+                    },
+                  }}
+                />
+                <input
+                  ref={(el) => {
+                    if (el) {
+                      inputRefs.current.set(index, el);
+                    }
+                  }}
+                  type="text"
+                  placeholder="Describe la tarea aquí..."
+                  value={task.name}
+                  onChange={(e) => handleChange(e, index, techIndex)}
+                  onKeyDown={(e) => handleKeyDown(e, index, techIndex)}
+                  style={{
+                    textDecoration: task.completed ? "line-through" : "none",
+                    fontStyle: task.completed ? "italic" : "normal",
+                  }}
+                  className="bg-slate-200 w-full p-[0.2rem] rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        );
+      })}
+      <button
+        onClick={addTechnician}
+        className="mt-4 p-2 bg-blue-500 text-white rounded"
+      >
+        Añadir Técnico
+      </button>
     </>
   );
 }

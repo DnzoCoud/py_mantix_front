@@ -5,7 +5,7 @@ import { PrimeIcons } from "primereact/api";
 import { Button } from "primereact/button";
 import { IEventFormChange } from "@/interfaces/Props/IEventFormChange";
 import { FloatLabel } from "primereact/floatlabel";
-import ActivityForm from "../ActivityForm";
+import ActivityForm, { TechnicianActivities } from "../ActivityForm";
 import { IActivity } from "@/interfaces/IActivity";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IWorkOrder } from "@/interfaces/IWorkOrder";
@@ -29,15 +29,16 @@ export default function EventFormProgram({
   event,
 }: IEventFormChange) {
   const [submitLoad, setSubmitLoad] = useState<boolean>(false);
-  const [activity, setActivity] = useState<IActivity[] | []>([]);
+  const [activity, setActivity] = useState<TechnicianActivities[] | []>([]);
   const [addWorkOrder] = useAddWorkOrderMutation();
   const [updateEvent] = useUpdateEventMutation();
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
   );
-  const [technicals, setTechnicals] = useState<IUser[]>([])
-  const [technical, setTechnical] = useState<IUser|null>()
-  const { data: fetchTechnicals, isLoading:technicalLoading } = useFetchTechnicalsQuery()
+  const [technicals, setTechnicals] = useState<IUser[]>([]);
+  const [technical, setTechnical] = useState<IUser | null>();
+  const { data: fetchTechnicals, isLoading: technicalLoading } =
+    useFetchTechnicalsQuery();
 
   const dispatch = useDispatch();
   const {
@@ -53,18 +54,22 @@ export default function EventFormProgram({
   const onSubmit: SubmitHandler<IWorkOrder> = async (data) => {
     try {
       if (event.status_detail.id === EVENT_STATE.PROGRAMADO) {
-        if(technical)
-          await ejecutionEvent(data.diagnosis.trim(), event.id, technical.id);
+        await ejecutionEvent(data.diagnosis.trim(), event.id);
+        setActiveIndex(activeIndex + 1);
       }
-      setActiveIndex(activeIndex + 1);
     } catch (error) {
       console.error("Error during submission:", error);
       // Manejar errores aquí, tal vez establecer un mensaje de error en el estado
     }
   };
 
-  const ejecutionEvent = async (diagnosis: string, eventId: number, technicalId:number) => {
+  const ejecutionEvent = async (
+    diagnosis: string,
+    eventId: number
+    // technicalId: number
+  ) => {
     try {
+      console.log(activity);
       setSubmitLoad(true);
       const saveWorkOrder = await addWorkOrder({
         diagnosis,
@@ -77,12 +82,10 @@ export default function EventFormProgram({
       const updatedEvent = await updateEvent({
         id: eventId,
         init_time: new Date().toLocaleTimeString(),
-        activity_data: activity,
-        technical: technicalId,
+        // technical: technicalId,
         status: EVENT_STATE.EN_EJECUCION,
       }).unwrap();
       dispatch(setUpdateEvent(updatedEvent));
-
     } catch (error) {
       console.error("Error executing event:", error);
     } finally {
@@ -91,10 +94,10 @@ export default function EventFormProgram({
   };
 
   useEffect(() => {
-    if(fetchTechnicals){
-      setTechnicals(fetchTechnicals)
+    if (fetchTechnicals) {
+      setTechnicals(fetchTechnicals);
     }
-  }, [fetchTechnicals])
+  }, [fetchTechnicals]);
 
   useEffect(() => {
     register("diagnosis", { required: "Este campo es obligatorio" });
@@ -105,8 +108,8 @@ export default function EventFormProgram({
   }, [fetchWorkOrder, register, setValue]);
 
   const handleTechnicalChange = (event: IUser | null) => {
-    setTechnical(event)
-  }
+    setTechnical(event);
+  };
   return (
     <>
       <form
@@ -119,7 +122,11 @@ export default function EventFormProgram({
             <span>Mantenimiento Programado</span>
           </div>
           <Button
-            label={event.status_detail.id === EVENT_STATE.PROGRAMADO ? "Empezar ejecucion" : "Siguiente"}
+            label={
+              event.status_detail.id === EVENT_STATE.PROGRAMADO
+                ? "Empezar ejecucion"
+                : "Siguiente"
+            }
             icon={PrimeIcons.ARROW_RIGHT}
             size="small"
             outlined
@@ -157,7 +164,7 @@ export default function EventFormProgram({
               )}
             </div>
           </div>
-          <div className="col-span-12">
+          {/* <div className="col-span-12">
             <div className="w-full flex flex-col mt-2">
               <FloatLabel>
                 <Dropdown
@@ -184,7 +191,7 @@ export default function EventFormProgram({
                 </label>
               </FloatLabel>
             </div>
-          </div>
+          </div> */}
           <div className="col-span-12">
             <div className="w-full flex flex-col">
               <ActivityForm
