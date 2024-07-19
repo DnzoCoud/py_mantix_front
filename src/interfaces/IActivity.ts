@@ -5,5 +5,5 @@ export type IActivity = {
   name: string;
   completed: boolean;
   technical: number | null;
-  techical_detail?: IUser | null;
+  technical_detail?: IUser | null;
 };

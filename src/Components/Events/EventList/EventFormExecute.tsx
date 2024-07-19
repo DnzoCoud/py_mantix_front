@@ -3,7 +3,7 @@ import { IEventFormChange } from "@/interfaces/Props/IEventFormChange";
 import { PrimeIcons } from "primereact/api";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
-import ActivityForm from "../ActivityForm";
+import ActivityForm, { TechnicianActivities } from "../ActivityForm";
 import { IActivity } from "@/interfaces/IActivity";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IWorkOrder } from "@/interfaces/IWorkOrder";
@@ -19,6 +19,7 @@ import { setUpdateEvent } from "@/redux/features/eventSlice";
 import { setUpdateWorkOrder } from "@/redux/features/workOrderSlice";
 import { FloatLabel } from "primereact/floatlabel";
 import { useUpdateMachineMutation } from "@/redux/services/machineService";
+import { transformToTechnicianActivities } from "@/Utils/useComposables";
 
 export default function EventFormExecute({
   setActiveIndex,
@@ -26,12 +27,12 @@ export default function EventFormExecute({
   event,
 }: IEventFormChange) {
   const [submitLoad, setSubmitLoad] = useState<boolean>(false);
-  const [activity, setActivity] = useState<IActivity[] | []>([]);
+  const [activity, setActivity] = useState<TechnicianActivities[] | []>([]);
   const [existWorkOrder, setExistWorkOrder] = useState<IWorkOrder>();
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
   );
-  const [updateMachine] = useUpdateMachineMutation()
+  const [updateMachine] = useUpdateMachineMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [updateWorkOrder] = useUpdateWorkOrderMutation();
   const dispatch = useDispatch();
@@ -41,7 +42,7 @@ export default function EventFormExecute({
     formState: { errors },
     setValue,
     watch,
-    } = useForm<IWorkOrder>();
+  } = useForm<IWorkOrder>();
   const cause = watch("cause", "");
   const observation = watch("observation", "");
   const onSubmit: SubmitHandler<IWorkOrder> = async (data) => {
@@ -52,7 +53,7 @@ export default function EventFormExecute({
   };
 
   const saveEjecution = async (observation: string, cause: string) => {
-    setSubmitLoad(true)
+    setSubmitLoad(true);
     try {
       const updatedWorkOrder = await updateWorkOrder({
         id: existWorkOrder?.id,
@@ -70,13 +71,12 @@ export default function EventFormExecute({
 
       await updateMachine({
         id: event.machine_detail.id,
-        last_maintenance: new Date()
-      })
-    }
-    catch(error) {
+        last_maintenance: new Date(),
+      });
+    } catch (error) {
       console.error("Error saving execution:", error);
-    }finally {
-      setSubmitLoad(false)
+    } finally {
+      setSubmitLoad(false);
     }
   };
   React.useEffect(() => {
@@ -86,9 +86,14 @@ export default function EventFormExecute({
     if (fetchWorkOrder) {
       setExistWorkOrder(fetchWorkOrder);
       if (fetchWorkOrder.cause) setValue("cause", fetchWorkOrder.cause);
-      if (fetchWorkOrder.observation) setValue("observation", fetchWorkOrder.observation);
+      if (fetchWorkOrder.observation)
+        setValue("observation", fetchWorkOrder.observation);
     }
   }, [fetchWorkOrder, register, setValue]);
+
+  const [activities, setActivities] = useState<TechnicianActivities[]>(
+    transformToTechnicianActivities(event.activities)
+  );
   return (
     <>
       <form
@@ -129,9 +134,7 @@ export default function EventFormExecute({
             <div className="w-full flex flex-col">
               <ActivityForm
                 setActivities={setActivity}
-                initialTasks={
-                  event.activities.length > 0 ? event.activities : undefined
-                }
+                initialTasks={activities}
               />
             </div>
           </div>
@@ -139,7 +142,7 @@ export default function EventFormExecute({
             <div className="w-full flex flex-col mt-2">
               <FloatLabel>
                 <InputTextarea
-                  value={cause ?? ''}
+                  value={cause ?? ""}
                   autoResize
                   rows={2}
                   cols={30}
@@ -148,9 +151,7 @@ export default function EventFormExecute({
                       className: "w-full",
                     },
                   }}
-                  disabled={
-                    event.status_detail.id !== EVENT_STATE.EN_EJECUCION
-                  }
+                  disabled={event.status_detail.id !== EVENT_STATE.EN_EJECUCION}
                   onChange={(e) => setValue("cause", e.target.value)}
                 />
                 <label
@@ -160,7 +161,9 @@ export default function EventFormExecute({
                   Causas
                 </label>
               </FloatLabel>
-              {errors.cause && <span className="text-red-500">{errors.cause.message}</span>}
+              {errors.cause && (
+                <span className="text-red-500">{errors.cause.message}</span>
+              )}
               {/* <InputTextarea
                 autoResize
                 rows={2}
@@ -174,7 +177,7 @@ export default function EventFormExecute({
               <InputTextarea autoResize rows={2} cols={30} /> */}
               <FloatLabel>
                 <InputTextarea
-                  value={observation ?? ''}
+                  value={observation ?? ""}
                   autoResize
                   rows={2}
                   cols={30}
@@ -183,9 +186,7 @@ export default function EventFormExecute({
                       className: "w-full",
                     },
                   }}
-                  disabled={
-                    event.status_detail.id !== EVENT_STATE.EN_EJECUCION
-                  }
+                  disabled={event.status_detail.id !== EVENT_STATE.EN_EJECUCION}
                   onChange={(e) => setValue("observation", e.target.value)}
                 />
                 <label
@@ -195,7 +196,11 @@ export default function EventFormExecute({
                   Observaciones
                 </label>
               </FloatLabel>
-              {errors.observation && <span className="text-red-500">{errors.observation.message}</span>}
+              {errors.observation && (
+                <span className="text-red-500">
+                  {errors.observation.message}
+                </span>
+              )}
             </div>
           </div>
         </div>

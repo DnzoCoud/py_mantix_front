@@ -42,7 +42,7 @@ export default function DialogEventList({
     if (visible) {
       refetch();
     }
-  }, [visible, dateSelected, refetch]);
+  }, [visible, dateSelected]);
 
   const eventsByDay = useAppSelector((state) => state.event.eventsByDay);
 

@@ -84,6 +84,7 @@ export default function EventFormProgram({
         init_time: new Date().toLocaleTimeString(),
         // technical: technicalId,
         status: EVENT_STATE.EN_EJECUCION,
+        activity_data: activity,
       }).unwrap();
       dispatch(setUpdateEvent(updatedEvent));
     } catch (error) {
@@ -164,42 +165,9 @@ export default function EventFormProgram({
               )}
             </div>
           </div>
-          {/* <div className="col-span-12">
-            <div className="w-full flex flex-col mt-2">
-              <FloatLabel>
-                <Dropdown
-                  value={technical}
-                  options={technicals}
-                  optionLabel="username"
-                  dataKey="id"
-                  filter
-                  pt={{
-                    root: {
-                      className: "selectMaquina",
-                    },
-                  }}
-                  loading={technicalLoading}
-                  onChange={(e: DropdownChangeEvent) =>
-                    handleTechnicalChange(e.value)
-                  }
-                />
-                <label
-                  htmlFor="username"
-                  style={{ left: "3%", transition: "all .2s ease" }}
-                >
-                  Tecnico encargado
-                </label>
-              </FloatLabel>
-            </div>
-          </div> */}
           <div className="col-span-12">
             <div className="w-full flex flex-col">
-              <ActivityForm
-                setActivities={setActivity}
-                initialTasks={
-                  event.activities.length > 0 ? event.activities : undefined
-                }
-              />
+              <ActivityForm setActivities={setActivity} />
             </div>
           </div>
         </div>

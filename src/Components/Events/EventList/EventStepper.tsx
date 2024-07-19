@@ -13,9 +13,11 @@ import { useAppSelector } from "@/redux/hooks";
 import { EVENT_STATE } from "@/Utils/constants";
 import { IEvent } from "@/interfaces/IEvent";
 
-export default function EventStepper({event}:{event:IEvent}) {
-  const eventStates = EVENT_STATE
-  const [activeIndex, setActiveIndex] = useState<number>(event.status_detail.id);
+export default function EventStepper({ event }: { event: IEvent }) {
+  const eventStates = EVENT_STATE;
+  const [activeIndex, setActiveIndex] = useState<number>(
+    event.status_detail.id
+  );
 
   const itemRenderer = (item: MenuItem, itemIndex: number) => {
     const isActiveItem = activeIndex === itemIndex;
@@ -77,8 +79,6 @@ export default function EventStepper({event}:{event:IEvent}) {
     },
   ];
 
-
-
   return (
     <>
       <Steps
@@ -91,7 +91,7 @@ export default function EventStepper({event}:{event:IEvent}) {
         }}
       />
       <div className="mt-4 w-full flex flex-col tr">
-        {activeIndex ===  eventStates.PROGRAMADO && (
+        {activeIndex === eventStates.PROGRAMADO && (
           <EventFormProgram
             setActiveIndex={setActiveIndex}
             activeIndex={activeIndex}
@@ -105,7 +105,9 @@ export default function EventStepper({event}:{event:IEvent}) {
             event={event}
           />
         )}
-        {activeIndex === eventStates.COMPLETADO && <EventFormComplete event={event}/>}
+        {activeIndex === eventStates.COMPLETADO && (
+          <EventFormComplete event={event} />
+        )}
       </div>
     </>
   );

@@ -1,19 +1,20 @@
-"use client";
+import React, { useState, useEffect, useRef } from "react";
 import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
 import { IActivity } from "@/interfaces/IActivity";
-import React, { useEffect, useRef, useState } from "react";
-import { IUser } from "@/interfaces/IUser";
 import { FloatLabel } from "primereact/floatlabel";
 import { useFetchTechnicalsQuery } from "@/redux/services/userService";
+import { Button } from "primereact/button";
+import { OverlayPanel } from "primereact/overlaypanel";
+import { IUser } from "@/interfaces/IUser";
 
 interface ActivityFormProps {
   setActivities: React.Dispatch<React.SetStateAction<TechnicianActivities[]>>;
-  initialTasks?: IActivity[];
+  initialTasks?: TechnicianActivities[];
 }
 
 export interface TechnicianActivities {
-  technician: number | null;
+  technician: IUser | null;
   activities: IActivity[];
 }
 
@@ -23,14 +24,7 @@ export default function ActivityForm({
 }: ActivityFormProps) {
   const [technicianActivities, setTechnicianActivities] = useState<
     TechnicianActivities[]
-  >([
-    {
-      technician: null,
-      activities: initialTasks || [
-        { id: null, name: "", completed: false, technical: null },
-      ],
-    },
-  ]);
+  >(initialTasks || []);
   const inputRefs = useRef<Map<number, HTMLInputElement | null>>(new Map());
   const [technicians, setTechnicians] = useState<IUser[]>([]);
   const {
@@ -38,10 +32,10 @@ export default function ActivityForm({
     isLoading: technicalLoading,
     refetch,
   } = useFetchTechnicalsQuery();
-
   useEffect(() => {
     refetch();
   }, []);
+
   useEffect(() => {
     if (fetchTechnicians) {
       setTechnicians(fetchTechnicians);
@@ -133,90 +127,91 @@ export default function ActivityForm({
   };
 
   useEffect(() => {
-    // const allActivities = technicianActivities.flatMap(
-    //   (techAct) => techAct.activities
-    // );
     setActivities(technicianActivities);
   }, [technicianActivities, setActivities]);
 
-  console.log("Technicians: ", technicians); // Add this line to see the technicians data
-
   return (
     <>
-      {technicianActivities.map((techAct, techIndex) => {
-        console.log(techAct);
-        return (
-          <div key={techIndex} className="my-4 w-full flex flex-col">
-            <FloatLabel
-              pt={{
-                root: {
-                  className: "!w-full",
-                },
+      {technicianActivities.map((techAct, techIndex) => (
+        <div key={techIndex} className="my-4 w-full flex flex-col">
+          <FloatLabel
+            pt={{
+              root: {
+                className: "!w-full",
+              },
+            }}
+          >
+            <Dropdown
+              value={techAct.technician}
+              options={technicians}
+              loading={technicalLoading}
+              optionLabel="username"
+              dataKey="id"
+              filter
+              onChange={(e) => {
+                const selectedTechnician = technicians.find(
+                  (t) => t.id === e.value
+                );
+                const newTechnicianActivities = technicianActivities.map(
+                  (ta, i) =>
+                    i === techIndex
+                      ? { ...ta, technician: selectedTechnician || null }
+                      : ta
+                );
+                setTechnicianActivities(newTechnicianActivities);
               }}
+              className="!w-full mb-2"
+            />
+            <label
+              htmlFor="username"
+              style={{ left: "3%", transition: "all .2s ease" }}
             >
-              <Dropdown
-                value={techAct.technician}
-                options={technicians}
-                loading={technicalLoading}
-                optionLabel="username"
-                dataKey="id"
-                filter
-                onChange={(e) => {
-                  const newTechnicianActivities = technicianActivities.map(
-                    (ta, i) =>
-                      i === techIndex ? { ...ta, technician: e.value } : ta
-                  );
-                  setTechnicianActivities(newTechnicianActivities);
+              Técnico encargado
+            </label>
+          </FloatLabel>
+          {techAct.activities.map((task, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-start mt-2 ml-4"
+            >
+              <Checkbox
+                onChange={() => toggleComplete(index, techIndex)}
+                checked={task.completed}
+                disabled={task.name.trim() === ""}
+                pt={{
+                  root: {
+                    className: "mr-1",
+                  },
                 }}
-                className="!w-full mb-2"
               />
-              <label
-                htmlFor="username"
-                style={{ left: "3%", transition: "all .2s ease" }}
-              >
-                Técnico encargado
-              </label>
-            </FloatLabel>
-            {techAct.activities.map((task, index) => (
-              <div key={index} className="flex items-center justify-start mt-2">
-                <Checkbox
-                  onChange={() => toggleComplete(index, techIndex)}
-                  checked={task.completed}
-                  disabled={task.name.trim() === ""}
-                  pt={{
-                    root: {
-                      className: "mr-1",
-                    },
-                  }}
-                />
-                <input
-                  ref={(el) => {
-                    if (el) {
-                      inputRefs.current.set(index, el);
-                    }
-                  }}
-                  type="text"
-                  placeholder="Describe la tarea aquí..."
-                  value={task.name}
-                  onChange={(e) => handleChange(e, index, techIndex)}
-                  onKeyDown={(e) => handleKeyDown(e, index, techIndex)}
-                  style={{
-                    textDecoration: task.completed ? "line-through" : "none",
-                    fontStyle: task.completed ? "italic" : "normal",
-                  }}
-                  className="bg-slate-200 w-full p-[0.2rem] rounded-md"
-                />
-              </div>
-            ))}
-          </div>
-        );
-      })}
-      <button
+              <input
+                ref={(el) => {
+                  if (el) {
+                    inputRefs.current.set(index, el);
+                  }
+                }}
+                type="text"
+                placeholder="Describe la tarea aquí..."
+                value={task.name}
+                onChange={(e) => handleChange(e, index, techIndex)}
+                onKeyDown={(e) => handleKeyDown(e, index, techIndex)}
+                style={{
+                  textDecoration: task.completed ? "line-through" : "none",
+                  fontStyle: task.completed ? "italic" : "normal",
+                }}
+                className="bg-slate-200 w-full p-[0.2rem] rounded-md"
+              />
+            </div>
+          ))}
+        </div>
+      ))}
+      <Button
+        label="Añadir Técnico"
+        size="small"
+        outlined
         onClick={addTechnician}
-        className="mt-4 p-2 bg-blue-500 text-white rounded"
-      >
-        Añadir Técnico
-      </button>
+        type="button"
+      />
     </>
   );
 }

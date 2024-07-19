@@ -15,8 +15,14 @@ import { MenuItem } from "primereact/menuitem";
 import { Menu } from "primereact/menu";
 import { IEvent } from "@/interfaces/IEvent";
 import { EVENT_STATE } from "@/Utils/constants";
+import { OverlayPanel } from "primereact/overlaypanel";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { IUser } from "@/interfaces/IUser";
 
 export default function EventCard({ event }: { event: IEvent }) {
+  const op = useRef(null);
+
   const configMenu = useRef<HTMLElement | null>(null);
   const eventColor = getColorEvents(event.status_detail.id);
   const menuRight = useRef<Menu>(null);
@@ -84,15 +90,35 @@ export default function EventCard({ event }: { event: IEvent }) {
       </header>
     );
   };
-
   const footerTemplate = (options: PanelFooterTemplateOptions) => {
     const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.light_background} rounded-bl-md rounded-br-md`;
-
+    const uniqueTechnicians = event.activities
+      .map((activity) => activity.technical_detail)
+      .filter(
+        (technician, index, self) =>
+          technician &&
+          index === self.findIndex((t) => t && t.id === technician.id)
+      )
+      .map((technician) => ({
+        id: technician?.id,
+        username: `${technician?.first_name} ${technician?.last_name}`,
+      }));
     return (
       <footer className={className}>
         <div className="flex items-center gap-2">
-          <span className="dark:text-black font-bold">{event.technical_detail ? `${event.technical_detail.first_name} ${event.technical_detail.last_name}` : "No tiene tecnico asignado"}</span>
-
+          <Button
+            outlined
+            label="Ver tecnicos asignados"
+            size="small"
+            severity="help"
+            //@ts-ignore
+            onClick={(e) => op.current?.toggle(e)}
+          />
+          <OverlayPanel ref={op}>
+            <DataTable value={uniqueTechnicians}>
+              <Column field="username" header="Nombre" />
+            </DataTable>
+          </OverlayPanel>
           <div className="flex items-center justify-start ml-4">
             <div
               className={`${eventColor.background} w-2 h-2 rounded-full  mr-1`}
