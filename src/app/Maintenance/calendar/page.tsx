@@ -8,6 +8,7 @@ import { Dialog } from "primereact/dialog";
 import Headers from "@/Components/Globals/Headers";
 import dynamic from "next/dynamic";
 import CalendarSkeleton from "@/Components/Globals/Skeleton/CalendarSkeleton";
+import EventCount from "@/Components/Events/EventCount";
 const Calendar = dynamic(() => import("@/Components/Events/Calendar"), {
   loading: () => <CalendarSkeleton />,
 });
@@ -32,6 +33,7 @@ export default function CalendarPage() {
             onClick={() => setActivateAdd(true)}
           />
         </div>
+        <EventCount />
         <Calendar />
       </div>
       <Dialog

@@ -15,9 +15,18 @@ import { IEvent } from "@/interfaces/IEvent";
 
 export default function EventStepper({ event }: { event: IEvent }) {
   const eventStates = EVENT_STATE;
-  const [activeIndex, setActiveIndex] = useState<number>(
-    event.status_detail.id
-  );
+  const [activeIndex, setActiveIndex] = useState<number>(() => {
+    if (
+      event.status_detail.id === EVENT_STATE.REPROGRAMADO &&
+      event.history_status
+    ) {
+      return event.history_status.previous_state.id;
+    } else {
+      return event.status_detail.id;
+    }
+  });
+  console.log(event.status_detail.id);
+  console.log(event.history_status?.previous_state.id);
 
   const itemRenderer = (item: MenuItem, itemIndex: number) => {
     const isActiveItem = activeIndex === itemIndex;
@@ -60,22 +69,22 @@ export default function EventStepper({ event }: { event: IEvent }) {
     {
       label: "Programado",
       icon: PrimeIcons.CLOCK,
-      template: (item) => itemRenderer(item, eventStates.PROGRAMADO ?? 1),
+      template: (item) => itemRenderer(item, eventStates.PROGRAMADO),
     },
     {
       label: "En Ejecucion",
       icon: PrimeIcons.STEP_BACKWARD,
-      template: (item) => itemRenderer(item, eventStates.EN_EJECUCION ?? 2),
+      template: (item) => itemRenderer(item, eventStates.EN_EJECUCION),
     },
     {
       label: "Completado",
       icon: PrimeIcons.DOWNLOAD,
-      template: (item) => itemRenderer(item, eventStates.COMPLETADO ?? 3),
+      template: (item) => itemRenderer(item, eventStates.COMPLETADO),
     },
     {
       label: "Reprogramado",
       icon: PrimeIcons.CALENDAR_MINUS,
-      template: (item) => itemRenderer(item, eventStates.REPROGRAMADO ?? 4),
+      template: (item) => itemRenderer(item, eventStates.REPROGRAMADO),
     },
   ];
 
@@ -91,14 +100,18 @@ export default function EventStepper({ event }: { event: IEvent }) {
         }}
       />
       <div className="mt-4 w-full flex flex-col tr">
-        {activeIndex === eventStates.PROGRAMADO && (
+        {(activeIndex === eventStates.PROGRAMADO ||
+          event.history_status?.previous_state.id ===
+            eventStates.PROGRAMADO) && (
           <EventFormProgram
             setActiveIndex={setActiveIndex}
             activeIndex={activeIndex}
             event={event}
           />
         )}
-        {activeIndex === eventStates.EN_EJECUCION && (
+        {(activeIndex === eventStates.EN_EJECUCION ||
+          event.history_status?.previous_state.id ===
+            eventStates.EN_EJECUCION) && (
           <EventFormExecute
             setActiveIndex={setActiveIndex}
             activeIndex={activeIndex}

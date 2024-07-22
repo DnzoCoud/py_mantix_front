@@ -5,7 +5,7 @@ import {
   PanelFooterTemplateOptions,
   PanelHeaderTemplateOptions,
 } from "primereact/panel";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import EventStepper from "./EventList/EventStepper";
 import { Badge } from "primereact/badge";
 import { Button } from "primereact/button";
@@ -19,11 +19,26 @@ import { OverlayPanel } from "primereact/overlaypanel";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { IUser } from "@/interfaces/IUser";
+import { FloatLabel } from "primereact/floatlabel";
+import { InputText } from "primereact/inputtext";
+import { useUpdateEventMutation } from "@/redux/services/eventService";
+import { formatDate } from "@fullcalendar/core/index.js";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUpdateEvent } from "@/redux/features/eventSlice";
+import LoaderComponents from "../Globals/Loader/LoaderComponents";
 
-export default function EventCard({ event }: { event: IEvent }) {
+export default function EventCard({
+  event,
+  refetch,
+}: {
+  event: IEvent;
+  refetch: any;
+}) {
   const op = useRef(null);
+  const reprogramButtonRef = useRef(null);
 
   const configMenu = useRef<HTMLElement | null>(null);
+  const reprogramMenuRef = useRef<HTMLElement | null>(null);
   const eventColor = getColorEvents(event.status_detail.id);
   const menuRight = useRef<Menu>(null);
   const headerTemplate = (options: PanelHeaderTemplateOptions) => {
@@ -90,6 +105,109 @@ export default function EventCard({ event }: { event: IEvent }) {
       </header>
     );
   };
+
+  const ReprogramForm = (): React.ReactNode => {
+    const formatDateToYYYYMMDD = (isoDateString: string): string => {
+      const date = new Date(isoDateString);
+      const year = date.getFullYear();
+      let month = "" + (date.getMonth() + 1);
+      let day = "" + date.getDate();
+
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
+
+      // Formato YYYY-MM-DD HH:mm:ss para asegurar compatibilidad con el servidor
+      return [year, month, day].join("-");
+    };
+    const [updateEvent, { isLoading }] = useUpdateEventMutation();
+    const [dates, setDates] = useState({
+      start: "", // Assuming event.start is a valid date
+      end: "", // Assuming event.end is a valid date
+    });
+
+    const adjustedStartDate = new Date(formatDateToYYYYMMDD(dates.start));
+    adjustedStartDate.setDate(adjustedStartDate.getDate() + 1); // Sumar un día
+    const adjustedEndDate = new Date(formatDateToYYYYMMDD(dates.end));
+    adjustedEndDate.setDate(adjustedEndDate.getDate() + 1); // Sumar un día
+
+    const dispatch = useAppDispatch();
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const updatedEvent = await updateEvent({
+        id: event.id,
+        status: EVENT_STATE.REPROGRAMADO,
+        start: adjustedStartDate,
+        end: adjustedEndDate,
+      }).unwrap();
+      dispatch(setUpdateEvent(updatedEvent));
+
+      refetch();
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setDates({
+        ...dates,
+        [name]: value,
+      });
+    };
+    return (
+      <>
+        <form
+          className="flex flex-col justify-evenly relative w-96"
+          onSubmit={(e) => handleSubmit(e)}
+        >
+          <LoaderComponents isLoad={isLoading} />
+          <div className="grid grid-cols-12 gap-4 mt-4">
+            <div className="col-span-12 ">
+              <Button
+                severity="warning"
+                outlined
+                label="Reprogramar"
+                size="small"
+                className="float-right mb-4"
+                loading={isLoading}
+                type="submit"
+              />
+              <div className="w-full flex flex-col mt-2">
+                <label htmlFor="">Reprogramar para</label>
+                <InputText
+                  name="start"
+                  value={dates.start}
+                  type="date"
+                  maxLength={30}
+                  pt={{
+                    root: {
+                      className: "w-full mt-1",
+                    },
+                  }}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+            <div className="col-span-12">
+              <div className="w-full flex flex-col mt-2">
+                <label htmlFor="">Hasta</label>
+                <InputText
+                  value={dates.end}
+                  type="date"
+                  name="end"
+                  maxLength={30}
+                  pt={{
+                    root: {
+                      className: "w-full mt-1",
+                    },
+                  }}
+                  onChange={handleChange}
+                  // onChange={(e) => setValue("start", parseDate(e.target.value))}
+                />
+              </div>
+            </div>
+          </div>
+        </form>
+      </>
+    );
+  };
   const footerTemplate = (options: PanelFooterTemplateOptions) => {
     const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.light_background} rounded-bl-md rounded-br-md`;
     const uniqueTechnicians = event.activities
@@ -119,6 +237,9 @@ export default function EventCard({ event }: { event: IEvent }) {
               <Column field="username" header="Nombre" />
             </DataTable>
           </OverlayPanel>
+          <OverlayPanel ref={reprogramButtonRef}>
+            <ReprogramForm />
+          </OverlayPanel>
           <div className="flex items-center justify-start ml-4">
             <div
               className={`${eventColor.background} w-2 h-2 rounded-full  mr-1`}
@@ -126,14 +247,16 @@ export default function EventCard({ event }: { event: IEvent }) {
             <span className="dark:text-black">{event.status_detail.name}</span>
           </div>
         </div>
-        {/* {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
+        {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
           <Button
             label="Reprogramar mantenimiento"
             severity="warning"
             outlined
             size="small"
+            //@ts-ignore
+            onClick={(e) => reprogramButtonRef.current?.toggle(e)}
           />
-        )} */}
+        )}
       </footer>
     );
   };

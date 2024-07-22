@@ -26,4 +26,11 @@ export type IEvent = {
   day_detail: IDay;
   technical: number;
   technical_detail: IUser;
+  history_status: HistoryStatus | null;
+};
+
+export type HistoryStatus = {
+  id: number;
+  previous_state: IStatus;
+  actual_state: IStatus;
 };

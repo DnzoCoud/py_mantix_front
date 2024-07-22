@@ -93,7 +93,7 @@ export default function DialogEventList({
                       className="col-span-12 md:col-span-6 lg:col-span-6"
                       key={index}
                     >
-                      <EventCard event={event} />
+                      <EventCard event={event} refetch={refetch} />
                     </div>
                   ))}
               </>
