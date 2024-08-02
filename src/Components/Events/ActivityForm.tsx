@@ -149,8 +149,9 @@ export default function ActivityForm({
               dataKey="id"
               filter
               onChange={(e) => {
+                const selectedTechnicianId = e.value;
                 const selectedTechnician = technicians.find(
-                  (t) => t.id === e.value
+                  (t) => t.id === selectedTechnicianId.id
                 );
                 const newTechnicianActivities = technicianActivities.map(
                   (ta, i) =>
