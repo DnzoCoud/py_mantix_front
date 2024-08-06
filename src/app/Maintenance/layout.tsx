@@ -35,7 +35,7 @@ export default function DashboardLayout({
         <main className="flex flex-col w-full h-full overflow-auto ">
           <NavBar />
           <div
-            className={`dark:bg-dark_bg bg-white mt-4 p-4 rounded-md transition-all ${
+            className={`dark:bg-dark_bg bg-white p-4 rounded-md transition-all ${
               maximixed ? "maximixed" : ""
             }`}
           >
