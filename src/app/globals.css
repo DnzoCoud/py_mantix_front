@@ -18,7 +18,7 @@ html body.dark #app {
 }
 
 html body #app {
-  @apply bg-white_bg;
+  @apply bg-white;
 }
 
 #app {
@@ -57,25 +57,39 @@ html body.dark #app *.darkBgComponents {
   background-color: #222831 !important;
 }
 
-.fc-h-event{
+.fc-h-event {
   background-color: transparent;
-  border:none;
+  border: none;
 }
 
-.fc .fc-button-primary{
-  @apply bg-white dark:bg-dark_medium_bg text-black dark:text-white
+.fc .fc-button-primary {
+  @apply bg-white dark:bg-dark_medium_bg text-black dark:text-white;
 }
 
-.fc-today-button{
-  background:transparent;
+.fc-today-button {
+  background: transparent;
   @apply text-black dark:text-white;
   border: none;
 }
-.fc .fc-button-primary:disabled{
+.fc .fc-button-primary:disabled {
   border: none;
 }
 
-
-.p-icon-field{
+.p-icon-field {
   width: 100%;
+}
+
+.fc-scrollgrid {
+  @apply rounded-3xl;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+  @apply bg-slate-100;
+}
+.fc .fc-daygrid-day {
+  height: 2rem;
+}
+
+.fc-scroller::-webkit-scrollbar {
+  display: none;
 }

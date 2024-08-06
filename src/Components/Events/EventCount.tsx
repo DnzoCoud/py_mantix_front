@@ -4,36 +4,37 @@ import { useAppSelector } from "@/redux/hooks";
 import { EVENT_STATE } from "@/Utils/constants";
 import { Badge } from "primereact/badge";
 import React from "react";
+import AnimatedCounter from "../Globals/AnimatedCont";
 export default function EventCount() {
-  const events = useAppSelector((state) => state.event.events);
-
+  const eventsByStatus = useAppSelector((state) => state.event.eventsByStatus);
   return (
     <div className="w-full p-4 flex items-center justify-evenly">
       <div className="flex items-center justify-start gap-4">
         <span>Programados</span>
         <Badge
-          value={countEventsByStatus(events, EVENT_STATE.PROGRAMADO)}
+          value={eventsByStatus["PROGRAMADO"] || 0}
           className="flex p-4 items-center bg-gray-500"
         />
       </div>
       <div className="flex items-center justify-start gap-4">
         <span>En ejecución</span>
         <Badge
-          value={countEventsByStatus(events, EVENT_STATE.EN_EJECUCION)}
+          value={eventsByStatus["EN_EJECUCION"] || 0}
           className="flex p-4 items-center"
         />
       </div>
       <div className="flex items-center justify-start gap-4">
         <span>Completados</span>
         <Badge
-          value={countEventsByStatus(events, EVENT_STATE.COMPLETADO)}
+          value={eventsByStatus["COMPLETADO"] || 0}
           className="flex p-4 items-center bg-green-400"
         />
       </div>
       <div className="flex items-center justify-start gap-4">
         <span>Reprogramados</span>
-        <Badge
-          value={countEventsByStatus(events, EVENT_STATE.REPROGRAMADO)}
+        <AnimatedCounter
+          targetNumber={eventsByStatus["REPROGRAMADO"] || 0}
+          duration={900}
           className="flex p-4 items-center bg-yellow-400"
         />
       </div>

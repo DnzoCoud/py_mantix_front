@@ -19,7 +19,7 @@ function SideBar() {
   const router = useRouter();
   const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useAppDispatch();
-  const authUser = useAppSelector(state => state.auth.authUser)
+  const authUser = useAppSelector((state) => state.auth.authUser);
 
   const items: IMenuSidebar[] = [
     // {
@@ -36,7 +36,7 @@ function SideBar() {
     //   icon: PrimeIcons.HOME,
     // },
     {
-      title: "Funciones",
+      title: "FUNCIONES",
       items: [
         {
           label: "Calendario",
@@ -83,15 +83,14 @@ function SideBar() {
     //   ],
     //   icon: PrimeIcons.COG,
     // },
-    
   ];
 
   const handleLogout = async () => {
     // await authData.logout();
-    await logout().unwrap()
+    await logout().unwrap();
     await signOut({ callbackUrl: "/Login" });
-    dispatch(clearAuthUser())
-    localStorage.removeItem('serverToken');
+    dispatch(clearAuthUser());
+    localStorage.removeItem("serverToken");
   };
 
   const sidebarStore = useSidebarStore();
@@ -100,33 +99,43 @@ function SideBar() {
       <aside
         className={`${
           sidebarStore.isOpen ? "w-[20%]" : "w-[5%]"
-        } relative dark:bg-dark_bg bg-white_medium_bg rounded-md p-2 shadow-md dark:shadow-dark_medium_bg transition-all `}
+        } relative dark:bg-dark_bg bg-white transition-all border-r`}
       >
-        <div className={`flex items-center w-full my-4 ${sidebarStore.isOpen ? "justify-start " : "justify-center"} transition-all`}>
-          <Avatar
+        <div
+          className={`flex items-center w-full border-b p-4 ${
+            sidebarStore.isOpen ? "justify-center " : "justify-center"
+          } transition-all`}
+        >
+          <h1 className="font-bold text-xl dark:text-white">Mantix App</h1>
+          {/* <Avatar
             label={getFirstTwoLetters(authUser?.user.username)}
             style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
             size="large"
           />
-          <div className={`flex flex-col items-start justify-center ml-2 ${sidebarStore.isOpen ? "" : "hidden"}`}>
+          <div
+            className={`flex flex-col items-start justify-center ml-2 ${
+              sidebarStore.isOpen ? "" : "hidden"
+            }`}
+          >
             <span className="font-bold">{authUser?.user.username}</span>
-            <small className="text-slate-600">{authUser?.user.first_name} {authUser?.user.last_name}</small>
+            <small className="text-slate-600">
+              {authUser?.user.first_name} {authUser?.user.last_name}
+            </small>
             <span className="font-bold">{authUser?.user.role_detail.name}</span>
-
-          </div>
+          </div> */}
         </div>
         <div className="overflow-x-auto">
           <MenuSidebar items={items} />
         </div>
-        <span
+        {/* <span
           onClick={() => sidebarStore.handleOpen()}
           className={`${
             sidebarStore.isOpen ? PrimeIcons.ANGLE_LEFT : PrimeIcons.ANGLE_RIGHT
-          } absolute top-4 -right-4 p-2 rounded-full shadow-md bg-white_medium_bg dark:bg-dark_bg cursor-pointer hover:bg-gray-200 transition-all`}
-        ></span>
+          } absolute top-4 -right-4 p-2 rounded-full shadow-md bg-white dark:bg-dark_bg cursor-pointer hover:bg-gray-200 transition-all z-50`}
+        ></span> */}
         <div className="w-full absolute bottom-2 flex  justify-center items-center">
           <Button
-            label={sidebarStore.isOpen ?"Cerrar Sesion" : undefined}
+            label={sidebarStore.isOpen ? "Cerrar Sesion" : undefined}
             size="small"
             icon={"pi pi-sign-out"}
             outlined

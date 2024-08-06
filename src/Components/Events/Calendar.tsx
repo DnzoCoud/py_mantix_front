@@ -1,8 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
-import { EventClickArg, EventInput } from "@fullcalendar/core/index.js";
+import {
+  DatesSetArg,
+  EventClickArg,
+  EventInput,
+} from "@fullcalendar/core/index.js";
 import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
@@ -11,7 +15,12 @@ import EventContent from "./EventContent";
 import { useFetchEventsQuery } from "@/redux/services/eventService";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/hooks";
-import { setEvent, setEvents } from "@/redux/features/eventSlice";
+import {
+  countEventsByStatusForMonth,
+  getCurrentMonthYear,
+  setEvent,
+  setEvents,
+} from "@/redux/features/eventSlice";
 
 function Calendar() {
   const [visible, setVisible] = useState<boolean>(false);
@@ -24,6 +33,7 @@ function Calendar() {
   } = useFetchEventsQuery();
   const dispatch = useDispatch();
   const events = useAppSelector((state) => state.event.events);
+  const calendarRef = useRef<FullCalendar>(null);
 
   useEffect(() => {
     refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
@@ -32,6 +42,18 @@ function Calendar() {
     if (fetchEvents) dispatch(setEvents(fetchEvents));
   }, [fetchEvents, dispatch]);
 
+  useEffect(() => {
+    const calendarApi = calendarRef.current?.getApi();
+    if (calendarApi) {
+      const currentDate = calendarApi.getDate();
+      dispatch(
+        countEventsByStatusForMonth({
+          month: currentDate.getMonth(),
+          year: currentDate.getFullYear(),
+        })
+      );
+    }
+  }, [dispatch, events]);
   const handleEventClick = (evento: EventClickArg) => {
     setVisible(true);
   };
@@ -59,14 +81,22 @@ function Calendar() {
       end: event.end, // Mantener la fecha en formato "yyyy-MM-dd"ss
       // Otras propiedades según sea necesario
       status: event.status_detail,
+      code: event.code,
+      shift: event.shift,
     };
   };
 
   const eventsForFullCalendar: EventInput[] = convertToEventInputs(events);
 
+  const handleDatesSet = (arg: DatesSetArg) => {
+    const { month, year } = getCurrentMonthYear(arg);
+    dispatch(countEventsByStatusForMonth({ month, year }));
+  };
   return (
     <>
       <FullCalendar
+        ref={calendarRef}
+        datesSet={handleDatesSet}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         // locale={"es"}

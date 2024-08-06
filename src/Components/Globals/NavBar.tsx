@@ -84,23 +84,23 @@ export default function NavBar() {
           },
         })
       );
-      localStorage.setItem('serverToken', session.user.token);
+      localStorage.setItem("serverToken", session.user.token);
     }
   }, [session]);
 
   const handleLogout = async () => {
     // await authData.logout();
-    await logout().unwrap()
+    await logout().unwrap();
     await signOut({ callbackUrl: "/Login" });
-    dispatch(clearAuthUser())
-    localStorage.removeItem('serverToken');
+    dispatch(clearAuthUser());
+    localStorage.removeItem("serverToken");
   };
 
-  const authUser = useAppSelector(state => state.auth.authUser)
+  const authUser = useAppSelector((state) => state.auth.authUser);
   return (
     <>
-      <div className="w-full h-16 flex justify-center items-center sticky top-0 z-40">
-        <div className="flex justify-between px-4 items-center w-full h-full bg-white_medium_bg dark:bg-dark_bg p-2 rounded-md transition-all ease-out shadow-md  dark:shadow-dark_medium_bg">
+      <div className="w-full h-16 flex justify-center items-center z-40">
+        <div className="flex justify-between px-4 items-center w-full h-full bg-white dark:bg-dark_bg p-2 rounded-md transition-all ease-out ">
           <div
             className="flex justify-evenly items-center cursor-pointer"
             onClick={() => router.push("/Dashboard")}
@@ -124,9 +124,7 @@ export default function NavBar() {
               }
             ></span>
             <div className="flex flex-col mr-4">
-              <span className="dark:text-white">
-                {authUser?.user.username}
-              </span>
+              <span className="dark:text-white">{authUser?.user.username}</span>
               <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg ">
                 {authUser?.user.role_detail.name}
               </span>

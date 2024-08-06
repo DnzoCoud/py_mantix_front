@@ -25,8 +25,6 @@ export default function EventStepper({ event }: { event: IEvent }) {
       return event.status_detail.id;
     }
   });
-  console.log(event.status_detail.id);
-  console.log(event.history_status?.previous_state.id);
 
   const itemRenderer = (item: MenuItem, itemIndex: number) => {
     const isActiveItem = activeIndex === itemIndex;

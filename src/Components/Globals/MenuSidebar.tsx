@@ -24,15 +24,15 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
               !sidebarStore.isOpen ? ".custom-target-icon-" + index : ""
             }`}
           />
-          <div className={`flex flex-col mx-1 overflow-y-auto`}>
+          <div className={`flex flex-col mx-1 overflow-y-auto p-4`}>
             <div
               className={`flex ${
                 sidebarStore.isOpen ? "justify-start" : "justify-center"
               } items-center`}
             >
-              <i className={item.icon + " mr-2 text-gray-400"}></i>
+              <i className={item.icon + " mr-2 text-gray-800"}></i>
               {sidebarStore.isOpen && (
-                <span className="text-gray-400">{item.title}</span>
+                <span className="text-gray-800">{item.title}</span>
               )}
             </div>
             {item.items?.map((menu, menuIndex) => (
@@ -41,13 +41,13 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
                   sidebarStore.isOpen && menu.badge !== undefined
                     ? "justify-between"
                     : sidebarStore.isOpen
-                    ? "justify-between"
+                    ? "justify-between  ml-2"
                     : "justify-center"
                 }  items-center mt-4 ${
                   pathName == menu.link
-                    ? "bg-gray-200 dark:bg-gray-700 shadow-md dark:shadow-dark_medium_bg"
+                    ? "bg-white dark:bg-gray-700 border-2"
                     : " hover:text-black"
-                }  rounded-md p-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 transition-all custom-target-icon-${index}`}
+                }  rounded-md p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all custom-target-icon-${index} active:bg-gray-300`}
                 onClick={() => handleRoutePush(menu.link)}
                 data-pr-tooltip={menu.tooltip}
                 data-pr-position="right"

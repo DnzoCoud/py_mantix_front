@@ -1,7 +1,7 @@
 "use client";
 import { IEvent } from "@/interfaces/IEvent";
 import { Dialog } from "primereact/dialog";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import EventCard from "./EventCard";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useFindEventsByDayQuery } from "@/redux/services/eventService";
@@ -10,6 +10,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { setEventsByDay } from "@/redux/features/eventSlice";
 import { Skeleton } from "primereact/skeleton";
 import { classNames } from "primereact/utils";
+import { Messages } from "primereact/messages";
 
 interface DialogEventListProps {
   visible: boolean;
@@ -30,12 +31,22 @@ export default function DialogEventList({
   } = useFindEventsByDayQuery(
     dateSelected ? { date: dateSelected.toString() } : skipToken
   );
+  const msgs = useRef<Messages>(null);
 
   useEffect(() => {
     if (fetchEventsByDay) {
       dispatch(setEventsByDay(fetchEventsByDay));
     }
   }, [fetchEventsByDay, dispatch]);
+
+  useEffect(() => {
+    msgs.current?.show({
+      severity: "warn",
+      summary: "Información",
+      detail: "No hay mantenimientos programados para esta fecha",
+      closable: false,
+    });
+  }, []);
 
   useEffect(() => {
     // Forzar refetch cada vez que el componente se monta
@@ -96,6 +107,13 @@ export default function DialogEventList({
                       <EventCard event={event} refetch={refetch} />
                     </div>
                   ))}
+                {eventsByDay.length <= 0 && (
+                  <>
+                    <span className="text-center p-2 bg-orange-100 font-bold col-span-12 rounded-md border-l-8 border-orange-400">
+                      No hay ningun mantenimiento programado par esta fecha
+                    </span>
+                  </>
+                )}
               </>
             )}
           </div>
