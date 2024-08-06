@@ -96,7 +96,7 @@ function Calendar() {
   };
   return (
     <>
-      <EventCount />
+      {!eventsLoading && <EventCount />}
 
       <FullCalendar
         ref={calendarRef}
