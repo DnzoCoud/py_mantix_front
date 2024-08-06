@@ -21,6 +21,7 @@ import {
   setEvent,
   setEvents,
 } from "@/redux/features/eventSlice";
+import EventCount from "./EventCount";
 
 function Calendar() {
   const [visible, setVisible] = useState<boolean>(false);
@@ -37,7 +38,7 @@ function Calendar() {
 
   useEffect(() => {
     refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
-  }, []);
+  }, [refetch]);
 
   useEffect(() => {
     if (fetchEvents) dispatch(setEvents(fetchEvents));
@@ -95,6 +96,8 @@ function Calendar() {
   };
   return (
     <>
+      <EventCount />
+
       <FullCalendar
         ref={calendarRef}
         datesSet={handleDatesSet}

@@ -33,7 +33,6 @@ export default function CalendarPage() {
             onClick={() => setActivateAdd(true)}
           />
         </div>
-        <EventCount />
         <Calendar />
       </div>
       <Dialog
