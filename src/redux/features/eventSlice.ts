@@ -12,7 +12,7 @@ interface EventState {
 }
 
 interface EventsByStatus {
-  [key: string]: number;
+  [id: number]: number;
 }
 
 const initialState = {
@@ -75,10 +75,12 @@ export const eventSlice = createSlice({
       const countByStatus: EventsByStatus = {};
 
       for (const key in state.eventState) {
-        const statusId = state.eventState[key as keyof EventState];
-        countByStatus[key] = filteredEvents.filter(
-          (event) => event.status_detail.id === statusId
-        ).length;
+        if (state.eventState.hasOwnProperty(key)) {
+          const statusId = parseInt(key);
+          countByStatus[statusId] = filteredEvents.filter(
+            (event) => event.status_detail.id === statusId
+          ).length;
+        }
       }
 
       state.eventsByStatus = countByStatus;
