@@ -37,7 +37,7 @@ function Calendar() {
 
   useEffect(() => {
     refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
-  }, [refetch]);
+  }, []);
 
   useEffect(() => {
     if (fetchEvents) dispatch(setEvents(fetchEvents));
