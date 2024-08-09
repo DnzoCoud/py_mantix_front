@@ -107,7 +107,8 @@ export default function EventStepper({ event }: { event: IEvent }) {
             event={event}
           />
         )}
-        {(activeIndex === eventStates.EN_EJECUCION ||
+        {((activeIndex === eventStates.EN_EJECUCION &&
+          activeIndex !== eventStates.COMPLETADO) ||
           event.history_status?.previous_state.id ===
             eventStates.EN_EJECUCION) && (
           <EventFormExecute
