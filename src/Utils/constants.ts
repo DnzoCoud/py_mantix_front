@@ -31,3 +31,18 @@ export const EVENT_STATE: EventState = {
   REPROGRAMADO: 4,
   PETICION_REPROGRAMADO: 5,
 };
+
+interface RolePermissions {
+  [role: string]: string[];
+}
+
+/**
+ * Menu segun los roles
+ *
+ */
+export const rolePermissions: RolePermissions = {
+  admin: ["Calendario", "Maquinas", "Usuarios", "Locaciones", "Areas"],
+  manager: ["Calendario", "Maquinas", "Usuarios"],
+  visualizer: ["Calendario"],
+  // Add more roles as needed
+};

@@ -23,7 +23,7 @@ import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
 import { useUpdateEventMutation } from "@/redux/services/eventService";
 import { formatDate } from "@fullcalendar/core/index.js";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setUpdateEvent } from "@/redux/features/eventSlice";
 import LoaderComponents from "../Globals/Loader/LoaderComponents";
 
@@ -34,6 +34,7 @@ export default function EventCard({
   event: IEvent;
   refetch: any;
 }) {
+  const authUser = useAppSelector((state) => state.auth.authUser);
   const op = useRef(null);
   const reprogramButtonRef = useRef(null);
 
@@ -42,7 +43,7 @@ export default function EventCard({
   const eventColor = getColorEvents(event.status_detail.id);
   const menuRight = useRef<Menu>(null);
   const headerTemplate = (options: PanelHeaderTemplateOptions) => {
-    const className = `${options.className} justify-between ${eventColor.background} px-2 items-center p-4 rounded-tl-md rounded-tr-md`;
+    const className = `${options.className} justify-between ${eventColor.border} border-b-0 px-2 items-center p-4 rounded-tl-md rounded-tr-md`;
     const menuPopup: MenuItem[] = [
       {
         label: "Opciones",
@@ -70,7 +71,7 @@ export default function EventCard({
           popupAlignment="right"
         />
         <div className="flex items-center gap-2 ">
-          <span className="font-bold dark:text-black">
+          <span className={`font-bold ${eventColor.textColor} dark:text-black`}>
             {event.machine_detail.name}
           </span>
           <Tag
@@ -100,7 +101,7 @@ export default function EventCard({
             </button>
           )} */}
 
-          {options.togglerElement}
+          {authUser?.user.role_detail.id !== 3 && options.togglerElement}
         </div>
       </header>
     );
@@ -208,8 +209,9 @@ export default function EventCard({
       </>
     );
   };
+
   const footerTemplate = (options: PanelFooterTemplateOptions) => {
-    const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.light_background} rounded-bl-md rounded-br-md`;
+    const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.border} border-t-0 rounded-bl-md rounded-br-md`;
     const uniqueTechnicians = event.activities
       .map((activity) => activity.technical_detail)
       .filter(
@@ -233,7 +235,10 @@ export default function EventCard({
             onClick={(e) => op.current?.toggle(e)}
           />
           <OverlayPanel ref={op}>
-            <DataTable value={uniqueTechnicians}>
+            <DataTable
+              value={uniqueTechnicians}
+              emptyMessage="Aún no tiene tecnicos asignados"
+            >
               <Column field="username" header="Nombre" />
             </DataTable>
           </OverlayPanel>
@@ -242,21 +247,22 @@ export default function EventCard({
           </OverlayPanel>
           <div className="flex items-center justify-start ml-4">
             <div
-              className={`${eventColor.background} w-2 h-2 rounded-full  mr-1`}
+              className={`${eventColor.badge_mark} w-2 h-2 rounded-full  mr-1`}
             ></div>
             <span className="dark:text-black">{event.status_detail.name}</span>
           </div>
         </div>
-        {event.status_detail.id !== EVENT_STATE.COMPLETADO && (
-          <Button
-            label="Reprogramar mantenimiento"
-            severity="warning"
-            outlined
-            size="small"
-            //@ts-ignore
-            onClick={(e) => reprogramButtonRef.current?.toggle(e)}
-          />
-        )}
+        {event.status_detail.id !== EVENT_STATE.COMPLETADO &&
+          authUser?.user.role_detail.id !== 3 && (
+            <Button
+              label="Reprogramar mantenimiento"
+              severity="warning"
+              outlined
+              size="small"
+              //@ts-ignore
+              onClick={(e) => reprogramButtonRef.current?.toggle(e)}
+            />
+          )}
       </footer>
     );
   };

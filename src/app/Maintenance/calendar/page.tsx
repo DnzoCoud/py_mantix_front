@@ -9,13 +9,14 @@ import Headers from "@/Components/Globals/Headers";
 import dynamic from "next/dynamic";
 import CalendarSkeleton from "@/Components/Globals/Skeleton/CalendarSkeleton";
 import EventCount from "@/Components/Events/EventCount";
+import { useAppSelector } from "@/redux/hooks";
 const Calendar = dynamic(() => import("@/Components/Events/Calendar"), {
   loading: () => <CalendarSkeleton />,
 });
 const EventForm = dynamic(() => import("@/Components/Events/EventForm"));
 export default function CalendarPage() {
   const [activateAdd, setActivateAdd] = useState<boolean>(false);
-
+  const authUser = useAppSelector((state) => state.auth.authUser);
   return (
     <>
       <div>
@@ -25,13 +26,15 @@ export default function CalendarPage() {
             subtitle="Mantenimientos programados"
             icon={PrimeIcons.CALENDAR}
           />
-          <Button
-            label="Agregar Mantenimiento"
-            icon={PrimeIcons.PLUS}
-            size="small"
-            severity="success"
-            onClick={() => setActivateAdd(true)}
-          />
+          {authUser?.user.role_detail.id !== 3 && (
+            <Button
+              label="Agregar Mantenimiento"
+              icon={PrimeIcons.PLUS}
+              size="small"
+              severity="success"
+              onClick={() => setActivateAdd(true)}
+            />
+          )}
         </div>
         <Calendar />
       </div>

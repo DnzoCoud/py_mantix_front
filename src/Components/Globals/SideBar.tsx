@@ -14,27 +14,15 @@ import { getFirstTwoLetters } from "@/Utils/useComposables";
 import { useLogoutMutation } from "@/redux/services/authService";
 import { clearAuthUser } from "@/redux/features/auth/authSlice";
 import { signOut } from "next-auth/react";
+import { rolePermissions } from "@/Utils/constants";
 
 function SideBar() {
   const router = useRouter();
   const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useAppDispatch();
   const authUser = useAppSelector((state) => state.auth.authUser);
-
+  const role = authUser?.user.role_detail.name.toLowerCase() ?? "guest";
   const items: IMenuSidebar[] = [
-    // {
-    //   title: "Home",
-    //   items: [
-    //     {
-    //       label: "Dashboard",
-    //       icon: PrimeIcons.CHART_BAR,
-    //       link: "/Maintenance",
-    //       badge: 3,
-    //       tooltip: "Dashboard",
-    //     },
-    //   ],
-    //   icon: PrimeIcons.HOME,
-    // },
     {
       title: "FUNCIONES",
       items: [
@@ -71,19 +59,19 @@ function SideBar() {
       ],
       icon: PrimeIcons.HOME,
     },
-    // {
-    //   title: "Preferencias",
-    //   items: [
-    //     {
-    //       label: "Configuracion",
-    //       icon: PrimeIcons.BUILDING,
-    //       link: "/Maintenance/preferences",
-    //       tooltip: "Configuracion",
-    //     },
-    //   ],
-    //   icon: PrimeIcons.COG,
-    // },
   ];
+
+  const filterMenuItems = (role: string, menuItems: IMenuSidebar[]) => {
+    return menuItems.map((menu) => {
+      return {
+        ...menu,
+        items: menu.items?.filter((item) => {
+          return rolePermissions[role]?.includes(item.label ?? "") ?? false;
+        }),
+      };
+    });
+  };
+  const filteredItems = filterMenuItems(role, items);
 
   const handleLogout = async () => {
     // await authData.logout();
@@ -125,7 +113,7 @@ function SideBar() {
           </div> */}
         </div>
         <div className="overflow-x-auto">
-          <MenuSidebar items={items} />
+          <MenuSidebar items={filteredItems} />
         </div>
         {/* <span
           onClick={() => sidebarStore.handleOpen()}
