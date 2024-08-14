@@ -240,9 +240,7 @@ export default function EventCard({
       );
     };
     const canReprogram =
-      isBeforeFriday(today) &&
-      isEventInNextWeek(event.start.toString()) &&
-      authUser?.user.role_detail.id === 7;
+      isBeforeFriday(today) && isEventInNextWeek(event.start.toString());
 
     const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.border} border-t-0 rounded-bl-md rounded-br-md`;
     const uniqueTechnicians = event.activities
@@ -287,7 +285,7 @@ export default function EventCard({
         </div>
         {event.status_detail.id !== EVENT_STATE.COMPLETADO &&
           authUser?.user.role_detail.id !== 3 &&
-          canReprogram && (
+          (authUser?.user.role_detail.id === 7 ? canReprogram : true) && (
             <Button
               label="Reprogramar mantenimiento"
               severity="warning"
