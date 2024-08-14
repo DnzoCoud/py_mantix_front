@@ -8,7 +8,7 @@ import { IActivity } from "@/interfaces/IActivity";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IWorkOrder } from "@/interfaces/IWorkOrder";
 import { useUpdateEventMutation } from "@/redux/services/eventService";
-import { EVENT_STATE } from "@/Utils/constants";
+import { allowedEjecuteRoles, EVENT_STATE } from "@/Utils/constants";
 import { useDispatch } from "react-redux";
 import {
   useFindWorkOrderByEventIdQuery,
@@ -20,6 +20,7 @@ import { setUpdateWorkOrder } from "@/redux/features/workOrderSlice";
 import { FloatLabel } from "primereact/floatlabel";
 import { useUpdateMachineMutation } from "@/redux/services/machineService";
 import { transformToTechnicianActivities } from "@/Utils/useComposables";
+import { useAppSelector } from "@/redux/hooks";
 
 export default function EventFormExecute({
   setActiveIndex,
@@ -36,6 +37,8 @@ export default function EventFormExecute({
   const [updateEvent] = useUpdateEventMutation();
   const [updateWorkOrder] = useUpdateWorkOrderMutation();
   const dispatch = useDispatch();
+  const authUser = useAppSelector((state) => state.auth.authUser);
+
   const {
     register,
     handleSubmit,
@@ -114,96 +117,104 @@ export default function EventFormExecute({
             <div className="h-3 w-3 bg-blue-400 rounded-full mr-2"></div>
             <span>Mantenimiento en ejecución</span>
           </div>
-          <Button
-            label="Completar Mantenimiento"
-            size="small"
-            outlined
-            icon={PrimeIcons.ARROW_RIGHT}
-            severity="success"
-            type="submit"
-            loading={submitLoad}
-            // onClick={() => setActiveIndex(activeIndex + 1)}
-          />
+          {allowedEjecuteRoles.includes(authUser?.user.role_detail.id ?? 0) && (
+            <Button
+              label="Completar Mantenimiento"
+              size="small"
+              outlined
+              icon={PrimeIcons.ARROW_RIGHT}
+              severity="success"
+              type="submit"
+              loading={submitLoad}
+              // onClick={() => setActiveIndex(activeIndex + 1)}
+            />
+          )}
         </div>
 
-        <div className="grid grid-cols-12 gap-4 mt-4">
-          <div className="col-span-12">
-            {existWorkOrder && <p>{existWorkOrder.diagnosis}</p>}
-          </div>
-          <div className="col-span-12">
-            <div className="w-full flex flex-col">
-              <ActivityForm
-                setActivities={setActivity}
-                initialTasks={activities}
-              />
+        {allowedEjecuteRoles.includes(authUser?.user.role_detail.id ?? 0) && (
+          <div className="grid grid-cols-12 gap-4 mt-4">
+            <div className="col-span-12">
+              {existWorkOrder && <p>{existWorkOrder.diagnosis}</p>}
             </div>
-          </div>
-          <div className="col-span-12">
-            <div className="w-full flex flex-col mt-2">
-              <FloatLabel>
-                <InputTextarea
-                  value={cause ?? ""}
-                  autoResize
-                  rows={2}
-                  cols={30}
-                  pt={{
-                    root: {
-                      className: "w-full",
-                    },
-                  }}
-                  disabled={event.status_detail.id !== EVENT_STATE.EN_EJECUCION}
-                  onChange={(e) => setValue("cause", e.target.value)}
+            <div className="col-span-12">
+              <div className="w-full flex flex-col">
+                <ActivityForm
+                  setActivities={setActivity}
+                  initialTasks={activities}
                 />
-                <label
-                  htmlFor="cause"
-                  style={{ left: "3%", transition: "all .2s ease" }}
-                >
-                  Causas
-                </label>
-              </FloatLabel>
-              {errors.cause && (
-                <span className="text-red-500">{errors.cause.message}</span>
-              )}
-              {/* <InputTextarea
+              </div>
+            </div>
+            <div className="col-span-12">
+              <div className="w-full flex flex-col mt-2">
+                <FloatLabel>
+                  <InputTextarea
+                    value={cause ?? ""}
+                    autoResize
+                    rows={2}
+                    cols={30}
+                    pt={{
+                      root: {
+                        className: "w-full",
+                      },
+                    }}
+                    disabled={
+                      event.status_detail.id !== EVENT_STATE.EN_EJECUCION
+                    }
+                    onChange={(e) => setValue("cause", e.target.value)}
+                  />
+                  <label
+                    htmlFor="cause"
+                    style={{ left: "3%", transition: "all .2s ease" }}
+                  >
+                    Causas
+                  </label>
+                </FloatLabel>
+                {errors.cause && (
+                  <span className="text-red-500">{errors.cause.message}</span>
+                )}
+                {/* <InputTextarea
                 autoResize
                 rows={2}
                 cols={30}
               /> */}
+              </div>
             </div>
-          </div>
-          <div className="col-span-12">
-            <div className="w-full flex flex-col">
-              {/* <Label text="Observaciones" isObligatory={true} idFor="" />
+            <div className="col-span-12">
+              <div className="w-full flex flex-col">
+                {/* <Label text="Observaciones" isObligatory={true} idFor="" />
               <InputTextarea autoResize rows={2} cols={30} /> */}
-              <FloatLabel>
-                <InputTextarea
-                  value={observation ?? ""}
-                  autoResize
-                  rows={2}
-                  cols={30}
-                  pt={{
-                    root: {
-                      className: "w-full",
-                    },
-                  }}
-                  disabled={event.status_detail.id !== EVENT_STATE.EN_EJECUCION}
-                  onChange={(e) => setValue("observation", e.target.value)}
-                />
-                <label
-                  htmlFor="observation"
-                  style={{ left: "3%", transition: "all .2s ease" }}
-                >
-                  Observaciones
-                </label>
-              </FloatLabel>
-              {errors.observation && (
-                <span className="text-red-500">
-                  {errors.observation.message}
-                </span>
-              )}
+                <FloatLabel>
+                  <InputTextarea
+                    value={observation ?? ""}
+                    autoResize
+                    rows={2}
+                    cols={30}
+                    pt={{
+                      root: {
+                        className: "w-full",
+                      },
+                    }}
+                    disabled={
+                      event.status_detail.id !== EVENT_STATE.EN_EJECUCION
+                    }
+                    onChange={(e) => setValue("observation", e.target.value)}
+                  />
+                  <label
+                    htmlFor="observation"
+                    style={{ left: "3%", transition: "all .2s ease" }}
+                  >
+                    Observaciones
+                  </label>
+                </FloatLabel>
+                {errors.observation && (
+                  <span className="text-red-500">
+                    {errors.observation.message}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </form>
     </>
   );

@@ -34,6 +34,8 @@ export default function EventCard({
   event: IEvent;
   refetch: any;
 }) {
+  const today = new Date();
+
   const authUser = useAppSelector((state) => state.auth.authUser);
   const op = useRef(null);
   const reprogramButtonRef = useRef(null);
@@ -55,6 +57,7 @@ export default function EventCard({
         ],
       },
     ];
+
     return (
       <header
         className={className}
@@ -211,6 +214,34 @@ export default function EventCard({
   };
 
   const footerTemplate = (options: PanelFooterTemplateOptions) => {
+    const isBeforeFriday = (date: Date): boolean => {
+      const dayOfWeek = date.getDay();
+      return dayOfWeek < 5; // Menor que 5 significa antes del viernes
+    };
+
+    const isEventInNextWeek = (eventDate: string): boolean => {
+      const today = new Date();
+
+      // Calculamos el inicio de la próxima semana
+      const nextWeekStart = new Date(today);
+      nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
+
+      // Calculamos el final de la próxima semana
+      const nextWeekEnd = new Date(nextWeekStart);
+      nextWeekEnd.setDate(nextWeekStart.getDate() + 5);
+
+      // Convertimos las fechas a formato YYYY-MM-DD
+      const formattedNextWeekStart = nextWeekStart.toISOString().split("T")[0];
+      const formattedNextWeekEnd = nextWeekEnd.toISOString().split("T")[0];
+
+      // Verificamos si eventDate está dentro de la próxima semana
+      return (
+        eventDate >= formattedNextWeekStart && eventDate <= formattedNextWeekEnd
+      );
+    };
+    const canReprogram =
+      isBeforeFriday(today) && isEventInNextWeek(event.start.toString());
+
     const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.border} border-t-0 rounded-bl-md rounded-br-md`;
     const uniqueTechnicians = event.activities
       .map((activity) => activity.technical_detail)
@@ -253,7 +284,8 @@ export default function EventCard({
           </div>
         </div>
         {event.status_detail.id !== EVENT_STATE.COMPLETADO &&
-          authUser?.user.role_detail.id !== 3 && (
+          authUser?.user.role_detail.id !== 3 &&
+          canReprogram && (
             <Button
               label="Reprogramar mantenimiento"
               severity="warning"

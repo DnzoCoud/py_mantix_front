@@ -17,11 +17,12 @@ import { useDispatch } from "react-redux";
 import { setWorkOrder } from "@/redux/features/workOrderSlice";
 import { useUpdateEventMutation } from "@/redux/services/eventService";
 import { setUpdateEvent } from "@/redux/features/eventSlice";
-import { EVENT_STATE } from "@/Utils/constants";
+import { allowedEjecuteRoles, EVENT_STATE } from "@/Utils/constants";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useFetchTechnicalsQuery } from "@/redux/services/userService";
 import { IUser } from "@/interfaces/IUser";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { useAppSelector } from "@/redux/hooks";
 
 export default function EventFormProgram({
   setActiveIndex,
@@ -41,6 +42,8 @@ export default function EventFormProgram({
     useFetchTechnicalsQuery();
 
   const dispatch = useDispatch();
+  const authUser = useAppSelector((state) => state.auth.authUser);
+
   const {
     register,
     handleSubmit,
@@ -122,55 +125,65 @@ export default function EventFormProgram({
             <div className="h-3 w-3 bg-gray-800 rounded-full mr-2"></div>
             <span>Mantenimiento Programado</span>
           </div>
-          <Button
-            label={
-              event.status_detail.id === EVENT_STATE.PROGRAMADO
-                ? "Empezar ejecucion"
-                : "Siguiente"
-            }
-            icon={PrimeIcons.ARROW_RIGHT}
-            size="small"
-            outlined
-            type="submit"
-            loading={submitLoad}
-            // onClick={handleExecute}
-          />
+          {allowedEjecuteRoles.includes(authUser?.user.role_detail.id ?? 0) && (
+            <Button
+              label={
+                event.status_detail.id === EVENT_STATE.PROGRAMADO
+                  ? "Empezar ejecucion"
+                  : "Siguiente"
+              }
+              icon={PrimeIcons.ARROW_RIGHT}
+              size="small"
+              outlined
+              type="submit"
+              loading={submitLoad}
+              // onClick={handleExecute}
+            />
+          )}
         </div>
-        <div className="grid grid-cols-12 gap-4 mt-4">
-          <div className="col-span-12">
-            <div className="w-full flex flex-col">
-              <FloatLabel>
-                <InputTextarea
-                  value={diagnosis}
-                  autoResize
-                  rows={2}
-                  cols={30}
-                  pt={{
-                    root: {
-                      className: "w-full",
-                    },
-                  }}
-                  disabled={event.status_detail.id !== EVENT_STATE.PROGRAMADO}
-                  onChange={(e) => setValue("diagnosis", e.target.value)}
-                />
-                <label
-                  htmlFor="diagnosis"
-                  style={{ left: "3%", transition: "all .2s ease" }}
-                >
-                  Diagnostico
-                </label>
-              </FloatLabel>
-              {errors.diagnosis && (
-                <span className="text-red-500">{errors.diagnosis.message}</span>
-              )}
+        {allowedEjecuteRoles.includes(authUser?.user.role_detail.id ?? 0) && (
+          <>
+            <div className="grid grid-cols-12 gap-4 mt-4">
+              <div className="col-span-12">
+                <div className="w-full flex flex-col">
+                  <FloatLabel>
+                    <InputTextarea
+                      value={diagnosis}
+                      autoResize
+                      rows={2}
+                      cols={30}
+                      pt={{
+                        root: {
+                          className: "w-full",
+                        },
+                      }}
+                      disabled={
+                        event.status_detail.id !== EVENT_STATE.PROGRAMADO
+                      }
+                      onChange={(e) => setValue("diagnosis", e.target.value)}
+                    />
+                    <label
+                      htmlFor="diagnosis"
+                      style={{ left: "3%", transition: "all .2s ease" }}
+                    >
+                      Diagnostico
+                    </label>
+                  </FloatLabel>
+                  {errors.diagnosis && (
+                    <span className="text-red-500">
+                      {errors.diagnosis.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="col-span-12">
+                <div className="w-full flex flex-col">
+                  <ActivityForm setActivities={setActivity} />
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="col-span-12">
-            <div className="w-full flex flex-col">
-              <ActivityForm setActivities={setActivity} />
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </form>
     </>
   );

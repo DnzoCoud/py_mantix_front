@@ -42,11 +42,16 @@ interface RolePermissions {
  */
 export const rolePermissions: RolePermissions = {
   admin: ["Calendario", "Maquinas", "Usuarios", "Locaciones", "Areas"],
-  director: ["Calendario", "Maquinas", "Usuarios", "Locaciones", "Areas"],
   manager: ["Calendario", "Maquinas", "Usuarios"],
+  director: ["Calendario"],
   visualizer: ["Calendario"],
   guest: ["Calendario"],
   technical: ["Calendario"],
   provider: ["Calendario"],
   // Add more roles as needed
 };
+
+export const allowedAddRoles = [1, 6];
+export const allowedReprogramRoles = [1, 6, 7];
+export const allowedEjecuteRoles = [1, 6];
+export const allowedDownloadWorkOrderRoles = [1, 6, 7];

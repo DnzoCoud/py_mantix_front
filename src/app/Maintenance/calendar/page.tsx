@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import CalendarSkeleton from "@/Components/Globals/Skeleton/CalendarSkeleton";
 import EventCount from "@/Components/Events/EventCount";
 import { useAppSelector } from "@/redux/hooks";
+import { allowedAddRoles } from "@/Utils/constants";
 const Calendar = dynamic(() => import("@/Components/Events/Calendar"), {
   loading: () => <CalendarSkeleton />,
 });
@@ -26,7 +27,7 @@ export default function CalendarPage() {
             subtitle="Mantenimientos programados"
             icon={PrimeIcons.CALENDAR}
           />
-          {authUser?.user.role_detail.id !== 3 && (
+          {allowedAddRoles.includes(authUser?.user.role_detail.id ?? 0) && (
             <Button
               label="Agregar Mantenimiento"
               icon={PrimeIcons.PLUS}
