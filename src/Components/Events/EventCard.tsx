@@ -240,7 +240,9 @@ export default function EventCard({
       );
     };
     const canReprogram =
-      isBeforeFriday(today) && isEventInNextWeek(event.start.toString());
+      isBeforeFriday(today) &&
+      isEventInNextWeek(event.start.toString()) &&
+      authUser?.user.role_detail.id === 7;
 
     const className = `${options.className} flex flex-wrap items-center justify-between gap-3 p-2 ${eventColor.border} border-t-0 rounded-bl-md rounded-br-md`;
     const uniqueTechnicians = event.activities
