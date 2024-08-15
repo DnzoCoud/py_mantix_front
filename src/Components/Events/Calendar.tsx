@@ -20,10 +20,13 @@ import {
   getCurrentMonthYear,
   setEvent,
   setEvents,
+  setUpdateEvent,
 } from "@/redux/features/eventSlice";
 import EventCount from "./EventCount";
 
 function Calendar() {
+  const authUser = useAppSelector((state) => state.auth.authUser);
+
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleDate, setVisibleDate] = useState<boolean>(false);
   const [dateSelect, setDateSelect] = useState<Date | string>("");
@@ -43,6 +46,39 @@ function Calendar() {
   useEffect(() => {
     if (fetchEvents) dispatch(setEvents(fetchEvents));
   }, [fetchEvents, dispatch]);
+
+  useEffect(() => {
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/events/");
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const eventData: IEvent = data.event_data;
+
+      if (data.type === "event_created") {
+        // Actualizar el estado de Redux con el nuevo evento
+        if (authUser?.user.role_detail.id === 7) {
+          if (
+            eventData?.machine_detail?.location_detail?.area_detail
+              ?.director_detail?.id === authUser.user.id
+          ) {
+            dispatch(setEvent(eventData));
+          }
+        } else {
+          dispatch(setEvent(eventData));
+        }
+      } else if (data.type === "event_updated") {
+        if (authUser?.user.role_detail.id === 7) {
+          if (
+            eventData?.machine_detail?.location_detail?.area_detail
+              ?.director_detail?.id === authUser.user.id
+          ) {
+            dispatch(setUpdateEvent(eventData));
+          }
+        } else {
+          dispatch(setUpdateEvent(eventData));
+        }
+      }
+    };
+  }, [authUser, dispatch]);
 
   useEffect(() => {
     const calendarApi = calendarRef.current?.getApi();

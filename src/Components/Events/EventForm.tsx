@@ -58,7 +58,6 @@ export default function EventForm() {
   };
 
   const onSubmit: SubmitHandler<IEvent> = async (data) => {
-    console.log("Entro");
     if (machine) {
       await saveEvent(formatDate(data.start), formatDate(data.end), machine.id);
     }

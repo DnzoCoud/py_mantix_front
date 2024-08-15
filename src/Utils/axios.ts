@@ -12,16 +12,17 @@ const createServerInstance = (): AxiosInstance => {
 
   axiosInstance.interceptors.request.use(
     (config) => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const accessToken = localStorage.getItem("serverToken");
-        console.log(accessToken);
-        config.headers.Authorization = accessToken ? `Token ${accessToken}` : 'Token ';
+        config.headers.Authorization = accessToken
+          ? `Token ${accessToken}`
+          : "Token ";
       }
-      
-      return config
+
+      return config;
     },
     (error) => Promise.reject(error)
-  )
+  );
   return axiosInstance;
 };
 
