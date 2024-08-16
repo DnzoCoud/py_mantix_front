@@ -23,7 +23,7 @@ RUN npm run build
 WORKDIR /app
 
 # 9. Copiar solo los archivos necesarios desde la etapa de construcción
-COPY --from=builder /app ./
+COPY --from=build /app ./
 # Si usas yarn, usa COPY --from=build /app/yarn.lock /app/
 
 # 10. Instalar solo las dependencias de producción
