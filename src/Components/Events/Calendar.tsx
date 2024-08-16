@@ -48,7 +48,9 @@ function Calendar() {
   }, [fetchEvents, dispatch]);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://127.0.0.1:8000/ws/events/");
+    const socket = new WebSocket(
+      `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/events/`
+    );
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const eventData: IEvent = data.event_data;
