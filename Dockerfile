@@ -19,16 +19,11 @@ COPY . .
 RUN npm run build
 # Si usas yarn, usa RUN yarn build
 
-# 7. Usar una imagen base de Node.js para ejecutar la aplicación
-FROM node:20.16.0
-
 # 8. Establecer el directorio de trabajo en el contenedor
 WORKDIR /app
 
 # 9. Copiar solo los archivos necesarios desde la etapa de construcción
-COPY --from=build /app/.next /app/.next
-COPY --from=build /app/public /app/public
-COPY --from=build /app/package*.json /app/
+COPY --from=builder /app ./
 # Si usas yarn, usa COPY --from=build /app/yarn.lock /app/
 
 # 10. Instalar solo las dependencias de producción
