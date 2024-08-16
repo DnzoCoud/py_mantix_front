@@ -1,38 +1,35 @@
-# 1. Usar una imagen base de Node.js para la construcción
-FROM node:20.16.0 AS build
+# Usa la imagen oficial de Node.js como base
+FROM node:18 AS builder
 
-# 2. Establecer el directorio de trabajo en el contenedor
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# 3. Copiar el archivo package.json y package-lock.json (o yarn.lock) al directorio de trabajo
+# Copia los archivos package.json y package-lock.json (o yarn.lock)
 COPY package*.json ./
-# Si usas yarn, usa COPY yarn.lock ./
 
-# 4. Instalar dependencias
+# Instala las dependencias del proyecto
 RUN npm install
-# Si usas yarn, usa RUN yarn install
 
-# 5. Copiar el resto de la aplicación al contenedor
+# Copia el resto de los archivos del proyecto
 COPY . .
 
-# 6. Construir la aplicación para producción
+# Construye la aplicación Next.js
 RUN npm run build
-# Si usas yarn, usa RUN yarn build
 
-# 8. Establecer el directorio de trabajo en el contenedor
+# Usa una imagen de Node.js más ligera para la producción
+FROM node:18-alpine
+
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# 9. Copiar solo los archivos necesarios desde la etapa de construcción
-COPY --from=build /app ./
-# Si usas yarn, usa COPY --from=build /app/yarn.lock /app/
+# Copia los archivos de la fase de construcción
+COPY --from=builder /app ./
 
-# 10. Instalar solo las dependencias de producción
+# Instala solo las dependencias de producción
 RUN npm install --only=production
-# Si usas yarn, usa RUN yarn install --production
 
-# 11. Exponer el puerto en el que Next.js servirá la aplicación
+# Expone el puerto en el que Next.js escuchará
 EXPOSE 3000
 
-# 12. Iniciar la aplicación
+# Define el comando por defecto para ejecutar la aplicación
 CMD ["npm", "start"]
-# Si usas yarn, usa CMD ["yarn", "start"]
