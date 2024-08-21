@@ -42,7 +42,7 @@ interface RolePermissions {
  */
 export const rolePermissions: RolePermissions = {
   admin: ["Calendario", "Maquinas", "Usuarios", "Locaciones", "Areas"],
-  manager: ["Calendario", "Maquinas", "Usuarios"],
+  manager: ["Calendario", "Maquinas", "Usuarios", "Locaciones"],
   director: ["Calendario"],
   visualizer: ["Calendario"],
   guest: ["Calendario"],
