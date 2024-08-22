@@ -1,3 +1,5 @@
+import { PrimeIcons } from "primereact/api";
+
 /**
  * Estados de los eventos corresponden a la db
  */
@@ -55,3 +57,22 @@ export const allowedAddRoles = [1, 6];
 export const allowedReprogramRoles = [1, 6, 7];
 export const allowedEjecuteRoles = [1, 6];
 export const allowedDownloadWorkOrderRoles = [1, 6, 7];
+
+// Mapa de íconos que asocia los nombres de íconos de la base de datos con PrimeIcons
+export const iconMap: { [key: string]: string } = {
+  calendar: PrimeIcons.CALENDAR,
+  truck: "pi pi-truck",
+  users: PrimeIcons.USERS,
+  locations: PrimeIcons.TH_LARGE, // Ajustar según el ícono deseado
+  areas: PrimeIcons.BOOKMARK,
+  roles: PrimeIcons.MINUS_CIRCLE,
+};
+export const iconRole: { [key: string]: string } = {
+  admin: PrimeIcons.SHIELD,
+  guest: PrimeIcons.USER,
+  manager: "pi pi-calendar-clock",
+  director: PrimeIcons.TH_LARGE, // Ajustar según el ícono deseado
+  visualizer: PrimeIcons.BOOKMARK,
+  technical: PrimeIcons.COG,
+  provider: PrimeIcons.MINUS_CIRCLE,
+};

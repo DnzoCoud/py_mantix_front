@@ -1,77 +1,41 @@
 "use client";
 import { IMenuSidebar } from "@/interfaces/IMenuSidebar";
 import { PrimeIcons } from "primereact/api";
-import { Menu } from "primereact/menu";
-import { MenuItem } from "primereact/menuitem";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MenuSidebar from "./MenuSidebar";
 import { useRouter } from "next/navigation";
 import useSidebarStore from "@/stores/useSidebarStore";
 import { Button } from "primereact/button";
-import { Avatar } from "primereact/avatar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { getFirstTwoLetters } from "@/Utils/useComposables";
 import { useLogoutMutation } from "@/redux/services/authService";
 import { clearAuthUser } from "@/redux/features/auth/authSlice";
 import { signOut } from "next-auth/react";
-import { rolePermissions } from "@/Utils/constants";
+import { iconMap, rolePermissions } from "@/Utils/constants";
+import { MenuRole } from "@/interfaces/IRole";
 
 function SideBar() {
   const router = useRouter();
   const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useAppDispatch();
   const authUser = useAppSelector((state) => state.auth.authUser);
-  const role = authUser?.user.role_detail.name.toLowerCase() ?? "guest";
+  const [menus, setMenus] = useState<MenuRole[]>([]);
+  useEffect(() => {
+    if (authUser) {
+      setMenus(authUser.user.role_detail.menus);
+    }
+  }, [dispatch, authUser]);
   const items: IMenuSidebar[] = [
     {
       title: "FUNCIONES",
-      items: [
-        {
-          label: "Calendario",
-          icon: PrimeIcons.CALENDAR,
-          link: "/Maintenance/calendar",
-          tooltip: "Calendario",
-        },
-        {
-          label: "Maquinas",
-          icon: "pi pi-truck",
-          link: "/Maintenance/machine",
-          tooltip: "Maquina",
-        },
-        {
-          label: "Usuarios",
-          icon: PrimeIcons.USERS,
-          link: "/Maintenance/users",
-          tooltip: "Usuarios",
-        },
-        {
-          label: "Locaciones",
-          icon: PrimeIcons.USERS,
-          link: "/Maintenance/locations",
-          tooltip: "Locaciones",
-        },
-        {
-          label: "Areas",
-          icon: PrimeIcons.BOOKMARK,
-          link: "/Maintenance/areas",
-          tooltip: "Areas",
-        },
-      ],
       icon: PrimeIcons.HOME,
+      items: menus.map((menu) => ({
+        label: menu.menu_detail.name,
+        icon: iconMap[menu.menu_detail.icon] || "pi pi-question",
+        link: menu.menu_detail.link,
+        tooltip: menu.menu_detail.tooltip,
+      })),
     },
   ];
-
-  const filterMenuItems = (role: string, menuItems: IMenuSidebar[]) => {
-    return menuItems.map((menu) => {
-      return {
-        ...menu,
-        items: menu.items?.filter((item) => {
-          return rolePermissions[role]?.includes(item.label ?? "") ?? false;
-        }),
-      };
-    });
-  };
-  const filteredItems = filterMenuItems(role, items);
 
   const handleLogout = async () => {
     // await authData.logout();
@@ -113,7 +77,7 @@ function SideBar() {
           </div> */}
         </div>
         <div className="overflow-x-auto">
-          <MenuSidebar items={filteredItems} />
+          <MenuSidebar items={items} />
         </div>
         {/* <span
           onClick={() => sidebarStore.handleOpen()}

@@ -1,5 +1,6 @@
+import { RoleChange } from "@/Components/Roles/RoleDataList";
 import { IArea } from "@/interfaces/IArea";
-import { IRole } from "@/interfaces/IRole";
+import { IRole, Menu } from "@/interfaces/IRole";
 import { IUser } from "@/interfaces/IUser";
 import axiosBaseQuery from "@/lib/axiosBaseQuery";
 import { createApi } from "@reduxjs/toolkit/query/react";
@@ -7,6 +8,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const userService = createApi({
   reducerPath: "userApi",
   baseQuery: axiosBaseQuery,
+  tagTypes: ["RolesMenus"],
   endpoints: (builder) => ({
     fetchDirectors: builder.query<IUser[] | [], void>({
       query: () => ({
@@ -32,13 +34,16 @@ export const userService = createApi({
         method: "GET",
       }),
     }),
-    uploadUsers: builder.mutation<IUser[], {excel_base64:string; type:string}>({
-      query: ({excel_base64, type} ) => ({
+    uploadUsers: builder.mutation<
+      IUser[],
+      { excel_base64: string; type: string }
+    >({
+      query: ({ excel_base64, type }) => ({
         url: `/sign/importUsersByExcel/${type}`,
         method: "POST",
         data: {
-          excel_base64
-        },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+          excel_base64,
+        },
       }),
     }),
     updateUser: builder.mutation<IUser, Partial<IUser>>({
@@ -55,28 +60,45 @@ export const userService = createApi({
         url: `/role/findAllRoles`,
         method: "GET",
       }),
+      providesTags: ["RolesMenus"],
     }),
-    saveUser: builder.mutation<IUser, {
-      username:string;
-      email:string;
-      first_name:string;
-      last_name:string;
-      role:number
-    }>({
+    fetchMenus: builder.query<Menu[] | [], void>({
+      query: () => ({
+        url: `/role/findAllMenus`,
+        method: "GET",
+      }),
+    }),
+    updateRoleMenus: builder.mutation<IRole[] | [], RoleChange[]>({
+      query: (roleChange) => ({
+        url: `/role/update_role_menus/`,
+        method: "PUT",
+        data: { roleChange: roleChange },
+      }),
+    }),
+    saveUser: builder.mutation<
+      IUser,
+      {
+        username: string;
+        email: string;
+        first_name: string;
+        last_name: string;
+        role: number;
+      }
+    >({
       query: ({ username, email, first_name, last_name, role }) => ({
         url: "/sign/save",
-        method: "POST", 
+        method: "POST",
         data: {
           username,
           email,
           first_name,
           last_name,
-          role
+          role,
         },
       }),
     }),
-    fetchUserById: builder.query<IUser, {id:number}>({
-      query: ({id}) => ({
+    fetchUserById: builder.query<IUser, { id: number }>({
+      query: ({ id }) => ({
         url: `/sign/findById/${id}`,
         method: "GET",
       }),
@@ -84,14 +106,14 @@ export const userService = createApi({
     deleteUser: builder.mutation<IUser, { id: number }>({
       query: ({ id }) => ({
         url: `/sign/delete/${id}`,
-        method: "DELETE"
+        method: "DELETE",
       }),
     }),
   }),
 });
 
-export const { 
-  useFetchDirectorsQuery, 
+export const {
+  useFetchDirectorsQuery,
   useFetchManagersQuery,
   useFetchUsersQuery,
   useUploadUsersMutation,
@@ -100,5 +122,7 @@ export const {
   useSaveUserMutation,
   useFetchUserByIdQuery,
   useDeleteUserMutation,
-  useFetchTechnicalsQuery
+  useFetchTechnicalsQuery,
+  useFetchMenusQuery,
+  useUpdateRoleMenusMutation,
 } = userService;

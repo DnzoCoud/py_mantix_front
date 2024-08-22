@@ -32,10 +32,10 @@ export default function DashboardLayout({
       />
       <div className="flex w-full h-full">
         <SideBar />
-        <main className="flex flex-col w-full h-full overflow-auto ">
+        <main className="flex flex-col w-full h-full overflow-auto">
           <NavBar />
           <div
-            className={`dark:bg-dark_bg bg-white p-4 rounded-md transition-all ${
+            className={`dark:bg-dark_bg bg-white p-4 rounded-md transition-all flex flex-col flex-1 ${
               maximixed ? "maximixed" : ""
             }`}
           >
