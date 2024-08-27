@@ -9,6 +9,28 @@ interface IColorClasses {
   icon: string;
 }
 
+export const getSolidColorEvents = (state: number): string => {
+  let colorClasses = "";
+  switch (state) {
+    case 1: //Programado
+      colorClasses = "bg-slate-400 ";
+      break;
+    case 2: //En ejecucion
+      colorClasses = "!bg-blue-400";
+      break;
+    case 3: //Completado
+      colorClasses = "bg-green-400";
+      break;
+    case 4: //Reprogramado
+      colorClasses = "bg-yellow-400";
+      break;
+    default: //PeticionReprogramado
+      colorClasses = "bg-purple-400";
+      break;
+  }
+  return colorClasses;
+};
+
 export const getColorEvents = (state: number): IColorClasses => {
   let colorClasses: IColorClasses;
 

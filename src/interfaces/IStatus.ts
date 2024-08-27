@@ -1,4 +1,5 @@
 export type IStatus = {
-    id:number
-    name: string
-}
+  id: number;
+  name: string;
+  icon: string;
+};

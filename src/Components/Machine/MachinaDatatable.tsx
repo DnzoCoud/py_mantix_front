@@ -1,7 +1,10 @@
 import { IMaquina } from "@/interfaces/IMaquina";
 import { setDeleteMachine, setMachines } from "@/redux/features/machineSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { useDeleteMachineMutation, useFetchMachinesQuery } from "@/redux/services/machineService";
+import {
+  useDeleteMachineMutation,
+  useFetchMachinesQuery,
+} from "@/redux/services/machineService";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -13,6 +16,7 @@ import { useDispatch } from "react-redux";
 import MachineForm from "./MachineForm";
 import { useToastStore } from "@/stores/useToastStore";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
+import MachineHistory from "./MachineHistory";
 
 export default function MachinaDatatable() {
   const [machine, setMachine] = useState<IMaquina>();
@@ -21,10 +25,16 @@ export default function MachinaDatatable() {
   });
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [editMachine, setEditMachine] = useState<boolean>(false);
+  const [showHistory, setShowHistory] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { data: fetchMachines, isLoading, isError, refetch } = useFetchMachinesQuery();
+  const {
+    data: fetchMachines,
+    isLoading,
+    isError,
+    refetch,
+  } = useFetchMachinesQuery();
   const machines = useAppSelector((state) => state.machine.machines);
-  const [deleteMachine] = useDeleteMachineMutation()
+  const [deleteMachine] = useDeleteMachineMutation();
   const [saveLoad, setSaveLoad] = useState<boolean>(false);
   const toastStore = useToastStore();
 
@@ -33,9 +43,9 @@ export default function MachinaDatatable() {
   }, [refetch]);
   useEffect(() => {
     if (fetchMachines) {
-      dispatch(setMachines(fetchMachines))
-    };
-  }, [fetchMachines, dispatch ]);
+      dispatch(setMachines(fetchMachines));
+    }
+  }, [fetchMachines, dispatch]);
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -59,36 +69,51 @@ export default function MachinaDatatable() {
     );
   };
 
-  const handleDelete = async (maquina:IMaquina) => {
-    setSaveLoad(true)
+  const handleDelete = async (maquina: IMaquina) => {
+    setSaveLoad(true);
     try {
-      await deleteMachine({id: maquina.id}).unwrap()
-      dispatch(setDeleteMachine(maquina.id))
-      toastStore.setMessage("Eliminacion Correcta", toastStore.SUCCES_TOAST)
-    } catch (error:any) {
-      toastStore.setMessage("Error al eliminar", toastStore.ERROR_TOAST)
-    }finally{
-      setSaveLoad(false)
+      await deleteMachine({ id: maquina.id }).unwrap();
+      dispatch(setDeleteMachine(maquina.id));
+      toastStore.setMessage("Eliminacion Correcta", toastStore.SUCCES_TOAST);
+    } catch (error: any) {
+      toastStore.setMessage("Error al eliminar", toastStore.ERROR_TOAST);
+    } finally {
+      setSaveLoad(false);
     }
-  }
-  const confirmDelete = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>, maquina:IMaquina) =>{
+  };
+  const confirmDelete = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    maquina: IMaquina
+  ) => {
     confirmPopup({
       target: event.currentTarget,
-      message: 'Deseas eliminar este elemento?',
-      icon: 'pi pi-info-circle',
-      defaultFocus: 'reject',
-      acceptClassName: 'p-button-danger',
+      message: "Deseas eliminar este elemento?",
+      icon: "pi pi-info-circle",
+      defaultFocus: "reject",
+      acceptClassName: "p-button-danger",
       accept: () => {
-        handleDelete(maquina)
+        handleDelete(maquina);
       },
-      reject:() => {return false}
-
-    })
-  }
+      reject: () => {
+        return false;
+      },
+    });
+  };
 
   const actionHandler = (rowData: IMaquina) => {
     return (
       <React.Fragment>
+        <Button
+          icon="pi pi-clock"
+          rounded
+          text
+          className="mr-2"
+          onClick={() => {
+            setShowHistory(true);
+            setMachine({ ...rowData });
+          }}
+          severity="help"
+        />
         <Button
           icon="pi pi-pencil"
           rounded
@@ -96,7 +121,14 @@ export default function MachinaDatatable() {
           className="mr-2"
           onClick={() => showDialog(rowData)}
         />
-        <Button icon="pi pi-trash" rounded text severity="danger" onClick={(e) => confirmDelete(e, rowData)} loading={saveLoad} />
+        <Button
+          icon="pi pi-trash"
+          rounded
+          text
+          severity="danger"
+          onClick={(e) => confirmDelete(e, rowData)}
+          loading={saveLoad}
+        />
       </React.Fragment>
     );
   };
@@ -113,7 +145,7 @@ export default function MachinaDatatable() {
   return (
     <>
       {/* <Loader isLoad={isLoading}/> */}
-      <ConfirmPopup/>
+      <ConfirmPopup />
 
       <DataTable
         tableStyle={{ minWidth: "50rem" }}
@@ -163,6 +195,18 @@ export default function MachinaDatatable() {
         onHide={hideDialog}
       >
         <MachineForm id={machine?.id} />
+      </Dialog>
+
+      <Dialog
+        visible={showHistory}
+        style={{ width: "95%" }}
+        breakpoints={{ "960px": "75vw", "641px": "90vw" }}
+        header="Historial Maquina"
+        modal
+        className="p-1"
+        onHide={() => setShowHistory(false)}
+      >
+        <MachineHistory id={machine?.id ?? 0} />
       </Dialog>
     </>
   );

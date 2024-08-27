@@ -1,4 +1,4 @@
-import { IEvent } from "@/interfaces/IEvent";
+import { IEvent, Maintenancehistory } from "@/interfaces/IEvent";
 import axiosBaseQuery from "@/lib/axiosBaseQuery";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
@@ -74,6 +74,18 @@ export const eventService = createApi({
       }),
       invalidatesTags: ["Events", "EventsByDay"],
     }),
+    getHistoryForMachine: builder.query<
+      Maintenancehistory[],
+      { machine: number }
+    >({
+      query: ({ machine }) => ({
+        url: "/event/get_history_for_machine",
+        method: "GET",
+        params: {
+          machine: machine,
+        },
+      }),
+    }),
   }),
 });
 
@@ -85,4 +97,5 @@ export const {
   useUpdateEventMutation,
   useUploadEventsMutation,
   useReprogramRequestMutation,
+  useGetHistoryForMachineQuery,
 } = eventService;

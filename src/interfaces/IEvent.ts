@@ -36,3 +36,12 @@ export type HistoryStatus = {
   previous_state: IStatus;
   actual_state: IStatus;
 };
+
+export type Maintenancehistory = {
+  id: number;
+  maintenance_date: string;
+  description: string;
+  machine: IMaquina;
+  performed_by: IUser;
+  status: IStatus;
+};
