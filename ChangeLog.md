@@ -18,4 +18,4 @@
 
 ## Resumen Ejecutivo
 
-La versión 1.1.0 incluye un rediseño significativo del dashboard y nuevas capacidades multilenguaje, además de mejoras en el rendimiento y correcciones de errores importantes.
+La versión 1.1.0 incluye un rediseño y nuevas capacidades, además de mejoras en el rendimiento y correcciones de errores importantes.
