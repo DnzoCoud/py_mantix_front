@@ -12,6 +12,7 @@ import { MeterGroup } from "primereact/metergroup";
 import { useAppSelector } from "@/redux/hooks";
 import { EVENT_STATE } from "@/Utils/constants";
 import { IEvent } from "@/interfaces/IEvent";
+import EventRequest from "./EventRquest";
 
 export default function EventStepper({ event }: { event: IEvent }) {
   const eventStates = EVENT_STATE;
@@ -43,6 +44,9 @@ export default function EventStepper({ event }: { event: IEvent }) {
           break;
         case eventStates.REPROGRAMADO:
           backgroundColor = "bg-yellow-300"; // Color para el quinto ítem activo
+          break;
+        case eventStates.PETICION_REPROGRAMADO:
+          backgroundColor = "bg-purple-500"; // Color para el quinto ítem activo
           break;
         default:
           backgroundColor = ""; // Otros ítems activos no tendrán un color de fondo
@@ -84,6 +88,11 @@ export default function EventStepper({ event }: { event: IEvent }) {
       icon: PrimeIcons.CALENDAR_MINUS,
       template: (item) => itemRenderer(item, eventStates.REPROGRAMADO),
     },
+    {
+      label: "Reprogramado",
+      icon: PrimeIcons.CALENDAR_TIMES,
+      template: (item) => itemRenderer(item, eventStates.PETICION_REPROGRAMADO),
+    },
   ];
 
   return (
@@ -98,27 +107,28 @@ export default function EventStepper({ event }: { event: IEvent }) {
         }}
       />
       <div className="mt-4 w-full flex flex-col tr">
-        {(activeIndex === eventStates.PROGRAMADO ||
-          event.history_status?.previous_state.id ===
-            eventStates.PROGRAMADO) && (
+        {activeIndex === eventStates.PROGRAMADO && (
           <EventFormProgram
             setActiveIndex={setActiveIndex}
             activeIndex={activeIndex}
             event={event}
           />
         )}
-        {((activeIndex === eventStates.EN_EJECUCION &&
-          activeIndex !== eventStates.COMPLETADO) ||
-          event.history_status?.previous_state.id ===
-            eventStates.EN_EJECUCION) && (
+
+        {activeIndex === eventStates.EN_EJECUCION && (
           <EventFormExecute
             setActiveIndex={setActiveIndex}
             activeIndex={activeIndex}
             event={event}
           />
         )}
+
         {activeIndex === eventStates.COMPLETADO && (
           <EventFormComplete event={event} />
+        )}
+
+        {activeIndex === eventStates.PETICION_REPROGRAMADO && (
+          <EventRequest event={event} />
         )}
       </div>
     </>

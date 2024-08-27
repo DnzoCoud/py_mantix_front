@@ -1,10 +1,8 @@
 "use client";
 import { getColorEvents } from "@/Utils/ColorEvents";
 import { EventContentArg } from "@fullcalendar/core/index.js";
-import { Avatar } from "primereact/avatar";
-import { AvatarGroup } from "primereact/avatargroup";
 import { Tag } from "primereact/tag";
-import React, { useEffect } from "react";
+import React from "react";
 
 interface EventContentProps {
   eventInfo: EventContentArg;
@@ -51,32 +49,12 @@ export default function EventContent({ eventInfo }: EventContentProps) {
               <div
                 className={`w-3 h-3 rounded-full ${eventColor.badge_mark}`}
               ></div>
-              <span className="text-xs font-light text-black">
+              <span className="text-xs font-light text-black text-wrap">
                 {eventInfo.event.extendedProps.status.name}
               </span>
             </div>
           </Tag>
         </div>
-        {/* <div className="flex items-center justify-between mx-4">
-          <AvatarGroup
-            pt={{
-              root: {
-                className: "w-full flex justify-center items-center mt-4",
-              },
-            }}
-          >
-            <Avatar
-              label="AR"
-              size="large"
-              shape="circle"
-              pt={{
-                root: {
-                  className: "w-[2rem] h-[2rem]",
-                },
-              }}
-            />
-          </AvatarGroup>
-        </div> */}
       </div>
     </>
   );

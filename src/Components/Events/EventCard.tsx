@@ -139,7 +139,10 @@ export default function EventCard({
       e.preventDefault();
       const updatedEvent = await updateEvent({
         id: event.id,
-        status: EVENT_STATE.REPROGRAMADO,
+        status:
+          authUser?.user.role_detail.id === 7
+            ? EVENT_STATE.PETICION_REPROGRAMADO
+            : EVENT_STATE.REPROGRAMADO,
         start: adjustedStartDate,
         end: adjustedEndDate,
       }).unwrap();
@@ -167,14 +170,22 @@ export default function EventCard({
               <Button
                 severity="warning"
                 outlined
-                label="Reprogramar"
+                label={
+                  authUser?.user.role_detail.id === 7
+                    ? "Enviar petición"
+                    : "Reprogramar"
+                }
                 size="small"
                 className="float-right mb-4"
                 loading={isLoading}
                 type="submit"
               />
               <div className="w-full flex flex-col mt-2">
-                <label htmlFor="">Reprogramar para</label>
+                <label htmlFor="">
+                  {authUser?.user.role_detail.id === 7
+                    ? "Peticion de Reprogramacion"
+                    : "Reprogramar para"}
+                </label>
                 <InputText
                   name="start"
                   value={dates.start}
@@ -284,10 +295,15 @@ export default function EventCard({
           </div>
         </div>
         {event.status_detail.id !== EVENT_STATE.COMPLETADO &&
+          event.status_detail.id !== EVENT_STATE.PETICION_REPROGRAMADO &&
           authUser?.user.role_detail.id !== 3 &&
           (authUser?.user.role_detail.id === 7 ? canReprogram : true) && (
             <Button
-              label="Reprogramar mantenimiento"
+              label={
+                authUser?.user.role_detail.id === 7
+                  ? "Pedir Reprogramar"
+                  : "Reprogramar mantenimiento"
+              }
               severity="warning"
               outlined
               size="small"

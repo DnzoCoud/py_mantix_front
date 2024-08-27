@@ -28,9 +28,9 @@ export default function ChangePasswordPage() {
   const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useAppDispatch();
   const { data: session, status } = useSession();
-  const [updateUser] = useUpdateUserMutation()
-  const authUser = useAppSelector(state => state.auth.authUser)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [updateUser] = useUpdateUserMutation();
+  const authUser = useAppSelector((state) => state.auth.authUser);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function ChangePasswordPage() {
       );
       localStorage.setItem("serverToken", session.user.token);
     }
-  }, [session]);
+  }, [session, dispatch]);
 
   const {
     control,
@@ -62,36 +62,35 @@ export default function ChangePasswordPage() {
   } = useForm<ChangePasswordForm>();
 
   const onSubmit = async (data: ChangePasswordForm) => {
-    await updatePassword(data.password)
+    await updatePassword(data.password);
   };
 
-  const updatePassword = async (newPassword:string) => {
-    setLoading(true)
+  const updatePassword = async (newPassword: string) => {
+    setLoading(true);
 
     try {
-      if(authUser){
+      if (authUser) {
         await updateUser({
-          id:authUser.user.id,
-          password: newPassword
-        }).unwrap()
-        await handleLogout()
-        toast.success("Contraseña cambiada correctamente")
-        router.push("/Login")
+          id: authUser.user.id,
+          password: newPassword,
+        }).unwrap();
+        await handleLogout();
+        toast.success("Contraseña cambiada correctamente");
+        router.push("/Login");
       }
-    } catch (error:any) {
-      toast.error("Error interno")
-      
-    }finally{
-      setLoading(false)
+    } catch (error: any) {
+      toast.error("Error interno");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const handleLogout = async () => {
     // await authData.logout();
-    await logout().unwrap()
+    await logout().unwrap();
     await signOut({ callbackUrl: "/Login" });
-    dispatch(clearAuthUser())
-    localStorage.removeItem('serverToken');
+    dispatch(clearAuthUser());
+    localStorage.removeItem("serverToken");
   };
 
   const password = watch("password");
@@ -108,113 +107,114 @@ export default function ChangePasswordPage() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme='colored'
+        theme="colored"
       />
       <Loader isLoad={loading} />
 
       <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 h-3/4 rounded-md shadow-md bg-white flex justify-between">
-        <div className="flex flex-col justify-center items-center w-2/4">
-          <Image
-            src={Logo.src}
-            alt="Logo"
-            className="object-cover"
-            width={600}
-            height={600}
-            priority
-          />
-        </div>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="w-2/4 flex flex-col justify-center items-start"
-        >
-          <h1 className="font-bold text-4xl">Cambiar Contraseña</h1>
-          <div className="grid grid-cols-12 gap-4 mt-4 w-full">
-            <div className="col-span-12">
-              <div className="w-11/12 flex flex-col mb-4">
-                <FloatLabel>
-                  <Controller
-                    name="password"
-                    control={control}
-                    defaultValue=""
-                    rules={{ required: "La contraseña es requerida" }}
-                    render={({ field }) => (
-                      <Password
-                        {...field}
-                        toggleMask
-                        pt={{
-                          root: { className: "w-full" },
-                          input: { className: "w-full" },
-                          iconField: { className: "w-full" },
-                        }}
-                      />
-                    )}
-                  />
-                  <label
-                    htmlFor="password"
-                    style={{ left: "3%", transition: "all .2s ease" }}
-                  >
-                    Contraseña
-                  </label>
-                </FloatLabel>
-                {errors.password && (
-                  <span className="text-red-500">{errors.password.message}</span>
-                )}
-              </div>
-            </div>
-            <div className="col-span-12">
-              <div className="w-11/12 flex flex-col">
-                <FloatLabel>
-                  <Controller
-                    name="confirmPassword"
-                    control={control}
-                    defaultValue=""
-                    rules={{
-                      required: "Confirmar contraseña es requerido",
-                      validate: (value) =>
-                        value === password || "Las contraseñas no coinciden",
-                    }}
-                    render={({ field }) => (
-                      <Password
-                        {...field}
-                        toggleMask
-                        pt={{
-                          root: { className: "w-full" },
-                          input: { className: "w-full" },
-                          iconField: { className: "w-full" },
-                        }}
-                      />
-                    )}
-                  />
-                  <label
-                    htmlFor="confirmPassword"
-                    style={{ left: "3%", transition: "all .2s ease" }}
-                  >
-                    Confirmar Contraseña
-                  </label>
-                </FloatLabel>
-                {errors.confirmPassword && (
-                  <span className="text-red-500">
-                    {errors.confirmPassword.message}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="col-span-12">
-              <Button
-                type="submit"
-                className="dark:bg-white_bg mt-6"
-                label="Cambiar contraseña"
-                pt={{ root: { className: "w-11/12" } }}
-                loading={loading}
-              />
-            </div>
+        <div className="w-3/4 h-3/4 rounded-md shadow-md bg-white flex justify-between">
+          <div className="flex flex-col justify-center items-center w-2/4">
+            <Image
+              src={Logo.src}
+              alt="Logo"
+              className="object-cover"
+              width={600}
+              height={600}
+              priority
+            />
           </div>
-        </form>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-2/4 flex flex-col justify-center items-start"
+          >
+            <h1 className="font-bold text-4xl">Cambiar Contraseña</h1>
+            <div className="grid grid-cols-12 gap-4 mt-4 w-full">
+              <div className="col-span-12">
+                <div className="w-11/12 flex flex-col mb-4">
+                  <FloatLabel>
+                    <Controller
+                      name="password"
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: "La contraseña es requerida" }}
+                      render={({ field }) => (
+                        <Password
+                          {...field}
+                          toggleMask
+                          pt={{
+                            root: { className: "w-full" },
+                            input: { className: "w-full" },
+                            iconField: { className: "w-full" },
+                          }}
+                        />
+                      )}
+                    />
+                    <label
+                      htmlFor="password"
+                      style={{ left: "3%", transition: "all .2s ease" }}
+                    >
+                      Contraseña
+                    </label>
+                  </FloatLabel>
+                  {errors.password && (
+                    <span className="text-red-500">
+                      {errors.password.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="col-span-12">
+                <div className="w-11/12 flex flex-col">
+                  <FloatLabel>
+                    <Controller
+                      name="confirmPassword"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Confirmar contraseña es requerido",
+                        validate: (value) =>
+                          value === password || "Las contraseñas no coinciden",
+                      }}
+                      render={({ field }) => (
+                        <Password
+                          {...field}
+                          toggleMask
+                          pt={{
+                            root: { className: "w-full" },
+                            input: { className: "w-full" },
+                            iconField: { className: "w-full" },
+                          }}
+                        />
+                      )}
+                    />
+                    <label
+                      htmlFor="confirmPassword"
+                      style={{ left: "3%", transition: "all .2s ease" }}
+                    >
+                      Confirmar Contraseña
+                    </label>
+                  </FloatLabel>
+                  {errors.confirmPassword && (
+                    <span className="text-red-500">
+                      {errors.confirmPassword.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="col-span-12">
+                <Button
+                  type="submit"
+                  className="dark:bg-white_bg mt-6"
+                  label="Cambiar contraseña"
+                  pt={{ root: { className: "w-11/12" } }}
+                  loading={loading}
+                />
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
     </>
-
   );
 }
 {

@@ -5,6 +5,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const eventService = createApi({
   reducerPath: "eventApi",
   baseQuery: axiosBaseQuery,
+  tagTypes: ["Events", "EventsByDay"],
   endpoints: (builder) => ({
     addEvent: builder.mutation<
       IEvent,
@@ -26,6 +27,7 @@ export const eventService = createApi({
         url: `/event/findAll`,
         method: "GET",
       }),
+      providesTags: ["Events"],
     }),
     findEventById: builder.query<IEvent | null, { id?: number }>({
       query: ({ id }) => ({
@@ -38,11 +40,10 @@ export const eventService = createApi({
         url: `/event/findByDay/?start=${date}`,
         method: "GET",
       }),
+      providesTags: ["EventsByDay"],
     }),
-    updateEvent: builder.mutation<
-      IEvent,Partial<IEvent>
-    >({
-      query: (updatedEventData ) => ({
+    updateEvent: builder.mutation<IEvent, Partial<IEvent>>({
+      query: (updatedEventData) => ({
         url: "/event/update",
         method: "PATCH",
         data: {
@@ -50,16 +51,30 @@ export const eventService = createApi({
         },
       }),
     }),
-    uploadEvents: builder.mutation<IEvent[], {excel_base64:string}>({
-      query: ({excel_base64} ) => ({
+    uploadEvents: builder.mutation<IEvent[], { excel_base64: string }>({
+      query: ({ excel_base64 }) => ({
         url: "/event/importEventsByExcel",
         method: "POST",
         data: {
-          excel_base64
-        },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+          excel_base64,
+        },
       }),
-    })                                                                                                                                                                                                  
-  }),                                         
+    }),
+    reprogramRequest: builder.mutation<
+      IEvent,
+      { event: number; action: boolean }
+    >({
+      query: ({ event, action }) => ({
+        url: "/event/reprogram_request",
+        method: "POST",
+        data: {
+          event,
+          action,
+        },
+      }),
+      invalidatesTags: ["Events", "EventsByDay"],
+    }),
+  }),
 });
 
 export const {
@@ -68,5 +83,6 @@ export const {
   useFindEventByIdQuery,
   useFindEventsByDayQuery,
   useUpdateEventMutation,
-  useUploadEventsMutation
+  useUploadEventsMutation,
+  useReprogramRequestMutation,
 } = eventService;

@@ -32,9 +32,10 @@ export default function ActivityForm({
     isLoading: technicalLoading,
     refetch,
   } = useFetchTechnicalsQuery();
+
   useEffect(() => {
     refetch();
-  }, []);
+  }, [refetch]);
 
   useEffect(() => {
     if (fetchTechnicians) {

@@ -49,16 +49,29 @@ export const getColorEvents = (state: number): IColorClasses => {
         icon: "pi pi-cloud-download",
       };
       break;
-    default: //Reprogramado
+    case 4: //Reprogramado
       colorClasses = {
-        background: "bg-yellow-300",
+        background: "bg-yellow-200",
         light_background: "bg-yellow-200",
-        hover_background: "bg-yellow-400",
+        hover_background: "hover:bg-yellow-100",
         badge_mark: "bg-yellow-600",
-        badges: "bg-yellow-500",
-        border: "border-2",
-        textColor: "border-2",
-        icon: "",
+        badges: "bg-yellow-300",
+        border: "border-2 border-yellow-300",
+        textColor: "text-yellow-700",
+        icon: "pi pi-calendar-plus",
+      };
+
+      break;
+    default: //PeticionReprogramado
+      colorClasses = {
+        background: "bg-purple-200",
+        light_background: "bg-purple-200",
+        hover_background: "hover:bg-purple-100",
+        badge_mark: "bg-purple-600",
+        badges: "bg-purple-200",
+        border: "border-2 border-purple-500",
+        textColor: "text-purple-500",
+        icon: "pi pi-calendar-times",
       };
       break;
   }

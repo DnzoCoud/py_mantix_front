@@ -28,6 +28,7 @@ export type IEvent = {
   technical_detail: IUser;
   history_status: HistoryStatus | null;
   code: string;
+  request_user: IUser;
 };
 
 export type HistoryStatus = {

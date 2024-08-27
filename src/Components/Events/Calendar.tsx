@@ -11,7 +11,6 @@ import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import DialogEventList from "./DialogEventList";
-import EventContent from "./EventContent";
 import { useFetchEventsQuery } from "@/redux/services/eventService";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/hooks";
@@ -22,7 +21,22 @@ import {
   setEvents,
   setUpdateEvent,
 } from "@/redux/features/eventSlice";
-import EventCount from "./EventCount";
+import dynamic from "next/dynamic";
+import { Skeleton } from "primereact/skeleton";
+
+const EventCount = dynamic(() => import("./EventCount"), {
+  loading: () => (
+    <div className="flex justify-evenly items-center gap-4 p-2 m-4">
+      <Skeleton className="p-2 w-1/4" />
+      <Skeleton className="p-2 w-1/4" />
+      <Skeleton className="p-2 w-1/4" />
+      <Skeleton className="p-2 w-1/4" />
+    </div>
+  ),
+});
+const EventContent = dynamic(() => import("./EventContent"), {
+  loading: () => <Skeleton className="p-12" />,
+});
 
 function Calendar() {
   const authUser = useAppSelector((state) => state.auth.authUser);
@@ -100,7 +114,6 @@ function Calendar() {
 
   const handleDateClick = (info: DateClickArg) => {
     setVisibleDate(true);
-    console.log("Date Click");
     setDateSelect(info.dateStr);
   };
 
