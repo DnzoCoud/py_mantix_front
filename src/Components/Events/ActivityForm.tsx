@@ -127,6 +127,13 @@ export default function ActivityForm({
     ]);
   };
 
+  const removeTechnician = (techIndex: number) => {
+    const newTechnicianActivities = technicianActivities.filter(
+      (_, i) => i !== techIndex
+    );
+    setTechnicianActivities(newTechnicianActivities);
+  };
+
   useEffect(() => {
     setActivities(technicianActivities);
   }, [technicianActivities, setActivities]);
@@ -134,7 +141,21 @@ export default function ActivityForm({
   return (
     <>
       {technicianActivities.map((techAct, techIndex) => (
-        <div key={techIndex} className="my-4 w-full flex flex-col">
+        <div
+          key={techIndex}
+          className="my-2 w-full flex flex-col transition-all bg-zinc-50 px-4 rounded-lg border justify-between items-stretch"
+        >
+          <div className="w-full flex items-center justify-end py-2">
+            <Button
+              size="small"
+              outlined
+              type="button"
+              icon="pi pi-minus"
+              className="border-red-500 text-red-500 hover:bg-red-100 active:bg-red-200 !p-1 "
+              title="Eliminar tecnico"
+              onClick={() => removeTechnician(techIndex)} // Elimina tecnico
+            />
+          </div>
           <FloatLabel
             pt={{
               root: {
@@ -174,7 +195,7 @@ export default function ActivityForm({
           {techAct.activities.map((task, index) => (
             <div
               key={index}
-              className="flex items-center justify-start mt-2 ml-4"
+              className="flex items-center justify-start mt-2 ml-4 "
             >
               <Checkbox
                 onChange={() => toggleComplete(index, techIndex)}
@@ -200,11 +221,26 @@ export default function ActivityForm({
                 style={{
                   textDecoration: task.completed ? "line-through" : "none",
                   fontStyle: task.completed ? "italic" : "normal",
+                  color: task.completed ? "gray" : "black",
                 }}
-                className="bg-slate-200 w-full p-[0.2rem] rounded-md"
+                className={`bg-white border-b w-full p-[0.2rem] focus:bg-zinc-50 ${
+                  task.completed ? "border-blue-500" : " border-black"
+                }`}
               />
             </div>
           ))}
+          <div className="mt-8 w-full flex items-center justify-between flex-wrap pb-4">
+            <small className="text-zinc-400">
+              Oprime enter para una nueva actividad
+            </small>
+            <Button
+              label="Añadir Actividad"
+              size="small"
+              outlined
+              type="button"
+              onClick={() => addTask(techIndex)} // Añade nueva actividad
+            />
+          </div>
         </div>
       ))}
       <Button

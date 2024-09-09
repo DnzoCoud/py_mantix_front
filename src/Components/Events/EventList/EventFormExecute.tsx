@@ -4,7 +4,6 @@ import { PrimeIcons } from "primereact/api";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import ActivityForm, { TechnicianActivities } from "../ActivityForm";
-import { IActivity } from "@/interfaces/IActivity";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IWorkOrder } from "@/interfaces/IWorkOrder";
 import { useUpdateEventMutation } from "@/redux/services/eventService";
@@ -21,6 +20,7 @@ import { FloatLabel } from "primereact/floatlabel";
 import { useUpdateMachineMutation } from "@/redux/services/machineService";
 import { transformToTechnicianActivities } from "@/Utils/useComposables";
 import { useAppSelector } from "@/redux/hooks";
+import { toast } from "react-toastify";
 
 export default function EventFormExecute({
   setActiveIndex,
@@ -49,6 +49,15 @@ export default function EventFormExecute({
   const cause = watch("cause", "");
   const observation = watch("observation", "");
   const onSubmit: SubmitHandler<IWorkOrder> = async (data) => {
+    if (
+      !data.cause?.trim() ||
+      !data.observation?.trim() ||
+      activity.length === 0
+    ) {
+      toast.error("Debe ingresar una causa y observación.");
+
+      return;
+    }
     if (data.observation && data.cause) {
       await saveEjecution(data.observation.trim(), data.cause.trim());
       setActiveIndex(activeIndex + 1);
@@ -78,6 +87,7 @@ export default function EventFormExecute({
       });
     } catch (error) {
       console.error("Error saving execution:", error);
+      toast.error("Error al completar el mantenimiento");
     } finally {
       setSubmitLoad(false);
     }
@@ -100,10 +110,10 @@ export default function EventFormExecute({
   return (
     <>
       <form
-        className="flex flex-col justify-start"
+        className="flex flex-col justify-start relative"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between sticky top-0 bg-white z-10 py-1">
           <Button
             label="Atras"
             size="small"
@@ -127,6 +137,10 @@ export default function EventFormExecute({
               type="submit"
               loading={submitLoad}
               // onClick={() => setActiveIndex(activeIndex + 1)}
+              disabled={
+                !cause?.trim() || !observation?.trim() || activity.length === 0
+              }
+              className="disabled:border-green-300 disabled:text-green-300"
             />
           )}
         </div>
@@ -158,7 +172,9 @@ export default function EventFormExecute({
                       },
                     }}
                     disabled={
-                      event.status_detail.id !== EVENT_STATE.EN_EJECUCION
+                      event.status_detail.id !== EVENT_STATE.EN_EJECUCION &&
+                      event.history_status?.previous_state.id !==
+                        EVENT_STATE.EN_EJECUCION
                     }
                     onChange={(e) => setValue("cause", e.target.value)}
                   />
@@ -195,7 +211,9 @@ export default function EventFormExecute({
                       },
                     }}
                     disabled={
-                      event.status_detail.id !== EVENT_STATE.EN_EJECUCION
+                      event.status_detail.id !== EVENT_STATE.EN_EJECUCION &&
+                      event.history_status?.previous_state.id !==
+                        EVENT_STATE.EN_EJECUCION
                     }
                     onChange={(e) => setValue("observation", e.target.value)}
                   />

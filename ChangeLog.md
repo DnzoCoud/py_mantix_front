@@ -19,3 +19,20 @@
 ## Resumen Ejecutivo
 
 La versión 1.1.0 incluye un rediseño y nuevas capacidades, además de mejoras en el rendimiento y correcciones de errores importantes.
+
+---
+
+# Versión 1.1.1 - 9 de Septiembre de 2024
+
+## Nuevas Características
+
+- **Eliminar Tecnicos en los mantenimientos**: Ahora en los mantenimientos podran eliminar los tecnicos que ya no requieran ser asignados al manto.
+- **Boton de añadir activididad para mayor accesibilidad y facilidad**: Boton para ñadir las actividades mas visual para mayor facilidad de uso.
+
+## Mejoras
+
+- **Interfaz de Usuario**: Se mejoraron los colores y el diseño de las actividades.
+
+## Correcciones de Errores
+
+- **Error de mantenimientos**: Solucionado el problema en algunos mantenimientos no actualizaba la informacion y sin embargo continuaba el proceso creando errores futuros.

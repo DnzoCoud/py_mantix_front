@@ -75,7 +75,7 @@ export default function EventCard({
         />
         <div className="flex items-center gap-2 ">
           <span className={`font-bold ${eventColor.textColor} dark:text-black`}>
-            {event.machine_detail.name}
+            #{event.code} - {event.machine_detail.name}
           </span>
           <Tag
             severity="warning"

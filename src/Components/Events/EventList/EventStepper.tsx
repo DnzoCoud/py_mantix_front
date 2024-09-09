@@ -1,15 +1,11 @@
 "use client";
-import React, { useRef, useState } from "react";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import React, { useState } from "react";
 import { Steps } from "primereact/steps";
 import { MenuItem } from "primereact/menuitem";
 import { PrimeIcons } from "primereact/api";
 import EventFormProgram from "./EventFormProgram";
 import EventFormExecute from "./EventFormExecute";
 import EventFormComplete from "./EventFormComplete";
-
-import { MeterGroup } from "primereact/metergroup";
-import { useAppSelector } from "@/redux/hooks";
 import { EVENT_STATE } from "@/Utils/constants";
 import { IEvent } from "@/interfaces/IEvent";
 import EventRequest from "./EventRquest";
@@ -29,7 +25,12 @@ export default function EventStepper({ event }: { event: IEvent }) {
 
   const itemRenderer = (item: MenuItem, itemIndex: number) => {
     const isActiveItem = activeIndex === itemIndex;
-    let backgroundColor = isActiveItem ? "" : "bg-gray-200"; // Color de fondo predeterminado para los ítems no activos
+    const isCompletedItem = itemIndex < activeIndex;
+    let backgroundColor = isActiveItem
+      ? ""
+      : isCompletedItem
+      ? "bg-blue-200"
+      : "bg-gray-200"; // Color de fondo predeterminado para los ítems no activos
     // console.log(activeIndex);
     if (isActiveItem) {
       switch (activeIndex) {
@@ -53,17 +54,24 @@ export default function EventStepper({ event }: { event: IEvent }) {
           break;
       }
     }
+    const icon = isCompletedItem ? PrimeIcons.CHECK : item.icon;
+
     const textColor = isActiveItem
       ? "text-white dark:text-black"
+      : isCompletedItem
+      ? "text-blue-600"
       : "text-gray-400";
 
     return (
-      <span
-        className={`  inline-flex justify-center items-center border rounded-full h-12 w-12 z-10 cursor-pointer ${textColor} ${backgroundColor}`}
-        onClick={() => setActiveIndex(itemIndex)}
-      >
-        <i className={`${item.icon} text-xl`} />
-      </span>
+      <div className="flex flex-col items-center justify-center">
+        <span
+          className={`inline-flex justify-center items-center border rounded-full h-12 w-12 z-10 cursor-pointer ${textColor} ${backgroundColor} pointer-events-none`}
+          onClick={() => setActiveIndex(itemIndex)}
+        >
+          <i className={`${icon} text-xl`} />
+        </span>
+        <small className="text-zinc-300 ">{item.label}</small>
+      </div>
     );
   };
 
@@ -89,7 +97,7 @@ export default function EventStepper({ event }: { event: IEvent }) {
       template: (item) => itemRenderer(item, eventStates.REPROGRAMADO),
     },
     {
-      label: "Reprogramado",
+      label: "Petición",
       icon: PrimeIcons.CALENDAR_TIMES,
       template: (item) => itemRenderer(item, eventStates.PETICION_REPROGRAMADO),
     },

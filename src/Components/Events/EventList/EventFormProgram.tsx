@@ -6,7 +6,6 @@ import { Button } from "primereact/button";
 import { IEventFormChange } from "@/interfaces/Props/IEventFormChange";
 import { FloatLabel } from "primereact/floatlabel";
 import ActivityForm, { TechnicianActivities } from "../ActivityForm";
-import { IActivity } from "@/interfaces/IActivity";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IWorkOrder } from "@/interfaces/IWorkOrder";
 import {
@@ -19,10 +18,8 @@ import { useUpdateEventMutation } from "@/redux/services/eventService";
 import { setUpdateEvent } from "@/redux/features/eventSlice";
 import { allowedEjecuteRoles, EVENT_STATE } from "@/Utils/constants";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useFetchTechnicalsQuery } from "@/redux/services/userService";
-import { IUser } from "@/interfaces/IUser";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { useAppSelector } from "@/redux/hooks";
+import { toast } from "react-toastify";
 
 export default function EventFormProgram({
   setActiveIndex,
@@ -36,10 +33,6 @@ export default function EventFormProgram({
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
   );
-  const [technicals, setTechnicals] = useState<IUser[]>([]);
-  const [technical, setTechnical] = useState<IUser | null>();
-  const { data: fetchTechnicals, isLoading: technicalLoading } =
-    useFetchTechnicalsQuery();
 
   const dispatch = useDispatch();
   const authUser = useAppSelector((state) => state.auth.authUser);
@@ -55,8 +48,17 @@ export default function EventFormProgram({
   // const existWorkOrder = useAppSelector(state => state.workOrder.workOrders.find(order => order.event === event.id)  || null)
 
   const onSubmit: SubmitHandler<IWorkOrder> = async (data) => {
+    // Validación: Si no hay diagnóstico o actividades
+    if (!data.diagnosis.trim() || activity.length === 0) {
+      toast.error("Debe ingresar un diagnóstico y al menos una actividad.");
+
+      return;
+    }
     try {
-      if (event.status_detail.id === EVENT_STATE.PROGRAMADO) {
+      if (
+        event.status_detail.id === EVENT_STATE.PROGRAMADO ||
+        event.history_status?.previous_state.id === EVENT_STATE.PROGRAMADO
+      ) {
         await ejecutionEvent(data.diagnosis.trim(), event.id);
         setActiveIndex(activeIndex + 1);
       }
@@ -91,17 +93,11 @@ export default function EventFormProgram({
       }).unwrap();
       dispatch(setUpdateEvent(updatedEvent));
     } catch (error) {
-      console.error("Error executing event:", error);
+      toast.error("Error al empezar el mantenimiento");
     } finally {
       setSubmitLoad(false);
     }
   };
-
-  useEffect(() => {
-    if (fetchTechnicals) {
-      setTechnicals(fetchTechnicals);
-    }
-  }, [fetchTechnicals]);
 
   useEffect(() => {
     register("diagnosis", { required: "Este campo es obligatorio" });
@@ -111,16 +107,13 @@ export default function EventFormProgram({
     }
   }, [fetchWorkOrder, register, setValue]);
 
-  const handleTechnicalChange = (event: IUser | null) => {
-    setTechnical(event);
-  };
   return (
     <>
       <form
         className="flex flex-col justify-start relative"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between sticky top-0 bg-white z-10 mb-2">
           <div className="flex items-center">
             <div className="h-3 w-3 bg-gray-800 rounded-full mr-2"></div>
             <span>Mantenimiento Programado</span>
@@ -128,7 +121,9 @@ export default function EventFormProgram({
           {allowedEjecuteRoles.includes(authUser?.user.role_detail.id ?? 0) && (
             <Button
               label={
-                event.status_detail.id === EVENT_STATE.PROGRAMADO
+                event.status_detail.id === EVENT_STATE.PROGRAMADO ||
+                event.history_status?.previous_state.id ===
+                  EVENT_STATE.PROGRAMADO
                   ? "Empezar ejecucion"
                   : "Siguiente"
               }
@@ -137,6 +132,7 @@ export default function EventFormProgram({
               outlined
               type="submit"
               loading={submitLoad}
+              disabled={!diagnosis.trim() || activity.length === 0}
               // onClick={handleExecute}
             />
           )}
@@ -158,7 +154,9 @@ export default function EventFormProgram({
                         },
                       }}
                       disabled={
-                        event.status_detail.id !== EVENT_STATE.PROGRAMADO
+                        event.status_detail.id !== EVENT_STATE.PROGRAMADO &&
+                        event.history_status?.previous_state.id !==
+                          EVENT_STATE.PROGRAMADO
                       }
                       onChange={(e) => setValue("diagnosis", e.target.value)}
                     />
