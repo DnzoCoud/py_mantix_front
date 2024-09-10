@@ -107,6 +107,10 @@ export default function EventFormProgram({
     }
   }, [fetchWorkOrder, register, setValue]);
 
+  const handleActivitiesChange = (newActivities: TechnicianActivities[]) => {
+    setActivity(newActivities);
+  };
+
   return (
     <>
       <form
@@ -176,7 +180,7 @@ export default function EventFormProgram({
               </div>
               <div className="col-span-12">
                 <div className="w-full flex flex-col">
-                  <ActivityForm setActivities={setActivity} />
+                  <ActivityForm setActivities={handleActivitiesChange} />
                 </div>
               </div>
             </div>

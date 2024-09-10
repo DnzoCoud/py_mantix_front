@@ -9,8 +9,9 @@ import { OverlayPanel } from "primereact/overlaypanel";
 import { IUser } from "@/interfaces/IUser";
 
 interface ActivityFormProps {
-  setActivities: React.Dispatch<React.SetStateAction<TechnicianActivities[]>>;
+  setActivities: (activities: TechnicianActivities[]) => void;
   initialTasks?: TechnicianActivities[];
+  setChange?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface TechnicianActivities {
@@ -21,6 +22,7 @@ export interface TechnicianActivities {
 export default function ActivityForm({
   setActivities,
   initialTasks,
+  setChange,
 }: ActivityFormProps) {
   const [technicianActivities, setTechnicianActivities] = useState<
     TechnicianActivities[]
@@ -88,6 +90,7 @@ export default function ActivityForm({
         : techAct
     );
     setTechnicianActivities(newActivities);
+    setChange?.(true);
   };
 
   const removeTask = (index: number, techIndex: number) => {
@@ -101,6 +104,7 @@ export default function ActivityForm({
         : techAct
     );
     setTechnicianActivities(newActivities);
+    setChange?.(true);
   };
 
   const toggleComplete = (index: number, techIndex: number) => {
@@ -125,6 +129,7 @@ export default function ActivityForm({
         activities: [{ id: null, name: "", completed: false, technical: null }],
       },
     ]);
+    setChange?.(true);
   };
 
   const removeTechnician = (techIndex: number) => {

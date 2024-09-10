@@ -29,6 +29,8 @@ export default function EventFormExecute({
 }: IEventFormChange) {
   const [submitLoad, setSubmitLoad] = useState<boolean>(false);
   const [activity, setActivity] = useState<TechnicianActivities[] | []>([]);
+  const [isActivitiesModified, setIsActivitiesModified] =
+    useState<boolean>(false);
   const [existWorkOrder, setExistWorkOrder] = useState<IWorkOrder>();
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
@@ -59,8 +61,24 @@ export default function EventFormExecute({
       return;
     }
     if (data.observation && data.cause) {
-      await saveEjecution(data.observation.trim(), data.cause.trim());
-      setActiveIndex(activeIndex + 1);
+      if (isActivitiesModified) {
+        setSubmitLoad(true);
+        const updatedWorkOrder = await updateWorkOrder({
+          id: existWorkOrder?.id,
+          observation,
+          cause,
+        }).unwrap();
+        dispatch(setUpdateWorkOrder(updatedWorkOrder));
+        const updatedEvent = await updateEvent({
+          id: event.id,
+          activity_data: activity,
+        }).unwrap();
+        dispatch(setUpdateEvent(updatedEvent));
+        setIsActivitiesModified(false);
+        setSubmitLoad(false);
+      } else {
+        await saveEjecution(data.observation.trim(), data.cause.trim());
+      }
     }
   };
 
@@ -85,6 +103,7 @@ export default function EventFormExecute({
         id: event.machine_detail.id,
         last_maintenance: new Date(),
       });
+      setActiveIndex(activeIndex + 1);
     } catch (error) {
       console.error("Error saving execution:", error);
       toast.error("Error al completar el mantenimiento");
@@ -107,6 +126,11 @@ export default function EventFormExecute({
   const [activities, setActivities] = useState<TechnicianActivities[]>(
     transformToTechnicianActivities(event.activities)
   );
+
+  const handleActivitiesChange = (newActivities: TechnicianActivities[]) => {
+    setActivity(newActivities);
+  };
+
   return (
     <>
       <form
@@ -129,7 +153,11 @@ export default function EventFormExecute({
           </div>
           {allowedEjecuteRoles.includes(authUser?.user.role_detail.id ?? 0) && (
             <Button
-              label="Completar Mantenimiento"
+              label={
+                isActivitiesModified
+                  ? "Guardar Cambios"
+                  : "Completar Mantenimiento"
+              }
               size="small"
               outlined
               icon={PrimeIcons.ARROW_RIGHT}
@@ -153,8 +181,9 @@ export default function EventFormExecute({
             <div className="col-span-12">
               <div className="w-full flex flex-col">
                 <ActivityForm
-                  setActivities={setActivity}
+                  setActivities={handleActivitiesChange}
                   initialTasks={activities}
+                  setChange={setIsActivitiesModified}
                 />
               </div>
             </div>
