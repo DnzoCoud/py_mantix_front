@@ -20,6 +20,7 @@ import { allowedEjecuteRoles, EVENT_STATE } from "@/Utils/constants";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useAppSelector } from "@/redux/hooks";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 export default function EventFormProgram({
   setActiveIndex,
@@ -86,7 +87,7 @@ export default function EventFormProgram({
 
       const updatedEvent = await updateEvent({
         id: eventId,
-        init_time: new Date().toLocaleTimeString(),
+        init_time: moment().format("HH:mm:ss"),
         // technical: technicalId,
         status: EVENT_STATE.EN_EJECUCION,
         activity_data: activity,
