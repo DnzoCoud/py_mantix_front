@@ -21,6 +21,7 @@ import { useUpdateMachineMutation } from "@/redux/services/machineService";
 import { transformToTechnicianActivities } from "@/Utils/useComposables";
 import { useAppSelector } from "@/redux/hooks";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 export default function EventFormExecute({
   setActiveIndex,
@@ -93,7 +94,7 @@ export default function EventFormExecute({
       dispatch(setUpdateWorkOrder(updatedWorkOrder));
       const updatedEvent = await updateEvent({
         id: event.id,
-        end_time: new Date().toLocaleTimeString(),
+        end_time: moment().format("HH:mm:ss"),
         activity_data: activity,
         status: EVENT_STATE.COMPLETADO,
       }).unwrap();
