@@ -99,14 +99,14 @@ export default function NavBar() {
   const authUser = useAppSelector((state) => state.auth.authUser);
   return (
     <>
-      <div className="w-full h-16 flex justify-center items-center z-40">
-        <div className="flex justify-between px-4 items-center w-full h-full bg-white dark:bg-dark_bg p-2 rounded-md transition-all ease-out ">
+      <div className="w-full h-12 flex justify-center items-center z-40 mt-2 ">
+        <div className="flex justify-between px-4 items-center w-full md:w-[60%]  lg:w-[40%] h-full   bg-gradient-to-br from-zinc-50 dark:from-zinc-800 to-zinc-100 dark:to-zinc-900  dark:bg-dark_bg p-2 rounded-md transition-all ease-out border dark:border-zinc-600">
           <div
             className="flex justify-evenly items-center cursor-pointer"
             onClick={() => router.push("/Dashboard")}
           >
             <h1 className="dark:text-white font-extrabold mr-1">Mantix</h1>
-            <Tag severity="warning" value="Pro" />
+            <Tag className="!bg-black" value="Pro" />
           </div>
           {/* <div className="flex justify-evenly items-center">
             <Menubar
@@ -120,18 +120,19 @@ export default function NavBar() {
             <span
               onClick={handleToggleTheme}
               className={
-                icon + " mr-2 p-2 cursor-pointer text-xl dark:text-white"
+                icon +
+                " mr-2 p-2 cursor-pointer text-xl dark:text-white !hidden"
               }
             ></span>
-            <div className="flex flex-col mr-4">
+            {/* <div className="flex flex-col mr-4">
               <span className="dark:text-white">{authUser?.user.username}</span>
               <span className="p-[0.1rem] bg-blue-400 text-center text-white rounded-lg ">
                 {authUser?.user.role_detail.name}
               </span>
-            </div>
+            </div> */}
             <Avatar
               label={getFirstTwoLetters(authUser?.user.username)}
-              style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
+              style={{ backgroundColor: "#000", color: "#ffffff" }}
               onContextMenu={(e) => cm.current?.show(e)}
             />
           </div>

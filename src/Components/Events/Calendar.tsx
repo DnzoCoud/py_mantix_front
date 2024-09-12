@@ -23,6 +23,8 @@ import {
 } from "@/redux/features/eventSlice";
 import dynamic from "next/dynamic";
 import { Skeleton } from "primereact/skeleton";
+import esLocale from "@fullcalendar/core/locales/es";
+import listPlugin from "@fullcalendar/list";
 
 const EventCount = dynamic(() => import("./EventCount"), {
   loading: () => (
@@ -110,6 +112,15 @@ function Calendar() {
   }, [dispatch]);
   const handleEventClick = (evento: EventClickArg) => {
     setVisible(true);
+    console.log(evento);
+    // <EventCard event={event} refetch={refetch} />
+    // return (
+    //   <DialogEvent
+    //     eventInfo={}
+    //     visible={visible}
+    //     onClose={handleEventClose}
+    //   />
+    // );
   };
 
   const handleDateClick = (info: DateClickArg) => {
@@ -152,27 +163,23 @@ function Calendar() {
       <FullCalendar
         ref={calendarRef}
         datesSet={handleDatesSet}
-        plugins={[dayGridPlugin, interactionPlugin]}
+        plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
         initialView="dayGridMonth"
         // locale={"es"}
         nowIndicator
+        nowIndicatorClassNames={"bg-red-500"}
         eventClick={(e: EventClickArg) => handleEventClick(e)}
         events={eventsForFullCalendar}
         dateClick={handleDateClick}
         eventContent={(eventInfo) => <EventContent eventInfo={eventInfo} />}
         headerToolbar={{
           left: "title",
-          center: "",
+          center: "dayGridMonth,dayGridWeek,listWeek",
           right: "prev,today,next",
         }}
         timeZone="local"
+        locale={esLocale}
       />
-
-      {/* <DialogEvent
-        eventInfo={eventInfo}
-        visible={visible}
-        onClose={handleEventClose}
-      /> */}
 
       {dateSelect && (
         <DialogEventList

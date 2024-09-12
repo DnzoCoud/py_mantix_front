@@ -50,41 +50,42 @@ function SideBar() {
     <>
       <aside
         className={`${
-          sidebarStore.isOpen ? "w-[20%]" : "w-[5%]"
-        } relative dark:bg-dark_bg bg-white transition-all border-r`}
+          sidebarStore.isOpen ? "w-[15%]" : "w-[5%]"
+        } relative dark:bg-dark_bg transition-all border bg-gradient-to-br from-zinc-50 to-zinc-100 m-2 rounded-lg`}
       >
         <div
-          className={`flex items-center w-full border-b p-4 ${
-            sidebarStore.isOpen ? "justify-center " : "justify-center"
+          className={`flex items-center w-full justify-center ${
+            sidebarStore.isOpen ? "gap-2 " : "gap-0"
           } transition-all`}
         >
-          <h1 className="font-bold text-xl dark:text-white">Mantix App</h1>
-          {/* <Avatar
-            label={getFirstTwoLetters(authUser?.user.username)}
-            style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
-            size="large"
-          />
-          <div
-            className={`flex flex-col items-start justify-center ml-2 ${
-              sidebarStore.isOpen ? "" : "hidden"
+          <span
+            className={`font-bold text-xl dark:text-white text-end overflow-hidden ${
+              sidebarStore.isOpen ? "w-1/2" : "w-0"
             }`}
           >
-            <span className="font-bold">{authUser?.user.username}</span>
-            <small className="text-slate-600">
-              {authUser?.user.first_name} {authUser?.user.last_name}
-            </small>
-            <span className="font-bold">{authUser?.user.role_detail.name}</span>
-          </div> */}
+            Mantix{" "}
+          </span>
+          <span
+            className={`font-bold text-white bg-black py-2  flex-1 ${
+              sidebarStore.isOpen
+                ? "rounded-l-xl rounded-tr-lg pl-2 " //Cuando el sidebar esta abierto
+                : "text-center text-2xl rounded-t-lg"
+            }`}
+          >
+            {sidebarStore.isOpen ? "Pro" : "M"}
+          </span>
         </div>
         <div className="overflow-x-auto">
           <MenuSidebar items={items} />
         </div>
-        {/* <span
+
+        <span
           onClick={() => sidebarStore.handleOpen()}
           className={`${
             sidebarStore.isOpen ? PrimeIcons.ANGLE_LEFT : PrimeIcons.ANGLE_RIGHT
-          } absolute top-4 -right-4 p-2 rounded-full shadow-md bg-white dark:bg-dark_bg cursor-pointer hover:bg-gray-200 transition-all z-50`}
-        ></span> */}
+          } absolute top-8 -right-4 p-2 rounded-full shadow-md bg-white dark:bg-dark_bg cursor-pointer hover:bg-gray-200 transition-all z-50 active:bg-gray-300`}
+        ></span>
+
         <div className="w-full absolute bottom-2 flex  justify-center items-center">
           <Button
             label={sidebarStore.isOpen ? "Cerrar Sesion" : undefined}
