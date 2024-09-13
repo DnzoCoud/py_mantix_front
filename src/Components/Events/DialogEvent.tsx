@@ -1,31 +1,38 @@
 "use client";
-import { IEvent } from "@/interfaces/IEvent";
-import { EventClickArg } from "@fullcalendar/core/index.js";
 import { Dialog } from "primereact/dialog";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { MenuItem } from "primereact/menuitem";
-import { Steps } from "primereact/steps";
 import React, { useEffect, useState } from "react";
 import EventStepper from "./EventList/EventStepper";
+import { useFindEventByIdQuery } from "@/redux/services/eventService";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 export default function DialogEvent({
   eventInfo,
   visible,
   onClose,
 }: {
-  eventInfo: IEvent;
+  eventInfo?: number;
   visible: boolean;
   onClose: () => void;
 }) {
+  const { data, refetch } = useFindEventByIdQuery(
+    eventInfo ? { id: eventInfo } : skipToken
+  );
+
+  // Refetch the data when eventInfo changes
+  useEffect(() => {
+    if (eventInfo) {
+      refetch();
+    }
+  }, [eventInfo, refetch]);
   return (
     <>
       <Dialog
-        header={eventInfo.title}
+        header={"Evento"}
         visible={visible}
         onHide={onClose}
         draggable={false}
       >
-        {/* <EventStepper /> */}
+        {data && <EventStepper event={data} />}
       </Dialog>
     </>
   );

@@ -103,9 +103,11 @@ export default function NavBar() {
         <div className="flex justify-between px-4 items-center w-full md:w-[60%]  lg:w-[40%] h-full   bg-gradient-to-br from-zinc-50 dark:from-zinc-800 to-zinc-100 dark:to-zinc-900  dark:bg-dark_bg p-2 rounded-md transition-all ease-out border dark:border-zinc-600">
           <div
             className="flex justify-evenly items-center cursor-pointer"
-            onClick={() => router.push("/Dashboard")}
+            onClick={() => router.push("/")}
           >
-            <h1 className="dark:text-white font-extrabold mr-1">Mantix</h1>
+            <h1 className="dark:text-white font-extrabold mr-1 logo_text !tracking-tight">
+              Mantix
+            </h1>
             <Tag className="!bg-black" value="Pro" />
           </div>
           {/* <div className="flex justify-evenly items-center">

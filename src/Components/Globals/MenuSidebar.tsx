@@ -57,8 +57,8 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
                   <i
                     className={`${menu.icon} ${
                       pathName == menu.link
-                        ? "text-blue-400 dark:text-green-400"
-                        : "text-gray-00 dark:text-blue-900 hover:text-black"
+                        ? "text-black dark:text-green-400 "
+                        : "text-zinc-400 dark:text-blue-900 "
                     } ${
                       sidebarStore.isOpen && menu.badge !== undefined
                         ? "mr-2"
@@ -73,7 +73,7 @@ export default function MenuSidebar({ items }: IMenuSidebar) {
                     className={`dark:text-white ${
                       pathName == menu.link
                         ? "font-bold text-black"
-                        : "text-gray-600"
+                        : "text-zinc-500"
                     }
                     ${sidebarStore.isOpen ? "" : "hidden"}
                     `}

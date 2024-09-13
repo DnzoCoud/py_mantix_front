@@ -1,4 +1,8 @@
-import { IEvent, Maintenancehistory } from "@/interfaces/IEvent";
+import {
+  EventManipulationDto,
+  IEvent,
+  Maintenancehistory,
+} from "@/interfaces/IEvent";
 import axiosBaseQuery from "@/lib/axiosBaseQuery";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
@@ -45,6 +49,24 @@ export const eventService = createApi({
     updateEvent: builder.mutation<IEvent, Partial<IEvent>>({
       query: (updatedEventData) => ({
         url: "/event/update",
+        method: "PATCH",
+        data: {
+          ...updatedEventData,
+        },
+      }),
+    }),
+    executeEvent: builder.mutation<IEvent, Partial<EventManipulationDto>>({
+      query: (updatedEventData) => ({
+        url: `/event/execute_event/${updatedEventData.id}`,
+        method: "PATCH",
+        data: {
+          ...updatedEventData,
+        },
+      }),
+    }),
+    completeEvent: builder.mutation<IEvent, Partial<EventManipulationDto>>({
+      query: (updatedEventData) => ({
+        url: `/event/complete_event/${updatedEventData.id}`,
         method: "PATCH",
         data: {
           ...updatedEventData,
@@ -98,4 +120,6 @@ export const {
   useUploadEventsMutation,
   useReprogramRequestMutation,
   useGetHistoryForMachineQuery,
+  useExecuteEventMutation,
+  useCompleteEventMutation,
 } = eventService;

@@ -43,7 +43,12 @@ const EventContent = dynamic(() => import("./EventContent"), {
 function Calendar() {
   const authUser = useAppSelector((state) => state.auth.authUser);
 
-  const [visible, setVisible] = useState<boolean>(false);
+  const [visible, setVisible] = useState<{
+    event_id?: number;
+    open: boolean;
+  }>({
+    open: false,
+  });
   const [visibleDate, setVisibleDate] = useState<boolean>(false);
   const [dateSelect, setDateSelect] = useState<Date | string>("");
   const {
@@ -111,15 +116,14 @@ function Calendar() {
     }
   }, [dispatch]);
   const handleEventClick = (evento: EventClickArg) => {
-    setVisible(true);
-    console.log(evento);
+    const eventId = parseInt(evento.event._def.publicId);
+    setVisible({
+      open: true,
+      event_id: eventId,
+    });
     // <EventCard event={event} refetch={refetch} />
     // return (
-    //   <DialogEvent
-    //     eventInfo={}
-    //     visible={visible}
-    //     onClose={handleEventClose}
-    //   />
+
     // );
   };
 
@@ -128,7 +132,11 @@ function Calendar() {
     setDateSelect(info.dateStr);
   };
 
-  const handleEventClose = () => setVisible(false);
+  const handleEventClose = () =>
+    setVisible({
+      open: false,
+      event_id: undefined,
+    });
   const handleDateClose = () => setVisibleDate(false);
 
   const convertToEventInputs = (events: IEvent[]): EventInput[] => {
@@ -179,6 +187,12 @@ function Calendar() {
         }}
         timeZone="local"
         locale={esLocale}
+      />
+
+      <DialogEvent
+        eventInfo={visible.event_id}
+        visible={visible.open}
+        onClose={handleEventClose}
       />
 
       {dateSelect && (

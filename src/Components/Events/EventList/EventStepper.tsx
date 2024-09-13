@@ -29,7 +29,7 @@ export default function EventStepper({ event }: { event: IEvent }) {
     let backgroundColor = isActiveItem
       ? ""
       : isCompletedItem
-      ? "bg-blue-200"
+      ? "bg-black"
       : "bg-gray-200"; // Color de fondo predeterminado para los ítems no activos
     // console.log(activeIndex);
     if (isActiveItem) {
@@ -38,7 +38,7 @@ export default function EventStepper({ event }: { event: IEvent }) {
           backgroundColor = "bg-gray-300"; // Color para el primer ítem activo
           break;
         case eventStates.EN_EJECUCION:
-          backgroundColor = "bg-blue-300"; // Color para el segundo ítem activo
+          backgroundColor = "bg-white border-2 border-black"; // Color para el segundo ítem activo
           break;
         case eventStates.COMPLETADO:
           backgroundColor = "bg-green-300"; // Color para el cuarto ítem activo
@@ -57,20 +57,23 @@ export default function EventStepper({ event }: { event: IEvent }) {
     const icon = isCompletedItem ? PrimeIcons.CHECK : item.icon;
 
     const textColor = isActiveItem
-      ? "text-white dark:text-black"
+      ? "text-black dark:text-black"
       : isCompletedItem
-      ? "text-blue-600"
+      ? "text-white"
       : "text-gray-400";
 
     return (
       <div className="flex flex-col items-center justify-center">
         <span
           className={`inline-flex justify-center items-center border rounded-full h-12 w-12 z-10 cursor-pointer ${textColor} ${backgroundColor} pointer-events-none`}
-          onClick={() => setActiveIndex(itemIndex)}
         >
           <i className={`${icon} text-xl`} />
         </span>
-        <small className="text-zinc-300 ">{item.label}</small>
+        <small
+          className={` ${isCompletedItem ? "text-zinc-300 " : "text-black"}`}
+        >
+          {item.label}
+        </small>
       </div>
     );
   };
@@ -110,7 +113,7 @@ export default function EventStepper({ event }: { event: IEvent }) {
         activeIndex={activeIndex}
         pt={{
           menuitem: {
-            className: "before:!top-[50%]",
+            className: "before:!top-[40%]",
           },
         }}
       />

@@ -12,6 +12,7 @@ import { clearAuthUser } from "@/redux/features/auth/authSlice";
 import { signOut } from "next-auth/react";
 import { iconMap, rolePermissions } from "@/Utils/constants";
 import { MenuRole } from "@/interfaces/IRole";
+import Logo from "@/Components/assets/img/logo.png";
 
 function SideBar() {
   const router = useRouter();
@@ -54,16 +55,16 @@ function SideBar() {
         } relative dark:bg-dark_bg transition-all border bg-gradient-to-br from-zinc-50 to-zinc-100 m-2 rounded-lg`}
       >
         <div
-          className={`flex items-center w-full justify-center ${
+          className={`flex items-center w-full justify-center  ${
             sidebarStore.isOpen ? "gap-2 " : "gap-0"
           } transition-all`}
         >
           <span
-            className={`font-bold text-xl dark:text-white text-end overflow-hidden ${
+            className={`font-bold text-md py-2  dark:text-white text-end overflow-hidden !tracking-normal logo_text ${
               sidebarStore.isOpen ? "w-1/2" : "w-0"
             }`}
           >
-            Mantix{" "}
+            Mantix
           </span>
           <span
             className={`font-bold text-white bg-black py-2  flex-1 ${
@@ -72,7 +73,11 @@ function SideBar() {
                 : "text-center text-2xl rounded-t-lg"
             }`}
           >
-            {sidebarStore.isOpen ? "Pro" : "M"}
+            {sidebarStore.isOpen ? (
+              "Pro"
+            ) : (
+              <span className="logo_text text-center">x</span>
+            )}
           </span>
         </div>
         <div className="overflow-x-auto">

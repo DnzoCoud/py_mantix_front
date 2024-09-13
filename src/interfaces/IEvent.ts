@@ -3,6 +3,7 @@ import { IActivity } from "./IActivity";
 import { IMaquina } from "./IMaquina";
 import { IStatus } from "./IStatus";
 import { IUser } from "./IUser";
+import { IWorkOrder } from "./IWorkOrder";
 
 export type IDay = {
   date: string;
@@ -30,6 +31,15 @@ export type IEvent = {
   code: string;
   request_user: IUser;
 };
+
+type EventSubset = Pick<IEvent, "init_time" | "status" | "activity_data">;
+
+export interface EventManipulationDto extends EventSubset {
+  id: number;
+  diagnosis: string;
+  cause: string;
+  observation: string;
+}
 
 export type HistoryStatus = {
   id: number;

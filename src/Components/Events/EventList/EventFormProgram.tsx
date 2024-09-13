@@ -14,7 +14,10 @@ import {
 } from "@/redux/services/workOrderService";
 import { useDispatch } from "react-redux";
 import { setWorkOrder } from "@/redux/features/workOrderSlice";
-import { useUpdateEventMutation } from "@/redux/services/eventService";
+import {
+  useExecuteEventMutation,
+  useUpdateEventMutation,
+} from "@/redux/services/eventService";
 import { setUpdateEvent } from "@/redux/features/eventSlice";
 import { allowedEjecuteRoles, EVENT_STATE } from "@/Utils/constants";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -27,10 +30,8 @@ export default function EventFormProgram({
   activeIndex,
   event,
 }: IEventFormChange) {
-  const [submitLoad, setSubmitLoad] = useState<boolean>(false);
   const [activity, setActivity] = useState<TechnicianActivities[] | []>([]);
-  const [addWorkOrder] = useAddWorkOrderMutation();
-  const [updateEvent] = useUpdateEventMutation();
+  const [executeEvent, { isLoading: submitLoad }] = useExecuteEventMutation();
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
   );
@@ -50,8 +51,8 @@ export default function EventFormProgram({
 
   const onSubmit: SubmitHandler<IWorkOrder> = async (data) => {
     // Validación: Si no hay diagnóstico o actividades
-    if (!data.diagnosis.trim() || activity.length === 0) {
-      toast.error("Debe ingresar un diagnóstico y al menos una actividad.");
+    if (!data.diagnosis.trim()) {
+      toast.error("Debe ingresar un diagnóstico.");
 
       return;
     }
@@ -61,7 +62,6 @@ export default function EventFormProgram({
         event.history_status?.previous_state.id === EVENT_STATE.PROGRAMADO
       ) {
         await ejecutionEvent(data.diagnosis.trim(), event.id);
-        setActiveIndex(activeIndex + 1);
       }
     } catch (error) {
       console.error("Error during submission:", error);
@@ -75,28 +75,19 @@ export default function EventFormProgram({
     // technicalId: number
   ) => {
     try {
-      console.log(activity);
-      setSubmitLoad(true);
-      const saveWorkOrder = await addWorkOrder({
-        diagnosis,
-        event: eventId,
-        observation: null,
-        cause: null,
-      }).unwrap();
-      dispatch(setWorkOrder(saveWorkOrder));
-
-      const updatedEvent = await updateEvent({
+      const updatedEvent = await executeEvent({
         id: eventId,
         init_time: moment().format("HH:mm:ss"),
-        // technical: technicalId,
         status: EVENT_STATE.EN_EJECUCION,
         activity_data: activity,
+        diagnosis: diagnosis,
       }).unwrap();
       dispatch(setUpdateEvent(updatedEvent));
+      setActiveIndex(activeIndex + 1);
+      toast.success("Mantenimiento ejecutado.");
+
     } catch (error) {
       toast.error("Error al empezar el mantenimiento");
-    } finally {
-      setSubmitLoad(false);
     }
   };
 
@@ -137,7 +128,7 @@ export default function EventFormProgram({
               outlined
               type="submit"
               loading={submitLoad}
-              disabled={!diagnosis.trim() || activity.length === 0}
+              disabled={!diagnosis.trim()}
               // onClick={handleExecute}
             />
           )}

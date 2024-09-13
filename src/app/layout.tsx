@@ -7,6 +7,7 @@ import useThemeStore from "@/stores/themeStore";
 import "primeicons/primeicons.css";
 import SessionAuthProvider from "@/context/SessionAuthProvider";
 import ReduxProviders from "@/redux/providers";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}>
+      <Head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </Head>
       <html lang="es">
         <body className="transition-all ">
           <div id="app" className={inter.className}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IEventFormChange } from "@/interfaces/Props/IEventFormChange";
 import { PrimeIcons } from "primereact/api";
 import { Button } from "primereact/button";
@@ -6,7 +6,10 @@ import { InputTextarea } from "primereact/inputtextarea";
 import ActivityForm, { TechnicianActivities } from "../ActivityForm";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IWorkOrder } from "@/interfaces/IWorkOrder";
-import { useUpdateEventMutation } from "@/redux/services/eventService";
+import {
+  useCompleteEventMutation,
+  useUpdateEventMutation,
+} from "@/redux/services/eventService";
 import { allowedEjecuteRoles, EVENT_STATE } from "@/Utils/constants";
 import { useDispatch } from "react-redux";
 import {
@@ -36,9 +39,12 @@ export default function EventFormExecute({
   const { data: fetchWorkOrder } = useFindWorkOrderByEventIdQuery(
     event.id ? { eventId: event.id } : skipToken
   );
-  const [updateMachine] = useUpdateMachineMutation();
-  const [updateEvent] = useUpdateEventMutation();
-  const [updateWorkOrder] = useUpdateWorkOrderMutation();
+  const [updateEvent, { isLoading: updateEventLoading }] =
+    useUpdateEventMutation();
+  const [completeEvent, { isLoading: completeEventLoad }] =
+    useCompleteEventMutation();
+  const [updateWorkOrder, { isLoading: updateWorkOrderLoad }] =
+    useUpdateWorkOrderMutation();
   const dispatch = useDispatch();
   const authUser = useAppSelector((state) => state.auth.authUser);
 
@@ -52,18 +58,13 @@ export default function EventFormExecute({
   const cause = watch("cause", "");
   const observation = watch("observation", "");
   const onSubmit: SubmitHandler<IWorkOrder> = async (data) => {
-    if (
-      !data.cause?.trim() ||
-      !data.observation?.trim() ||
-      activity.length === 0
-    ) {
+    if (!data.cause?.trim() || !data.observation?.trim()) {
       toast.error("Debe ingresar una causa y observación.");
 
       return;
     }
     if (data.observation && data.cause) {
       if (isActivitiesModified) {
-        setSubmitLoad(true);
         const updatedWorkOrder = await updateWorkOrder({
           id: existWorkOrder?.id,
           observation,
@@ -76,7 +77,6 @@ export default function EventFormExecute({
         }).unwrap();
         dispatch(setUpdateEvent(updatedEvent));
         setIsActivitiesModified(false);
-        setSubmitLoad(false);
       } else {
         await saveEjecution(data.observation.trim(), data.cause.trim());
       }
@@ -84,35 +84,25 @@ export default function EventFormExecute({
   };
 
   const saveEjecution = async (observation: string, cause: string) => {
-    setSubmitLoad(true);
     try {
-      const updatedWorkOrder = await updateWorkOrder({
-        id: existWorkOrder?.id,
+      const updatedEvent = await completeEvent({
+        id: event.id,
+        activity_data: activity,
+        status: EVENT_STATE.COMPLETADO,
         observation,
         cause,
       }).unwrap();
-      dispatch(setUpdateWorkOrder(updatedWorkOrder));
-      const updatedEvent = await updateEvent({
-        id: event.id,
-        end_time: moment().format("HH:mm:ss"),
-        activity_data: activity,
-        status: EVENT_STATE.COMPLETADO,
-      }).unwrap();
       dispatch(setUpdateEvent(updatedEvent));
+      toast.success("Mantenimiento completado.");
 
-      await updateMachine({
-        id: event.machine_detail.id,
-        last_maintenance: new Date(),
-      });
       setActiveIndex(activeIndex + 1);
     } catch (error) {
       console.error("Error saving execution:", error);
       toast.error("Error al completar el mantenimiento");
-    } finally {
-      setSubmitLoad(false);
     }
   };
-  React.useEffect(() => {
+
+  useEffect(() => {
     register("cause", { required: "Este campo es obligatorio" });
     register("observation", { required: "Este campo es obligatorio" });
 
@@ -164,7 +154,9 @@ export default function EventFormExecute({
               icon={PrimeIcons.ARROW_RIGHT}
               severity="success"
               type="submit"
-              loading={submitLoad}
+              loading={
+                updateEventLoading || completeEventLoad || updateWorkOrderLoad
+              }
               // onClick={() => setActiveIndex(activeIndex + 1)}
               disabled={
                 !cause?.trim() || !observation?.trim() || activity.length === 0
