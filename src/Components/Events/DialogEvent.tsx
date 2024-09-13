@@ -1,10 +1,13 @@
 "use client";
 import { Dialog } from "primereact/dialog";
 import React, { useEffect, useState } from "react";
-import EventStepper from "./EventList/EventStepper";
 import { useFindEventByIdQuery } from "@/redux/services/eventService";
 import { skipToken } from "@reduxjs/toolkit/query";
-
+import { Skeleton } from "primereact/skeleton";
+import dynamic from "next/dynamic";
+const EventStepper = dynamic(() => import("./EventList/EventStepper"), {
+  loading: () => <Skeleton height="12rem" />,
+});
 export default function DialogEvent({
   eventInfo,
   visible,
@@ -14,7 +17,7 @@ export default function DialogEvent({
   visible: boolean;
   onClose: () => void;
 }) {
-  const { data, refetch } = useFindEventByIdQuery(
+  const { data, refetch, isLoading } = useFindEventByIdQuery(
     eventInfo ? { id: eventInfo } : skipToken
   );
 
@@ -27,12 +30,16 @@ export default function DialogEvent({
   return (
     <>
       <Dialog
-        header={"Evento"}
+        header={!data ? "Mantenimiento" : `Mantenimiento #${data.code}`}
         visible={visible}
         onHide={onClose}
         draggable={false}
       >
-        {data && <EventStepper event={data} />}
+        {isLoading ? (
+          <Skeleton height="12rem" />
+        ) : (
+          <>{data && <EventStepper event={data} />}</>
+        )}
       </Dialog>
     </>
   );

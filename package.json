@@ -30,6 +30,7 @@
     "react-toastify": "^10.0.5",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
+    "sharp": "^0.33.5",
     "tailwind-merge": "^2.2.1",
     "zustand": "^4.5.2"
   },

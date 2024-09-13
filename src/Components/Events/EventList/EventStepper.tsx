@@ -3,12 +3,21 @@ import React, { useState } from "react";
 import { Steps } from "primereact/steps";
 import { MenuItem } from "primereact/menuitem";
 import { PrimeIcons } from "primereact/api";
-import EventFormProgram from "./EventFormProgram";
-import EventFormExecute from "./EventFormExecute";
-import EventFormComplete from "./EventFormComplete";
 import { EVENT_STATE } from "@/Utils/constants";
 import { IEvent } from "@/interfaces/IEvent";
 import EventRequest from "./EventRquest";
+import dynamic from "next/dynamic";
+import { Skeleton } from "primereact/skeleton";
+
+const EventFormProgram = dynamic(() => import("./EventFormProgram"), {
+  loading: () => <Skeleton height="12rem" />,
+});
+const EventFormExecute = dynamic(() => import("./EventFormExecute"), {
+  loading: () => <Skeleton height="12rem" />,
+});
+const EventFormComplete = dynamic(() => import("./EventFormComplete"), {
+  loading: () => <Skeleton height="12rem" />,
+});
 
 export default function EventStepper({ event }: { event: IEvent }) {
   const eventStates = EVENT_STATE;
