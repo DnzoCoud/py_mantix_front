@@ -6,14 +6,20 @@ import React from "react";
 
 interface EventContentProps {
   eventInfo: EventContentArg;
+  isLoad?: boolean;
 }
-export default function EventContent({ eventInfo }: EventContentProps) {
+export default function EventContent({ eventInfo, isLoad }: EventContentProps) {
   const eventColor = getColorEvents(eventInfo.event.extendedProps.status.id);
   return (
     <>
       <div
-        className={` flex flex-col items-start ${eventColor.border} bg-white dark:bg-dark_medium_bg rounded-2xl mb-4 transition-all ${eventColor.hover_background} w-full `}
+        className={`relative flex flex-col items-start ${eventColor.border} bg-white dark:bg-dark_medium_bg rounded-2xl overflow-hidden mb-4 transition-all ${eventColor.hover_background} w-full `}
       >
+        {isLoad && (
+          <div className="absolute w-full h-full bg-zinc-200 backdrop-blur-sm bg-opacity-45 flex items-center justify-center">
+            <i className={`pi pi-spinner animate-spin text-4xl text-black`} />
+          </div>
+        )}
         <div
           className={`flex items-center justify-between font-bold w-full px-4 py-2  rounded-tl-2xl rounded-tr-2xl`}
         >

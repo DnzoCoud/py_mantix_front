@@ -5,9 +5,9 @@ import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import {
   DatesSetArg,
   EventClickArg,
+  EventContentArg,
   EventInput,
 } from "@fullcalendar/core/index.js";
-import DialogEvent from "@/Components/Events/DialogEvent";
 import { IEvent } from "@/interfaces/IEvent";
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import DialogEventList from "./DialogEventList";
@@ -26,6 +26,13 @@ import { Skeleton } from "primereact/skeleton";
 import esLocale from "@fullcalendar/core/locales/es";
 import listPlugin from "@fullcalendar/list";
 
+const DialogEvent = dynamic(() => import("@/Components/Events/DialogEvent"), {
+  loading: () => (
+    <div className="flex justify-evenly items-center gap-4 p-2 m-4">
+      <Skeleton className="p-2 w-full" />
+    </div>
+  ),
+});
 const EventCount = dynamic(() => import("./EventCount"), {
   loading: () => (
     <div className="flex justify-evenly items-center gap-4 p-2 m-4">
@@ -42,7 +49,7 @@ const EventContent = dynamic(() => import("./EventContent"), {
 
 function Calendar() {
   const authUser = useAppSelector((state) => state.auth.authUser);
-
+  const [loadingEventId, setLoadingEventId] = useState<string | null>(null);
   const [visible, setVisible] = useState<{
     event_id?: number;
     open: boolean;
@@ -117,10 +124,16 @@ function Calendar() {
   }, [dispatch]);
   const handleEventClick = (evento: EventClickArg) => {
     const eventId = parseInt(evento.event._def.publicId);
+    setLoadingEventId(evento.event.id);
     setVisible({
       open: true,
       event_id: eventId,
     });
+
+    setTimeout(() => {
+      setLoadingEventId(null); // Desactiva el estado de carga después de 2 segundos.
+      // Aquí puedes agregar cualquier otra lógica después de que la carga finalice.
+    }, 2000);
     // <EventCard event={event} refetch={refetch} />
     // return (
 
@@ -164,6 +177,15 @@ function Calendar() {
     const { month, year } = getCurrentMonthYear(arg);
     dispatch(countEventsByStatusForMonth({ month, year }));
   };
+
+  const eventClassNames = (eventInfo: EventContentArg) => {
+    // Si el evento tiene el atributo `day.close`, añade una clase personalizada
+    if (eventInfo.event.extendedProps.day?.close) {
+      return ["event-closed"]; // Clase que se añadirá a los eventos cerrados
+    }
+    return ["event-open"]; // Clase por defecto para eventos abiertos
+  };
+
   return (
     <>
       {!eventsLoading && <EventCount />}
@@ -179,7 +201,12 @@ function Calendar() {
         eventClick={(e: EventClickArg) => handleEventClick(e)}
         events={eventsForFullCalendar}
         dateClick={handleDateClick}
-        eventContent={(eventInfo) => <EventContent eventInfo={eventInfo} />}
+        eventContent={(eventInfo) => (
+          <EventContent
+            eventInfo={eventInfo}
+            isLoad={loadingEventId === eventInfo.event.id}
+          />
+        )}
         headerToolbar={{
           left: "title",
           center: "dayGridMonth,dayGridWeek,listWeek",

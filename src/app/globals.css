@@ -127,3 +127,9 @@ html body.dark #app *.darkBgComponents {
 .fc-scroller::-webkit-scrollbar {
   display: none;
 }
+
+/* Estilos para los días cerrados */
+.closed-day {
+  background-color: rgba(255, 0, 0, 0.3); /* Rojo semitransparente */
+  color: white;
+}

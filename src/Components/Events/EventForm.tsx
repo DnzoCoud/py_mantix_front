@@ -128,7 +128,7 @@ export default function EventForm() {
         <LoaderComponents isLoad={saveLoad} />
         <div className="grid grid-cols-12 gap-4 mt-4">
           <div className="col-span-12 mb-4">
-            <Fieldset legend="Cargue Masivo" toggleable>
+            <Fieldset legend="Cargue Masivo" toggleable collapsed>
               {uploadErrors.length > 0 && (
                 <UploadErrors errors={uploadErrors} />
               )}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Steps } from "primereact/steps";
 import { MenuItem } from "primereact/menuitem";
 import { PrimeIcons } from "primereact/api";
@@ -21,16 +21,19 @@ const EventFormComplete = dynamic(() => import("./EventFormComplete"), {
 
 export default function EventStepper({ event }: { event: IEvent }) {
   const eventStates = EVENT_STATE;
-  const [activeIndex, setActiveIndex] = useState<number>(() => {
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+
+  // Actualiza el activeIndex cuando event cambia
+  useEffect(() => {
     if (
       event.status_detail.id === EVENT_STATE.REPROGRAMADO &&
       event.history_status
     ) {
-      return event.history_status.previous_state.id;
+      setActiveIndex(event.history_status.previous_state.id);
     } else {
-      return event.status_detail.id;
+      setActiveIndex(event.status_detail.id);
     }
-  });
+  }, [event]);
 
   const itemRenderer = (item: MenuItem, itemIndex: number) => {
     const isActiveItem = activeIndex === itemIndex;

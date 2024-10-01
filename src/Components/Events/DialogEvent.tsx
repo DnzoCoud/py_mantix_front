@@ -38,7 +38,7 @@ export default function DialogEvent({
         {isLoading ? (
           <Skeleton height="12rem" />
         ) : (
-          <>{data && <EventStepper event={data} />}</>
+          <>{!isLoading && data && <EventStepper event={data} />}</>
         )}
       </Dialog>
     </>
