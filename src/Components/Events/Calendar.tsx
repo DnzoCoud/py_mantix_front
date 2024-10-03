@@ -16,7 +16,6 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/hooks";
 import {
   countEventsByStatusForMonth,
-  getCurrentMonthYear,
   setEvent,
   setEvents,
   setUpdateEvent,
@@ -25,6 +24,10 @@ import dynamic from "next/dynamic";
 import { Skeleton } from "primereact/skeleton";
 import esLocale from "@fullcalendar/core/locales/es";
 import listPlugin from "@fullcalendar/list";
+import moment from "moment";
+import { InputText } from "primereact/inputtext";
+import { InputNumber } from "primereact/inputnumber";
+import { Button } from "primereact/button";
 
 const DialogEvent = dynamic(() => import("@/Components/Events/DialogEvent"), {
   loading: () => (
@@ -50,6 +53,8 @@ const EventContent = dynamic(() => import("./EventContent"), {
 function Calendar() {
   const authUser = useAppSelector((state) => state.auth.authUser);
   const [loadingEventId, setLoadingEventId] = useState<string | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedYear, setSelectedYear] = useState(currentMonth.getFullYear());
   const [visible, setVisible] = useState<{
     event_id?: number;
     open: boolean;
@@ -58,22 +63,21 @@ function Calendar() {
   });
   const [visibleDate, setVisibleDate] = useState<boolean>(false);
   const [dateSelect, setDateSelect] = useState<Date | string>("");
-  const {
-    data: fetchEvents,
-    isLoading: eventsLoading,
-    refetch,
-  } = useFetchEventsQuery();
+  const { data: fetchEvents, isLoading: eventsLoading } = useFetchEventsQuery(
+    {
+      month: currentMonth.getMonth() + 1,
+      year: currentMonth.getFullYear(),
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
   const dispatch = useDispatch();
   const events = useAppSelector((state) => state.event.events);
   const calendarRef = useRef<FullCalendar>(null);
-
-  useEffect(() => {
-    refetch(); // Realiza el fetch de las áreas cada vez que se monta o actualiza el componente
-  }, [refetch]);
-
   useEffect(() => {
     if (fetchEvents) dispatch(setEvents(fetchEvents));
-  }, [fetchEvents, dispatch]);
+  }, [fetchEvents, eventsLoading, dispatch]);
 
   useEffect(() => {
     const socket = new WebSocket(
@@ -170,64 +174,136 @@ function Calendar() {
       shift: event.shift,
     };
   };
+  // useEffect que invoca handleDatesSet
+  useEffect(() => {
+    // Último día del mes actual
+
+    handleDatesSet();
+
+    dispatch(
+      countEventsByStatusForMonth({
+        month: currentMonth.getMonth(),
+        year: currentMonth.getFullYear(),
+      })
+    );
+  }, [currentMonth, dispatch]);
 
   const eventsForFullCalendar: EventInput[] = convertToEventInputs(events);
 
-  const handleDatesSet = (arg: DatesSetArg) => {
-    const { month, year } = getCurrentMonthYear(arg);
-    dispatch(countEventsByStatusForMonth({ month, year }));
-  };
-
-  const eventClassNames = (eventInfo: EventContentArg) => {
-    // Si el evento tiene el atributo `day.close`, añade una clase personalizada
-    if (eventInfo.event.extendedProps.day?.close) {
-      return ["event-closed"]; // Clase que se añadirá a los eventos cerrados
+  const handleDatesSet = () => {
+    const newdate = calendarRef.current?.getApi().getDate();
+    if (
+      newdate?.getMonth() !== currentMonth.getMonth() ||
+      newdate?.getFullYear() !== currentMonth.getFullYear()
+    ) {
+      setCurrentMonth(newdate ?? new Date());
+      // Sumar 2 al mes para que coincida con el formato que espera tu API
+      dispatch(
+        countEventsByStatusForMonth({
+          month: newdate?.getMonth() ?? new Date().getMonth(), // Sumar 2 aquí
+          year: newdate?.getFullYear() ?? new Date().getFullYear(),
+        })
+      );
     }
-    return ["event-open"]; // Clase por defecto para eventos abiertos
   };
 
+  const handleYearChange = (event: any) => {
+    const year = parseInt(event.target.value, 10);
+    setSelectedYear(year);
+
+    // Aquí puedes añadir la lógica para actualizar el calendario
+  };
+
+  const handleFilterClick = () => {
+    const newDate = new Date(selectedYear, 0, 1); // Cambia a enero del año seleccionado
+    setCurrentMonth(newDate); // Asegúrate de que se actualice el estado del año seleccionado
+    if (calendarRef.current) {
+      calendarRef.current.getApi().gotoDate(newDate); // Cambia la fecha en FullCalendar
+    }
+
+    // Llama a countEventsByStatusForMonth para obtener eventos del nuevo año
+    dispatch(
+      countEventsByStatusForMonth({
+        month: 1, // Mes de enero
+        year: selectedYear, // Cambia a currentYear en lugar de selectedYear
+      })
+    );
+  };
+
+  if (eventsLoading) return <Skeleton className="p-12" />;
   return (
     <>
       {!eventsLoading && <EventCount />}
-
-      <FullCalendar
-        ref={calendarRef}
-        datesSet={handleDatesSet}
-        plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-        initialView="dayGridMonth"
-        // locale={"es"}
-        nowIndicator
-        nowIndicatorClassNames={"bg-red-500"}
-        eventClick={(e: EventClickArg) => handleEventClick(e)}
-        events={eventsForFullCalendar}
-        dateClick={handleDateClick}
-        eventContent={(eventInfo) => (
-          <EventContent
-            eventInfo={eventInfo}
-            isLoad={loadingEventId === eventInfo.event.id}
-          />
-        )}
-        headerToolbar={{
-          left: "title",
-          center: "dayGridMonth,dayGridWeek,listWeek",
-          right: "prev,today,next",
-        }}
-        timeZone="local"
-        locale={esLocale}
-      />
-
-      <DialogEvent
-        eventInfo={visible.event_id}
-        visible={visible.open}
-        onClose={handleEventClose}
-      />
-
-      {dateSelect && (
-        <DialogEventList
-          visible={visibleDate}
-          onClose={handleDateClose}
-          dateSelected={dateSelect}
+      <div className="w-1/2 flex items-center justify-start gap-4 my-4">
+        <label htmlFor="year">Selecciona un año:</label>
+        <InputText
+          id="year"
+          type="number"
+          value={selectedYear.toString()}
+          onChange={handleYearChange}
+          min={2020} // Cambia esto según tus necesidades
+          max={2030} // Cambia esto según tus necesidades
         />
+        <Button
+          loading={eventsLoading}
+          label="Filtrar"
+          onClick={handleFilterClick}
+          size="small"
+        />
+        {/* Botón de filtrar */}
+      </div>
+      {eventsLoading ? (
+        <Skeleton className="p-12" />
+      ) : (
+        <>
+          <FullCalendar
+            ref={calendarRef}
+            datesSet={handleDatesSet}
+            plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+            initialView="dayGridMonth"
+            // locale={"es"}
+            nowIndicator
+            nowIndicatorClassNames={"bg-red-500"}
+            eventClick={(e: EventClickArg) => handleEventClick(e)}
+            events={eventsForFullCalendar ?? []}
+            dateClick={handleDateClick}
+            eventContent={(eventInfo) => (
+              <EventContent
+                eventInfo={eventInfo}
+                isLoad={loadingEventId === eventInfo.event.id || eventsLoading}
+              />
+            )}
+            headerToolbar={{
+              left: "title",
+              center: "dayGridMonth,dayGridWeek,listWeek",
+              right: "prev,today,next",
+            }}
+            timeZone="local"
+            locale={esLocale}
+            visibleRange={(currentDate) => {
+              let start = moment(currentDate).startOf("month").toDate();
+              let end = moment(currentDate).endOf("month").toDate();
+              return {
+                start: start,
+                end: end,
+              };
+            }}
+          />
+
+          <DialogEvent
+            eventInfo={visible.event_id}
+            visible={visible.open}
+            onClose={handleEventClose}
+          />
+
+          {dateSelect && (
+            <DialogEventList
+              visible={visibleDate}
+              onClose={handleDateClose}
+              dateSelected={dateSelect}
+            />
+          )}
+        </>
       )}
     </>
   );

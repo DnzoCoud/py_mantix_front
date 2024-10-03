@@ -26,10 +26,17 @@ export const eventService = createApi({
         },
       }),
     }),
-    fetchEvents: builder.query<IEvent[] | [], void>({
-      query: () => ({
+    fetchEvents: builder.query<
+      IEvent[] | [],
+      { month?: number; year?: number }
+    >({
+      query: ({ month, year }) => ({
         url: `/event/findAll`,
         method: "GET",
+        params: {
+          month,
+          year,
+        },
       }),
       providesTags: ["Events"],
     }),
