@@ -1,33 +1,27 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
-import {
-  DatesSetArg,
-  EventClickArg,
-  EventContentArg,
-  EventInput,
-} from "@fullcalendar/core/index.js";
 import { IEvent } from "@/interfaces/IEvent";
-import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
-import DialogEventList from "./DialogEventList";
-import { useFetchEventsQuery } from "@/redux/services/eventService";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "@/redux/hooks";
 import {
   countEventsByStatusForMonth,
   setEvent,
   setEvents,
   setUpdateEvent,
 } from "@/redux/features/eventSlice";
-import dynamic from "next/dynamic";
-import { Skeleton } from "primereact/skeleton";
+import { useAppSelector } from "@/redux/hooks";
+import { useFetchEventsQuery } from "@/redux/services/eventService";
+import { EventClickArg, EventInput } from "@fullcalendar/core/index.js";
 import esLocale from "@fullcalendar/core/locales/es";
+import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
+import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import FullCalendar from "@fullcalendar/react";
 import moment from "moment";
-import { InputText } from "primereact/inputtext";
-import { InputNumber } from "primereact/inputnumber";
+import dynamic from "next/dynamic";
 import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Skeleton } from "primereact/skeleton";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import DialogEventList from "./DialogEventList";
 
 const DialogEvent = dynamic(() => import("@/Components/Events/DialogEvent"), {
   loading: () => (
